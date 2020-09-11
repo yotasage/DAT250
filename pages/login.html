@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Din NettBank</title>
+<link rel="icon" type="image/ico" href="../assets/favicon.ico"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+
+<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+
+<style>
+.container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+  }
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <form action="action_page.php" method="post">
+        <div>
+        <img src="../assets/DNB_ASA_logo.svg" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
+        </div>
+    
+        <div>
+        <label for="uname"><b>Username: </b></label>
+        <input type="text" placeholder="Enter Username" name="uname" required> <br /> <br />
+    
+        <label for="psw"><b>Password: </b></label>
+        <input type="password" placeholder="Enter Password" name="psw" required> <br /> <br />
+    
+        <button onclick="location.href='your_page.html';" type="submit">Login</button> <br />
+        <label>
+          <input type="checkbox" checked="checked" name="remember"> Remember me
+        </label>
+        
+            
+        </label>
+        </div>
+    
+        <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>
+    </form> 
+</div>
+
+</body>
+</html> 
