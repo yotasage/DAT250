@@ -12,8 +12,8 @@ app = Flask(__name__)
 #     return "Hello, Flask!"
 
 @app.route("/")
-def hello_there(name = None):
-    return render_template("index.html", name=name, date=datetime.datetime.now())
+def hello_there():
+    return render_template("index.html", date=datetime.datetime.now())
 
 @app.route("/pages/<page>")
 def pages(page = None):
