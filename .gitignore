@@ -1,3 +1,6 @@
 .venv_win
 .venv
 .vscode
+.venv_mac
+.venv
+.vscode
