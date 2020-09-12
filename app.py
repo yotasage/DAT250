@@ -31,6 +31,11 @@ def hello_there():
     print("home")
     return render_template("index.html", date=datetime.datetime.now())
 
+@app.route("/favicon.ico")
+def fav():
+    print("fav")
+    return app.send_static_file("assets/favicon.ico")
+
 @app.route("/pages/<page>")
 def pages(page = None):
     print(f"page = {page}")
