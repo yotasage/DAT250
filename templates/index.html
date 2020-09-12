@@ -36,13 +36,13 @@ button {
 
 <button onclick="location.href='pages/login.html';" type="button">Login page</button> 
 
-{%if name %}
+<!--  {%if name %}
     <strong>Hello there user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
 {% else %}
     What's your name? Provide it after /hello/ in the URL. This no longer works, i removed this.
-{% endif %}
+{% endif %} -->
 
-{{ date.strftime("%A, %d %B, %Y at %X") }}
+<strong>Hello there user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
 
 </body>
 </html> 
