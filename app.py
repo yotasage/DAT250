@@ -1,5 +1,9 @@
 # flask tutorial https://code.visualstudio.com/docs/python/tutorial-flask
 
+# If you have not already done this, start with unpacking the virtual environment (venv).
+# windows: venv_win.zip
+# mac: venv_mac.zip
+
 # To activate the virtual environment (venv) type in the following command in the terminal:
 # windows: & "e:/.../DAT250/Prosjekt/DAT250/.venv_win/Scripts/Activate.ps1"
 # mac: & "e:/.../DAT250/Prosjekt/DAT250/.venv_mac/Scripts/Activate.ps1"
