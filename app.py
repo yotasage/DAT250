@@ -1,13 +1,5 @@
 # flask tutorial https://code.visualstudio.com/docs/python/tutorial-flask
 
-# If you have not already done this, start with unpacking the virtual environment (venv).
-# windows: venv_win.zip
-# mac: venv_mac.zip
-
-# To activate the virtual environment (venv) type in the following command in the terminal:
-# windows: & "e:/.../DAT250/Prosjekt/DAT250/.venv_win/Scripts/Activate.ps1"
-# mac: & "e:/.../DAT250/Prosjekt/DAT250/.venv_mac/Scripts/Activate.ps1"
-
 # The command line should look something like this when the venv is activated
 # windows: (.venv_win) PS E:\...\DAT250\Prosjekt\DAT250> 
 # mac: (.venv_mac) PS E:\...\DAT250\Prosjekt\DAT250> 
@@ -15,6 +7,13 @@
 # To run the server in vs code, type the following command in the terminal after activating the venv:
 # windows: python -m flask run
 # mac: python3 -m flask run
+
+# server options:
+# these are safe:
+#   python -m flask run
+#   flask run
+# this one will make the server available to everyone on your network. This is an unsafe option as anyone could run arbitrary code on your pc when you run the server in this way:
+# flask run --host 0.0.0.0
 
 # The development server looks for app.py by default. 
 

@@ -1,6 +1,6 @@
 .venv_win
-.venv
-.vscode
 .venv_mac
 .venv
 .vscode
+.venv_win_tanja
+.vscode/settings.json
