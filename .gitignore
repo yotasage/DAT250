@@ -1,4 +1,4 @@
 .venv*
 .vscode
 .vscode/settings.json
-._pycache_
+.__pycache__

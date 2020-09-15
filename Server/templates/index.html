@@ -1,0 +1,48 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>Din NettBank</title>
+<link rel="icon" type="image/ico" href="assets/favicon.ico"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+
+<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+
+<style>
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+    .center {
+      text-align: center;
+    }
+</style>
+
+</head>
+<body>
+
+ 
+
+<img src="assets/DNB_ASA_logo.svg" alt="DNB logo"/>
+
+<h1 class="center">Din NettBank</h1>
+<p class="center">I just went ahead and named our bank "Din NettBank" (DNB)</p>
+
+<button onclick="location.href='pages/login.html';" type="button">Login page</button> 
+
+<!--  {%if name %}
+    <strong>Hello there user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
+{% else %}
+    What's your name? Provide it after /hello/ in the URL. This no longer works, i removed this.
+{% endif %} -->
+
+<strong>Hello there user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
+
+</body>
+</html> 
