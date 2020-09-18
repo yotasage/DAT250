@@ -1,16 +1,22 @@
-# flask tutorial https://code.visualstudio.com/docs/python/tutorial-flask
+# The views are the handlers that respond to requests from web browsers or other clients. 
+# In Flask handlers are written as Python functions. 
+# Each view function is mapped to one or more request URLs.
 
-# imports
 import datetime
-from flask import Flask
 from flask import render_template
 
-# something
-app = Flask(__name__)
+from app import app  # Importerer Flask objektet app
+from tools import send_mail
 
 @app.route("/")
+@app.route('/index')
 def hello_there():
     print("home")
+    return render_template("index.html", date=datetime.datetime.now())
+
+@app.route("/mail")
+def send_mails():
+    send_mail()
     return render_template("index.html", date=datetime.datetime.now())
 
 @app.route("/favicon.ico")
