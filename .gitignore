@@ -4,3 +4,4 @@
 application/__pycache__
 backup
 mail_user_config.py
+application/certificate
