@@ -26,6 +26,9 @@ if __name__ == '__main__':
    except SystemExit:
       server.stop()                                            # På linje 2070 i koden hvor stop() er definert har jeg satt inn: self.serving = False  # We don't care, fordi koden fryser der, er noe feil med cheroot
 
+# TLS test
+# https://www.ssllabs.com/ssltest/index.html
+
 # https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https
 # req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 
