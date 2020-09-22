@@ -33,4 +33,4 @@ if __name__ == '__main__':
 # req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 
 # https://www.linode.com/docs/security/ssl/create-a-self-signed-tls-certificate/
-# req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out MyCertificate.crt -keyout MyKey.key
+# req -new -newkey rsa:4096 -x509 -sha256 -days 100 -nodes -out MyCertificate.crt -keyout MyKey.key
