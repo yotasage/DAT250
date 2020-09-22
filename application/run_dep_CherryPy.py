@@ -4,7 +4,7 @@ from cheroot.wsgi import Server as WSGIServer
 from cheroot.wsgi import PathInfoDispatcher as WSGIPathInfoDispatcher
 from cheroot.ssl.builtin import BuiltinSSLAdapter
 
-from application.app import app  # Importerer variabelen app fra filen app.py
+from app import app  # Importerer variabelen app fra filen app.py
 
 my_app = WSGIPathInfoDispatcher({'/': app})
 
