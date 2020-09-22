@@ -35,7 +35,7 @@
     }
 
     tr:nth-child(even) {
-        background-color: #dddddd;
+        background-color: #78d1dd;
     }
 </style>
 </head>
@@ -43,8 +43,11 @@
 <body>
     <div>
         <img src="../assets/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
-      </div>
+    </div>
     
+    <div>
+        <strong>Welcome user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
+    </div>
     <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
 <div class="container">
     <form action="action_page.php" method="post">
@@ -90,30 +93,31 @@
             </table> 
 
         </div>
-
-        <div>
-            <table style="width:50%">
-                <caption><h1>My accounts</h1></caption>
-                <tr>
-                    <th>Name</th>
-                    <th>Account number</th>
-                    <th>Balance</th>
-                </tr>
-            
-                <tr>
-                    <td>Use</td>
-                    <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                    <td>1000</td>
-                </tr>
-            
-                <tr>
-                    <td>Savings</td>
-                    <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                    <td>79000</td>
-                </tr>
-            </table>
-        </div>
 </div>
 
+<div class="container">
+    <form action="action_page.php" method="post">
+    <table style="width:50%">
+        <caption><h1>My accounts</h1></caption>
+        <tr>
+        <th>Name</th>
+        <th>Account number</th>
+        <th>Balance</th>
+        </tr>
+
+        <tr>
+        <td>Use</td>
+        <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+        <td>1000</td>
+        </tr>
+
+        <tr>
+        <td>Savings</td>
+        <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+        <td>79000</td>
+        </tr>
+    </table>
+    </form>
+</div>
 </body>
 </html>
