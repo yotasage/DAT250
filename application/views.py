@@ -3,38 +3,29 @@
 # Each view function is mapped to one or more request URLs.
 
 import datetime
-from flask import render_template
+from flask import render_template, request
 
 from app import app # Importerer Flask objektet app
 from tools import send_mail
 
 @app.route("/")
 @app.route('/index')
-def hello_there():
-    print("home")
+def index():
     return render_template("index.html", date=datetime.datetime.now(), username="Vebjørn")
 
-@app.route("/mail")
-def send_mails():
-    send_mail()
-    return render_template("index.html", date=datetime.datetime.now())
+@app.route("/pages/login.html", methods=['GET'])
+def login(page = None):
+    messages = request.args.get('error')
+    return render_template("pages/login.html", date=datetime.datetime.now(), error=messages)
 
-@app.route("/favicon.ico")
-def fav():
-    print("fav")
-    return app.send_static_file("assets/favicon.ico")
-
-@app.route("/pages/<page>")
+@app.route("/pages/<page>", methods=['GET'])
 def pages(page = None):
-    print(f"page = {page}")
-    return render_template("pages/" + page, date=datetime.datetime.now())
+    return render_template("pages/" + page, date=datetime.datetime.now(), error=None)
 
 @app.route("/assets/<asset>")
 def assets(asset = None):
-    print(f"asset = {asset}")
     return app.send_static_file("assets/" + asset)
 
 @app.route("/styles/<asset>")
 def styles(style = None):
-    print(f"style = {style}")
     return app.send_static_file("style/" + style)

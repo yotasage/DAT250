@@ -6,4 +6,4 @@ from app import app  # Importerer variabelen app fra filen app.py
 #       host='127.0.0.1'        privat, bare lokal
 #       host='192.168.0.37'     offentlig, tilgjengelig for andre på nettverket (eksempel IPv4 addresse, sett inn din egen)
 #       host='0.0.0.0'          offentlig, tilgjengelig for andre på nettverket (alle IP addressene til maskinen kan brukes for å nå siden)
-app.run(host='127.0.0.1', debug=False)  # Runs the server in development mode using the integrated server in Flask
+app.run(host='127.0.0.1', debug=True)  # Runs the server in development mode using the integrated server in Flask

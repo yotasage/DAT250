@@ -72,6 +72,12 @@
         
             <div class=center>
 
+              {%if error %}
+                <br><strong style="color:red;">Either User ID or Password is wrong.</strong><br><br>
+              {% else %}
+                <br><br><br>
+              {% endif %}
+
               <div class=input_container> 
                 <label for="uname"><b>User ID:</b></label><br>
                 <input type="text" name="uname" required> <br> <br>
@@ -82,7 +88,7 @@
                 <input type="password" name="pswd" required> <br> <br>
               </div>
 
-              <button onclick="location.href='startside.html';" type="submit">Login</button>
+              <button type="submit" formaction="login_data">Login</button>
               <button onclick="location.href='registration.html';" type="button">Register</button> 
                 
               <br><br>
