@@ -11,3 +11,4 @@ flask_mail
 waitress
 cheroot
 threading
+authenticator
