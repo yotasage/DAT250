@@ -24,5 +24,5 @@ mail_settings = {
 app = Flask(__name__)
 app.config.update(mail_settings)
 mail = Mail(app)
-import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+from application import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
 
