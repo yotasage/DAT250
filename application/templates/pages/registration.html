@@ -4,10 +4,196 @@
 <title>JAMVP Bank</title>
 <link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
 
+<style>
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;
+    }
+
+    .container {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:500px; 
+        border-style: solid;  /* solid */
+        border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
+        background-color:  rgb(173, 173, 173);
+    }
+
+    button {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .fields {
+        padding: 8px;
+        display: inline-block;
+    }
+</style>
+
 </head>
 <body>
 
+    <img src="../assets/logo.png" alt="logo"/>
 
-    
+    <br>
+    <br>
+    <br>
+
+    <div>
+        <form>
+            <div class="container">
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="fname">First name:</label><br>
+                        <input type="text" id="fname" placeholder="First"  name="fname">
+                    </div>
+
+                    <div class="fields">
+                        <label for="mname">Middle name:</label><br>
+                        <input type="text" id="mname" placeholder="Middle"  name="mname">
+                    </div>
+
+                    <div class="fields">
+                        <label for="lname">Last name:</label><br>
+                        <input type="text" id="lname" placeholder="Last"  name="lname">
+                    </div>
+                </div>
+
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="email">E-mail:</label><br>
+                        <input type="email" id="email" placeholder="Identification@uis.no"  name="email">
+                    </div>
+
+                    <div class="fields">
+                        <label for="id">User Identification:</label><br>
+                        <input type="text" id="mname" placeholder="Identification"  name="id">
+                    </div>
+                </div>
+
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="phone_num">Phone number:</label><br>
+                        <input type="text" id="phone_num" placeholder="Phone number"  name="phone_num">
+                    </div>
+                </div>
+
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="dob">Date of birth:</label><br>
+                        <input type="text" id="dob" placeholder="dd-mm-yyyy"  name="dob">
+                    </div>
+                </div>
+
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="city">City:</label><br>
+                        <input type="text" id="city" placeholder="City"  name="city">
+                    </div>
+
+                    <div class="fields">
+                        <label for="postcode">Postal code:</label><br>
+                        <input type="text" id="postcode" placeholder="Postal Code"  name="postcode">
+                    </div>
+                </div>
+
+                <div style="text-align:left;">
+                    <div class="fields">
+                        <label for="address">Address:</label><br>
+                        <input type="text" id="address" placeholder="Address"  name="address">
+                    </div>
+                </div>
+
+                <br>
+                <button style="text-align:center;" type=submit onclick="location.href='pages/login.html';" type="button">Register</button>
+                <br>
+            </div>
+            
+            
+            
+            
+            
+        </form> 
+    </div>
+
+
+<!-- 
+
+<div>
+    <table style="width:33%">
+        <tr>
+          <th>Firstname</th>
+          <th></th>
+          <th>Surname</th>
+          <th></th>
+          <th>Lastname</th>
+        </tr>
+        <tr>
+          <td>Jonathan</td>
+          <td></td>
+          <td>Sæthre</td>
+          <td></td>
+          <td>Ege</td>
+        </tr>
+      </table>
+
+      <br>
+      <br>
+      <br>
+
+      <table style="width:33%">
+        <tr>
+          <th>E-mail address</th>
+          <th>Identification</th>
+        </tr>
+        <tr>
+          <td>242761@uis.no</td>
+          <td>242761</td>
+        </tr>
+      </table>
+
+      <table style="width:33%">
+        <tr>
+          <th>Date of birth</th>
+        </tr>
+        <tr>
+          <td>05-03-1996</td>
+        </tr>
+      </table>
+
+      <table style="width:33%">
+        <tr>
+          <th>Phone number</th>
+        </tr>
+        <tr>
+          <td>90413484</td>
+        </tr>
+      </table>
+
+      <table style="width:33%">
+        <tr>
+          <th>City</th>
+          <th>Postal Code</th>
+        </tr>
+        <tr>
+          <td>Stavanger</td>
+          <td>4021</td>
+        </tr>
+      </table> 
+
+      <table style="width:33%">
+        <tr>
+          <th>Address</th>
+        </tr>
+        <tr>
+          <td>Valahagen 8</td>
+        </tr>
+      </table> 
+</div>
+-->
 </body>
 </html> 

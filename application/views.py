@@ -12,7 +12,7 @@ from tools import send_mail
 @app.route('/index')
 def hello_there():
     print("home")
-    return render_template("index.html", date=datetime.datetime.now())
+    return render_template("index.html", date=datetime.datetime.now(), username="Vebjørn")
 
 @app.route("/mail")
 def send_mails():
