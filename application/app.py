@@ -5,7 +5,7 @@ import os
 from flask import Flask
 from flask_mail import Mail
 
-import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
+from application import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',
