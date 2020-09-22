@@ -2,10 +2,19 @@
 <html>
 <head>
 <title> JAMVP bank</title>
-<link rel="icon" type="image/ico" href="../assets/favicon.ico"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+<link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
 
 <!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
 <style>
+    .container{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:1000px;
+        border-style: none;
+        background-color: #f8f6f6;
+    }
+
     img {
         display: block;
         margin-left: auto;
@@ -15,104 +24,117 @@
     button {
         display: block;
         margin-left: auto;
-        margin-right: auto;
+        margin-left: auto;
+
       }
     
     .center {
         text-align: center;
     }
-    
-    </style>
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+
+    .table{
+        display: inline-block
+    }
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #78d1dd;
+    }
+    .paykan{
+        height: 25px;
+        width: 25px;
+    }
+</style>
 </head>
 
 <body>
+    <div>
+        <img src="../assets/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
+    </div>
+    
+    <div>
+        <strong>Welcome user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
+    </div>
     <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
 <div class="container">
     <form action="action_page.php" method="post">
         <div>
-        <img src="../assets/DNB_ASA_logo.svg" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
-        </div> 
+        <table style="width:50%">
+            <caption><h1>Quick payment</h1></caption>
+            <tr>
+                <th><b>Pay from</b></th>
+                <th><b>Pay to</b></th>
+                <th><b>KID number</b></th>
+                <th><b>Amount (kr)</b></th>
+                <th> <img src="../assets/pleikan.jpg" alt="paykan" class="paykan"></th>
+            </tr>
+            <tr>
+                <td><input type="number" placeholder="Your account number" name="account_num" required></td>
+                <td><input type="number" placeholder="Account number to" name="account_num_to" required> </td>
+                <td> <input type="text" placeholder="KID" name="kidnr" required></td>
+                <td> <input type="number" placeholder="Amount" name="belop"></td>
+                <td> <button onclick="location.href='startside.html';" type="submit"> Pay</button></td>
+            </tr>
+        </table>
 
+        </div>
+        
         <div>
-            <label for="bfra"><b> Betale fra: </b></label>
-            <input type="text" name="bfra" required> <br /> <br />
+            <table style="width:50%">
+                <caption><h1>Payment overview</h1></caption>
+                <tr>
+                    <th>Date</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount (kr)</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>20.09.2020</td>
+                    <td>brukskonto</td>
+                    <td> UiS </td>
+                    <td>100</td>
+                    <td>Payed</td>
+                </tr>
+            </table> 
         </div>
 
         <div>
-            <label for="btil"><b> Betale til:</b></label>
-            <input type="text" name="btil" required> <br /> <br />
+            <table style="width:50%">
+                <caption><h1>My accounts</h1></caption>
+                <tr>
+                <th>Name</th>
+                <th>Account number</th>
+                <th>Balance</th>
+                </tr>
+        
+                <tr>
+                <td>Use</td>
+                <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td>1000</td>
+                </tr>
+        
+                <tr>
+                <td>Savings</td>
+                <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td>79000</td>
+                </tr>
+            </table>
         </div>
-
-        <div>
-            <label for="bfra"><b> KID nr: </b></label>
-            <input type="text" name="KIDnr" required> <br /> <br />
-        </div>
-
-        <div>
-            <label for="belop"><b> Beløp: </b></label>
-            <input type="text" name="belop" required> <br /> <br />
-        </div>
-
-
     </form> 
 </div>
 
-<!--prøvde å lage et table for enkel betaling men fant ikke ut av hvordan jeg hadde kunnet få input her-->
-<table style="width:50%">
-    <caption>Enkel betaling</caption>
-    <tr>
-        <th>Betale fra</th>
-        <th>Betale til</th>
-        <th>KID nummer</th>
-        <th>Beløp (kr)</th>
-    </tr>
-    <tr>
-        <td><input type="text" placeholder="kontonummer" name="account_num" required></td>
-        <td></td>
-        <td>12</td>
-        <td>100</td>
-    </tr>
-</table>
-
-<!--Logg, vet ikke hvordan jeg skal få denne til  å faktisk logge ting-->
-<table style="width:50%">
-    <caption>Betalingsoversikt</caption>
-    <tr>
-        <th>Dato</th>
-        <th>Fra</th>
-        <th>Til</th>
-        <th>Beløp (kr)</th>
-        <th>Status</th>
-    </tr>
-    <tr>
-        <td>20.09.2020</td>
-        <td>brukskonto</td>
-        <td> UiS </td>
-        <td>100</td>
-        <td>Betalt</td>
-    </tr>
-</table>
-
-<!-- oversikt over alle kontoene, vet heller ikke hvordan jeg skal oppdatere denne og sånt -->
-<table style="width:50%">
-    <caption>Mine kontoer</caption>
-    <tr>
-        <th>Navn</th>
-        <th>Kontonummer</th>
-        <th>Saldo</th>
-    </tr>
-
-    <tr>
-        <td>Brukskonto</td>
-        <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-        <td>1000</td>
-    </tr>
-
-    <tr>
-        <td>Sparekonto</td>
-        <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-        <td>79000</td>
-    </tr>
-</table>
 </body>
 </html>

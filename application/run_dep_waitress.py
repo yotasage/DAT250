@@ -2,7 +2,7 @@
 
 import waitress
 
-from app import app  # Importerer variabelen app fra filen app.py
+from application.app import app  # Importerer variabelen app fra filen app.py
 
 #                   host='localhost'        privat, bare lokal
 #                   host='127.0.0.1'        privat, bare lokal

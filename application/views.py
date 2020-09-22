@@ -5,8 +5,8 @@
 import datetime
 from flask import render_template
 
-from app import app  # Importerer Flask objektet app
-from tools import send_mail
+from application.app import app  # Importerer Flask objektet app
+from application.tools import send_mail
 
 @app.route("/")
 @app.route('/index')

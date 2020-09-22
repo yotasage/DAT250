@@ -8,3 +8,4 @@ application/certificate
 .pem
 .certificate
 .key
+.pyc*
