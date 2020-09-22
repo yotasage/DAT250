@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JAMVP - Din side</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+
+<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+
+<style>
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+.center {
+    text-align: center;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 50%;
+  text-align: center;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+</style>
+
+</head>
+<body>
+
+
+<img src="../assets/logo.png" alt="logo"/>
+
+<h1 class="center">Your page</h1>
+
+<table>
+    <tr>
+        <th>Username</th>
+    </tr>
+    <tr>
+        <td>{{username}}</td>
+    </tr>
+</table>
+
+</body>
+</html> 
