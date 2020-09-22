@@ -6,6 +6,15 @@
 
 <!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
 <style>
+    .container{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:1000px;
+        border-style: none;
+        background-color: #f8f6f6;
+    }
+
     img {
         display: block;
         margin-left: auto;
@@ -15,7 +24,8 @@
     button {
         display: block;
         margin-left: auto;
-        margin-right: auto;
+        margin-left: auto;
+
       }
     
     .center {
@@ -25,9 +35,14 @@
     table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
+        margin-left: auto;
+        margin-right: auto;
         width: 100%;
     }
 
+    .table{
+        display: inline-block
+    }
     td, th {
         border: 1px solid #dddddd;
         text-align: left;
@@ -36,6 +51,10 @@
 
     tr:nth-child(even) {
         background-color: #78d1dd;
+    }
+    .paykan{
+        height: 25px;
+        width: 25px;
     }
 </style>
 </head>
@@ -51,6 +70,7 @@
     <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
 <div class="container">
     <form action="action_page.php" method="post">
+        <div>
         <table style="width:50%">
             <caption><h1>Quick payment</h1></caption>
             <tr>
@@ -58,21 +78,19 @@
                 <th><b>Pay to</b></th>
                 <th><b>KID number</b></th>
                 <th><b>Amount (kr)</b></th>
+                <th> <img src="../assets/pleikan.jpg" alt="paykan" class="paykan"></th>
             </tr>
             <tr>
                 <td><input type="number" placeholder="Your account number" name="account_num" required></td>
                 <td><input type="number" placeholder="Account number to" name="account_num_to" required> </td>
                 <td> <input type="text" placeholder="KID" name="kidnr" required></td>
                 <td> <input type="number" placeholder="Amount" name="belop"></td>
+                <td> <button onclick="location.href='startside.html';" type="submit"> Pay</button></td>
             </tr>
         </table>
 
-        <button onclick="location.href='startside.html';" type="submit"> Pay</button>
-    </form> 
-</div>
-
-<div class="container">
-    <form action="action_page.php" method="post">
+        </div>
+        
         <div>
             <table style="width:50%">
                 <caption><h1>Payment overview</h1></caption>
@@ -91,33 +109,32 @@
                     <td>Payed</td>
                 </tr>
             </table> 
-
         </div>
+
+        <div>
+            <table style="width:50%">
+                <caption><h1>My accounts</h1></caption>
+                <tr>
+                <th>Name</th>
+                <th>Account number</th>
+                <th>Balance</th>
+                </tr>
+        
+                <tr>
+                <td>Use</td>
+                <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td>1000</td>
+                </tr>
+        
+                <tr>
+                <td>Savings</td>
+                <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td>79000</td>
+                </tr>
+            </table>
+        </div>
+    </form> 
 </div>
 
-<div class="container">
-    <form action="action_page.php" method="post">
-    <table style="width:50%">
-        <caption><h1>My accounts</h1></caption>
-        <tr>
-        <th>Name</th>
-        <th>Account number</th>
-        <th>Balance</th>
-        </tr>
-
-        <tr>
-        <td>Use</td>
-        <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-        <td>1000</td>
-        </tr>
-
-        <tr>
-        <td>Savings</td>
-        <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-        <td>79000</td>
-        </tr>
-    </table>
-    </form>
-</div>
 </body>
 </html>
