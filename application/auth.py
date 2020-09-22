@@ -12,7 +12,7 @@ app.config.update(SECRET_KEY=os.environ['FLASK_SESSION_SECRET_KEY'])
 # app.config.update(DEBUG=True)
 
 
-@app.route('/qr/<email>')
+@app.route('/qr/<email>') #må endres
 def qr(email):
     """
     Return a QR code for the secret key associated with the given email
@@ -29,7 +29,7 @@ def qr(email):
     return send_file(img, mimetype="image/png")
 
 
-@app.route('/code/<email>')
+@app.route('/code/<email>') #må endres
 def code(email):
     """
     Returns the one-time password associated with the given user for the
@@ -38,11 +38,11 @@ def code(email):
     u = User.get_user(email)
     if u is None:
         return ''
-    t = pyotp.TOTP(u.key)
+    t = pyotp.TOTP(u.password)
     return str(t.now())
 
 
-@app.route('/user/<email>')
+@app.route('/user/<email>') #må endres
 def user(email):
     """User view page."""
     u = User.get_user(email)
@@ -51,7 +51,7 @@ def user(email):
     return render_template('/view.html', user=u)
 
 
-@app.route('/new', methods=['GET', 'POST'])
+@app.route('/new', methods=['GET', 'POST']) #må endres(?)
 def new():
     """New user form."""
     if request.method == 'POST':
@@ -65,7 +65,7 @@ def new():
         return render_template('new.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST']) #må endres
 def login():
     """Login form."""
     if request.method == 'POST':
@@ -95,7 +95,10 @@ def main():
 
 ''' Kilder:
 
+https://sahandsaba.com/two-step-verification-using-python-pyotp-qrcode-flask-and-heroku.html
 https://github.com/sahands/python-totp
+https://github.com/pyauth/pyotp
+https://github.com/neocotic/qrious
 https://github.com/pyauth/pyotp
 
 
