@@ -14,7 +14,7 @@ def post_data(page = None):
             return redirect("startside.html", code=302)
 
         return redirect(url_for('login', error="True"), code=302)
-    return redirect("index.html", code=302)
+    return redirect(url_for('index'), code=302)
 
 
 # https://tedboy.github.io/flask/generated/generated/werkzeug.ImmutableMultiDict.html
