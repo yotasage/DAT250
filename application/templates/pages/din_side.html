@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JAMVP - Din side</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+
+<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+
+<style>
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+.center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.sidebyside {
+    float: left;
+    border-spacing: 30px 2px;
+}
+
+table {
+  font-family: arial, sans-serif;
+  width: 20%;
+}
+
+.field {
+    border-style: solid;
+}
+
+td, th {
+  /*border: 1px solid #dddddd;*/
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+</style>
+
+</head>
+<body>
+
+
+<img src="../assets/logo.png" alt="logo"/>
+
+<h1 class="center">Your page</h1>
+
+<div class='center'>
+    <div class='center'>
+        <table class='sidebyside'>
+            <tr>
+                <th>Username</th>
+            </tr>
+            <tr>
+                <td class='field'>{{username}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class='center'>
+        <table class='sidebyside'>
+            <tr>
+                <th>Email</th>
+            </tr>
+            <tr>
+                <td class='field'>{{email}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <table class='sidebyside'>
+            <tr>
+                <th>Phone number</th>
+            </tr>
+            <tr>
+                <td class='field'>{{phone_number}}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+
+</body>
+</html> 

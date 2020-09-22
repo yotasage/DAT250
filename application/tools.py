@@ -5,7 +5,7 @@ import threading
 from flask import copy_current_request_context
 from flask_mail import Message as _Message
 
-from app import app, mail
+from application.app import app, mail
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'dinnettbank.tk'
