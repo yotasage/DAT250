@@ -2,7 +2,7 @@ import pyotp
 import pickle
 
 
-USER_FILE_NAME = 'users.data'
+USER_FILE_NAME = 'users.data' #database with userinformation
 class User(object):
     def __init__(self, email, name='', middlename='', lastname='', userid=None, password=None, phone=None, dob=None, city='', zip='', address=''):
         self.name = name
