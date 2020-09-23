@@ -21,17 +21,27 @@ button {
 
 .center {
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.sidebyside {
+    float: left;
+    border-spacing: 30px 2px;
 }
 
 table {
   font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 50%;
-  text-align: center;
+  width: 20%;
+}
+
+.field {
+    border-style: solid;
 }
 
 td, th {
-  border: 1px solid #dddddd;
+  /*border: 1px solid #dddddd;*/
   text-align: left;
   padding: 8px;
 }
@@ -50,14 +60,42 @@ tr:nth-child(even) {
 
 <h1 class="center">Your page</h1>
 
-<table>
-    <tr>
-        <th>Username</th>
-    </tr>
-    <tr>
-        <td>{{username}}</td>
-    </tr>
-</table>
+<div class='center'>
+    <div class='center'>
+        <table class='sidebyside'>
+            <tr>
+                <th>Username</th>
+            </tr>
+            <tr>
+                <td class='field'>{{username}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class='center'>
+        <table class='sidebyside'>
+            <tr>
+                <th>Email</th>
+            </tr>
+            <tr>
+                <td class='field'>{{email}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <table class='sidebyside'>
+            <tr>
+                <th>Phone number</th>
+            </tr>
+            <tr>
+                <td class='field'>{{phone_number}}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
 
 </body>
 </html> 

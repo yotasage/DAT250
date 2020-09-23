@@ -7,21 +7,22 @@
 <!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
 
 <style>
-img {
+  img {
     display: block;
     margin-left: auto;
     margin-right: auto;
   }
 
-button {
-    display: block;
+  button {
+    display: inline-block;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
   }
 
-    .center {
-      text-align: center;
-    }
+  .center {
+    text-align: center;
+  }
 </style>
 
 </head>
@@ -34,7 +35,13 @@ button {
 <h1 class="center">JAMVP Bank</h1>
 <p class="center">Our bank has gotten a new name, JAMVP :D</p>
 
-<button onclick="location.href='pages/login.html';" type="button">Login page</button> 
+<div class=center>
+  <button onclick="location.href='pages/login.html';" type="button">Login</button> 
+  <button onclick="location.href='pages/registration.html';" type="button">Register</button> 
+</div>
+
+
+<br>
 
 <!--  {%if name %}
     <strong>Hello there user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
