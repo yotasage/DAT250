@@ -19,16 +19,20 @@ button {
     margin-right: auto;
   }
 
-.center {
+/*
+.container {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
+    border-style: solid;
 }
+*/
 
-.sidebyside {
-    float: left;
-    border-spacing: 30px 2px;
+.container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
 }
 
 table {
@@ -41,13 +45,16 @@ table {
 }
 
 td, th {
-  /*border: 1px solid #dddddd;*/
   text-align: left;
   padding: 8px;
 }
 
 tr:nth-child(even) {
   background-color: #dddddd;
+}
+
+.center {
+    text-align: center;
 }
 
 </style>
@@ -58,11 +65,11 @@ tr:nth-child(even) {
 
 <img src="../assets/logo.png" alt="logo"/>
 
-<h1 class="center">Your page</h1>
+<h1 class='center'>Your page</h1>
 
-<div class='center'>
-    <div class='center'>
-        <table class='sidebyside'>
+<div class='container'>
+    <div>
+        <table class='leftside'>
             <tr>
                 <th>Username</th>
             </tr>
@@ -72,19 +79,19 @@ tr:nth-child(even) {
         </table>
     </div>
 
-    <div class='center'>
-        <table class='sidebyside'>
+    <div>
+        <table>
             <tr>
                 <th>Email</th>
             </tr>
             <tr>
-                <td class='field'>{{email}}</td>
+                <td class='field'>{{email_adress}}</td>
             </tr>
         </table>
     </div>
 
     <div>
-        <table class='sidebyside'>
+        <table class='leftside'>
             <tr>
                 <th>Phone number</th>
             </tr>
