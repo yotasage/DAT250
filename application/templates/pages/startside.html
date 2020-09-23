@@ -8,11 +8,22 @@
 <style>
     .container{
         display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width:1000px;
+        float: left;;
+        width:950px;
         border-style: none;
         background-color: #f8f6f6;
+        padding-left:15px; 
+        padding-right:15px;
+    }
+
+    .shrtcut{
+        display: block;
+        float: left;
+        width: 300px;
+        border-style: none;
+        background-color: #f8f6f6;
+        padding-left:15px; 
+        padding-right:15px;
     }
 
     img {
@@ -55,6 +66,23 @@
     .paykan{
         height: 25px;
         width: 25px;
+    }
+    .btn {
+    border: none;
+    background-color: inherit;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+    }
+
+    .shrtbtn{
+        color: #15545c;
+    }
+
+    .shrtbtn:hover{
+        background-color: #15545c;
+        color: white
     }
 </style>
 </head>
@@ -134,6 +162,21 @@
             </table>
         </div>
     </form> 
+</div>
+
+<div class="shrtcut">
+        <div>
+            <h2 style="color:#15545c;">Shortcuts</h2>
+        </div>
+
+        <div>
+        <button class="btn shrtbtn" onclick="location.href='login.html';" type="submit"> Log out</button>
+        </div>
+
+        <div>
+        <button class="btn shrtbtn" onclick="location.href='din_side.html';" type="submit"> Your page</button>
+        </div>
+ 
 </div>
 
 </body>
