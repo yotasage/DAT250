@@ -1,6 +1,9 @@
 import os
 import datetime
 import threading
+import math
+import string
+import random
 # import time  # For testing
 from flask import copy_current_request_context
 from flask_mail import Message as _Message
@@ -11,6 +14,27 @@ DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default
 DOMAIN_NAME = 'dinnettbank.tk'
 DEFAULT_MESSAGE_SUBJECT = "Flask test email, sent from server as " + os.environ.get('MAIL_USERNAME_FLASK')
 TEST_BODY="text body"
+
+# Må vurdere hvilke symboler vi kan tillate
+def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + string.punctuation):
+    for c in s:
+        if c not in whitelist:
+            return False
+    return True
+
+
+# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits/23728630#23728630
+def random_string_generator(size=6, chars=string.ascii_letters + string.digits):  # string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def is_number(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
 
 class Message(_Message):
