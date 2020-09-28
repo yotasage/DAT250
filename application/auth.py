@@ -1,11 +1,31 @@
+
+'''import hmac, base64, struct, hashlib, time
+
+def get_hotp_token(secret, intervals_no):
+    key = base64.b32decode(secret, True)
+    msg = struct.pack(">Q", intervals_no)
+    h = hmac.new(key, msg, hashlib.sha1).digest()
+    o = ord(h[19]) & 15
+    h = (struct.unpack(">I", h[o:o+4])[0] & 0x7fffffff) % 1000000
+    return h
+
+def get_totp_token(secret):
+    return get_hotp_token(secret, intervals_no=int(time.time())//30)
+'''
+import hmac, base64, struct, hashlib, time
+secret = 'MZXW633PN5XW6MZX'
+for i in xrange(1, 10):
+    print i, get_hotp_token(secret, intervals_no=i)
+
+'''
 import qrcode
 import logging
 import pyotp
 import os
-#from StringIO import StringIO  ???
+from StringIO import StringIO
 from flask import Flask, render_template, redirect, request, flash, send_file
 
-from application.user import User
+from user import User
 
 app = Flask(__name__)
 app.config.update(SECRET_KEY=os.environ['FLASK_SESSION_SECRET_KEY'])
@@ -88,7 +108,7 @@ def login():
 @app.route('/')
 def main():
     return render_template('index.html')
-
+'''
 
 
 
@@ -100,6 +120,7 @@ https://github.com/sahands/python-totp
 https://github.com/pyauth/pyotp
 https://github.com/neocotic/qrious
 https://github.com/pyauth/pyotp
-
+https://github.com/tadeck/onetimepass
+https://stackoverflow.com/questions/8529265/google-authenticator-implementation-in-python
 
 '''
