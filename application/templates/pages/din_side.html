@@ -1,108 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>JAMVP - Din side</title>
+<title>User information | JAMVP Bank</title>
 <link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
 
-<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+<!-- 
+https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ -->
 
 <style>
-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;
+    }
 
-button {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    .container {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:500px; 
+        text-align:left;
+        border-style: solid;  /* solid */
+        border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
+        background-color:  rgb(173, 173, 173);
+    }
 
-/*
-.container {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
-    border-style: solid;
-}
-*/
+    button {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align:center;
+    }
 
-.container {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-}
+    .fields {
+        padding: 8px;
+        display: inline-block;
+    }
 
-table {
-  font-family: arial, sans-serif;
-  width: 20%;
-}
-
-.field {
-    border-style: solid;
-}
-
-td, th {
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-
-.center {
-    text-align: center;
-}
+    h1 {text-align: center;}
 
 </style>
 
 </head>
 <body>
+    <img src="../assets/logo.png" alt="logo"/> <br>
 
-
-<img src="../assets/logo.png" alt="logo"/>
-
-<h1 class='center'>Your page</h1>
-
-<div class='container'>
+    <h1>User information</h1><br>
+    
     <div>
-        <table class='leftside'>
-            <tr>
-                <th>Username</th>
-            </tr>
-            <tr>
-                <td class='field'>{{username}}</td>
-            </tr>
-        </table>
+        <div class="container">
+            <div>
+                <div class="fields">
+                    <label for="fname">First name:</label><br>
+                    <label type="text" id="fname" placeholder="First"  name="fname">fname</label>
+                </div>
+
+                <div class="fields">
+                    <label for="mname">Middle name:</label><br>
+                    <input type="text" id="mname" placeholder="Middle"  name="mname" required>
+                </div>
+
+                <div class="fields">
+                    <label for="lname">Last name:</label><br>
+                    <input type="text" id="lname" placeholder="Last"  name="lname" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label for="email">E-mail:</label><br>
+                    <input type="email" id="email" placeholder="Identification@uis.no"  name="email" required>
+                </div>
+
+                <div class="fields">
+                    <label for="id">User Identification:</label><br>
+                    <input type="text" id="mname" placeholder="Identification"  name="id" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label for="phone_num">Phone number:</label><br>
+                    <input type="text" id="phone_num" placeholder="Phone number"  name="phone_num" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label for="dob">Date of birth:</label><br>
+                    <input type="text" id="dob" placeholder="dd-mm-yyyy"  name="dob" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label for="city">City:</label><br>
+                    <input type="text" id="city" placeholder="City"  name="city" required>
+                </div>
+
+                <div class="fields">
+                    <label for="postcode">Postal code:</label><br>
+                    <input type="text" id="postcode" placeholder="Postal Code"  name="postcode" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label for="address">Address:</label><br>
+                    <input type="text" id="address" placeholder="Address"  name="address" required>
+                </div>
+            </div>
+
+            <br>
+            <button type=submit formaction="../registration_data" formmethod="post">Edit info</button>
+            <br>
+        </div>
     </div>
-
-    <div>
-        <table>
-            <tr>
-                <th>Email</th>
-            </tr>
-            <tr>
-                <td class='field'>{{email_adress}}</td>
-            </tr>
-        </table>
-    </div>
-
-    <div>
-        <table class='leftside'>
-            <tr>
-                <th>Phone number</th>
-            </tr>
-            <tr>
-                <td class='field'>{{phone_number}}</td>
-            </tr>
-        </table>
-    </div>
-
-</div>
-
-
 </body>
 </html> 
