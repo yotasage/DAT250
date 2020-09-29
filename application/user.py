@@ -4,7 +4,7 @@ import pickle
 
 USER_FILE_NAME = 'users.data' #database with userinformation
 class User(object):
-    def __init__(self, email, name='', middlename='', lastname='', userid=None, password=None, phone=None, dob=None, city='', zip='', address=''):
+    def __init__(self, email, name='', middlename='', lastname='', userid=None, password=None, key=None, phone='', dob='', city='', zip='', address=''):
         self.name = name
         self.middlename = middlename
         self.lastname = lastname
@@ -12,13 +12,14 @@ class User(object):
         self.userid = userid
         self.password = password
         self.phone = phone
-        self.dob = dob
+        self.dob = dob # DOB = Date of Birth
         self.city = city
         self.zip = zip
         self.address = address
+        self.key = key # Secret key in authenticator
 
-        if password is None:
-            self.password = pyotp.random_base32()
+        if key is None:
+            self.key = pyotp.random_base32()
 
     def save(self):
         if len(self.email) < 13:
@@ -28,7 +29,7 @@ class User(object):
         if self.email in users:
             return False
         else:
-            users[self.email] = self.password
+            users[self.email] = self.key
             pickle.dump(users, open(USER_FILE_NAME, 'wb'))
             return True
 
@@ -38,7 +39,7 @@ class User(object):
             p = int(otp)
         except:
             return False
-        t = pyotp.TOTP(self.password)
+        t = pyotp.TOTP(self.key)
         return t.verify(p)
 
     @classmethod

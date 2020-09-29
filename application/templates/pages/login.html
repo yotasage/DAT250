@@ -7,18 +7,13 @@
 <!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
 
 <style>
-.container {
+  .container {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 300px;
+    border-style: none;  /* solid */
   }
-
-  .logo {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }  
 
   img {
     display: block;
@@ -26,46 +21,83 @@
     margin-right: auto;
   }
 
-  img.avatar {
-  width: 100%;
-  border-radius: 50%;
-}
+  /*img.avatar {
+    width: 100%;
+    border-radius: 50%;
+  }*/
+
+  button {
+    display: inline-block;
+  }
+
+  .center {
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: none;  /* solid */
+  }
+
+  .input_container {
+    width: 260px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: none;  /* solid */
+  }
+
+  label {
+    position: relative;
+    float:left;
+  }
+
+  input {
+    text-align: center;
+    border-style: none;
+    border-bottom-style: solid;
+    border-color: rgb(50, 50, 50);
+    width:100%;
+  }
 </style>
 
 </head>
-<body>
+  <body>
 
-  <div>
-    <img src="../assets/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
-  </div>
+    <div>
+      <img src="../assets/logo.png" alt="Logo" class="logo"> <br> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
+    </div>
 
-<div class="container">
-    <form action="action_page.php" method="post">
+    <div class="container">
+        <form action="action_page.php" method="post">
+        
+            <div class=center>
 
-        <div class="imgcontainer">
-          <img src="../assets/avatar.png" alt="Avatar" class="avatar"> <br /> <br />
-        </div>
-    
-        <div>
-        <label for="uname"><b>Username: </b></label>
-        <input type="text" placeholder="Enter Username" name="uname" required> <br /> <br />
-    
-        <label for="psw"><b>Password: </b></label>
-        <input type="password" placeholder="Enter Password" name="psw" required> <br /> <br />
-    
-        <button onclick="location.href='startside.html';" type="submit">Login</button> <br />
-        <label>
-          <input type="checkbox" checked="checked" name="remember"> Remember me
-        </label>
+              {%if error %}
+                <br><strong style="color:red;">Either User ID or Password is wrong.</strong><br><br>
+              {% else %}
+                <br><br><br>
+              {% endif %}
+
+              <div class=input_container> 
+                <label for="uname"><b>User ID:</b></label><br>
+                <input type="text" name="uname" required> <br> <br>
+              </div>
+
+              <div class=input_container> 
+                <label for="pswd"><b>Password:</b></label><br>
+                <input type="password" name="pswd" required> <br> <br>
+              </div>
+
+              <button type="submit" formaction="../login_data" formmethod="post">Login</button>
+              <button onclick="location.href='registration.html';" type="button">Register</button> 
+                
+              <br><br>
+              <span class="psw">Forgot <a href="#">password?</a></span>
+            </div>
         
             
-        </label>
-        </div>
-    
-        <span class="psw">Forgot <a href="#">password?</a></span>
-        </div>
-    </form> 
-</div>
+        </form> 
+    </div>
 
-</body>
+  </body>
 </html> 

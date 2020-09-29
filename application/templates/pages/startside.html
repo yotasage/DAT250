@@ -8,11 +8,22 @@
 <style>
     .container{
         display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width:1000px;
+        float: left;;
+        width:950px;
         border-style: none;
         background-color: #f8f6f6;
+        padding-left:15px; 
+        padding-right:15px;
+    }
+
+    .shrtcut{
+        display: block;
+        float: left;
+        width: 300px;
+        border-style: none;
+        background-color: #f8f6f6;
+        padding-left:15px; 
+        padding-right:15px;
     }
 
     img {
@@ -20,14 +31,14 @@
         margin-left: auto;
         margin-right: auto;
       }
-    
+
     button {
         display: block;
         margin-left: auto;
         margin-left: auto;
 
       }
-    
+
     .center {
         text-align: center;
     }
@@ -56,6 +67,23 @@
         height: 25px;
         width: 25px;
     }
+    .btn {
+    border: none;
+    background-color: inherit;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+    }
+
+    .shrtbtn{
+        color: #15545c;
+    }
+
+    .shrtbtn:hover{
+        background-color: #15545c;
+        color: white
+    }
 </style>
 </head>
 
@@ -63,7 +91,7 @@
     <div>
         <img src="../assets/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
     </div>
-    
+
     <div>
         <strong>Welcome user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
     </div>
@@ -90,7 +118,7 @@
         </table>
 
         </div>
-        
+
         <div>
             <table style="width:50%">
                 <caption><h1>Payment overview</h1></caption>
@@ -119,13 +147,13 @@
                 <th>Account number</th>
                 <th>Balance</th>
                 </tr>
-        
+
                 <tr>
                 <td>Use</td>
                 <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
                 <td>1000</td>
                 </tr>
-        
+
                 <tr>
                 <td>Savings</td>
                 <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
@@ -134,6 +162,21 @@
             </table>
         </div>
     </form> 
+</div>
+
+<div class="shrtcut">
+        <div>
+            <h2 style="color:#15545c;">Shortcuts</h2>
+        </div>
+
+        <div>
+        <button class="btn shrtbtn" onclick="location.href='login.html';" type="submit"> Log out</button>
+        </div>
+
+        <div>
+        <button class="btn shrtbtn" onclick="location.href='din_side.html';" type="submit"> Your page</button>
+        </div>
+
 </div>
 
 </body>

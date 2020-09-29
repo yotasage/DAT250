@@ -1,15 +1,29 @@
+'''
+import pyotp
+import time
+totp = pyotp.TOTP('base32secret3232')
+totp.now() # => '492039'
+
+# OTP verified for current time
+totp.verify('492039') # => True
+time.sleep(30)
+totp.verify('492039') # => False
+
+pyotp.totp.TOTP('JBSWY3DPEHPK3PXP').provisioning_uri(name='alice@google.com', issuer_name='Secure App')
+pyotp.parse_uri('otpauth://totp/Secure%20App:alice%40google.com?secret=JBSWY3DPEHPK3PXP&issuer=Secure%20App')
+'''
+
 import qrcode
 import logging
 import pyotp
 import os
-#from StringIO import StringIO  ???
+from io import StringIO
 from flask import Flask, render_template, redirect, request, flash, send_file
 
-from application.user import User
+from user import User
 
 app = Flask(__name__)
 app.config.update(SECRET_KEY=os.environ['FLASK_SESSION_SECRET_KEY'])
-# app.config.update(DEBUG=True)
 
 
 @app.route('/qr/<email>') #må endres
@@ -92,7 +106,6 @@ def main():
 
 
 
-
 ''' Kilder:
 
 https://sahandsaba.com/two-step-verification-using-python-pyotp-qrcode-flask-and-heroku.html
@@ -100,6 +113,7 @@ https://github.com/sahands/python-totp
 https://github.com/pyauth/pyotp
 https://github.com/neocotic/qrious
 https://github.com/pyauth/pyotp
-
+https://github.com/tadeck/onetimepass
+https://stackoverflow.com/questions/8529265/google-authenticator-implementation-in-python
 
 '''
