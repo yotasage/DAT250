@@ -5,3 +5,4 @@ cheroot
 threading
 authenticator
 pyotp
+flask-sqlalchemy

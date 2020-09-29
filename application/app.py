@@ -1,11 +1,13 @@
 # flask tutorial https://code.visualstudio.com/docs/python/tutorial-flask
 
 # imports
+
 import os
 from flask import Flask
 from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
 
-import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
+#import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',
@@ -23,6 +25,10 @@ mail_settings = {
 # something
 app = Flask(__name__)
 app.config.update(mail_settings)
-mail = Mail(app)
-import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
-import post_handlers
+#mail = Mail(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
+#import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+#import post_handlers
+
