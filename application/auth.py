@@ -26,7 +26,7 @@ app = Flask(__name__)
 app.config.update(SECRET_KEY=os.environ['FLASK_SESSION_SECRET_KEY'])
 
 
-@app.route('/qr/<email>') #må endres
+@app.route('/qr/<email>')
 def qr(email):
     """
     Return a QR code for the secret key associated with the given email
@@ -43,7 +43,7 @@ def qr(email):
     return send_file(img, mimetype="image/png")
 
 
-@app.route('/code/<email>') #må endres
+@app.route('/code/<email>')
 def code(email):
     """
     Returns the one-time password associated with the given user for the
@@ -56,7 +56,7 @@ def code(email):
     return str(t.now())
 
 
-@app.route('/user/<email>') #må endres
+@app.route('/user/<email>')
 def user(email):
     """User view page."""
     u = User.get_user(email)
@@ -65,7 +65,7 @@ def user(email):
     return render_template('/view.html', user=u)
 
 
-@app.route('/new', methods=['GET', 'POST']) #må endres(?)
+@app.route('/new', methods=['GET', 'POST'])
 def new():
     """New user form."""
     if request.method == 'POST':
@@ -79,7 +79,7 @@ def new():
         return render_template('new.html')
 
 
-@app.route('/login', methods=['GET', 'POST']) #må endres
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login form."""
     if request.method == 'POST':
