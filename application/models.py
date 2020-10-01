@@ -10,13 +10,13 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
 
 
-class Account(db.Model)
+class Account(db.Model):
     id = Column(db.Integer, primary_key=True)
     balance = db.Column(db.Integer, unique=True, nullable=False)
     name = db.Column(db.String(20), unique=True, nullable=False)
     account_number = db.Column(db.String, unique=True, nullable=False)
 
-class Transaction(db.Model)
+class Transaction(db.Model):
     id = Column(db.Integer, primary_key=True)
     tittel = db.Column(db.String(20), unique=True, nullable=False)
     dato = db.Column(db.Integer, unique=True, nullable=False)

@@ -28,6 +28,7 @@ app.config.update(mail_settings)
 #mail = Mail(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 #import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
 #import post_handlers

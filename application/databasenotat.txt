@@ -1,0 +1,18 @@
+snakke med magnus om:
+
+Dobbelsjekke at koden funker både for mac og windows
+
+kjøre kode istedenfor å kjøre gjennom terminal
+
+lage en pyfil som kjører databasekoden
+
+hvor ligger sqlite tkp test.db
+hvor ligger den? og kan vi velge hvor den kan ligge? vil helst ha den liggende på applikasjonen? ved siden av applikasjonen
+vil ha kontroll på db
+
+ta utgangspunkt i app.py, skrive inn databasen inn i app.py
+
+
+når vi kjører koden, så åpner ikke den filen, unable to open database file
+
+
