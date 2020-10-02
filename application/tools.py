@@ -11,7 +11,7 @@ from flask_mail import Message as _Message
 from app import app, mail
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
-DOMAIN_NAME = 'dinnettbank.tk'
+DOMAIN_NAME = 'jamvp.tk'
 DEFAULT_MESSAGE_SUBJECT = "Flask test email, sent from server as " + os.environ.get('MAIL_USERNAME_FLASK')
 TEST_BODY="text body"
 
@@ -21,6 +21,103 @@ def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + 
         if c not in whitelist:
             return False
     return True
+
+def valid_date(date, separator='-'):
+    if date != '':
+        date = date.split(separator)  # Tar bare datoer med formatet dd-mm-yyyy, separator kan endres
+        if len(date) == 3 and (is_number(date[0]) and is_number(date[1]) and is_number(date[2])):  # Datoen må bestå av 3 tall
+            try:  # Prøver å konvertere datoen fra brukeren til en dato
+                datetime.datetime(year=int(date[2]),month=int(date[1]),day=int(date[0]))
+            except ValueError:
+                return False
+        else:
+            return False
+    else:
+        return False
+    return True
+
+# Denne kan sjekkes i en if, den gir True når den returnerer text, og False når den returnerer "".
+def valid_email(email, domain='uis.no', min_length=6, max_length=7):
+    if email != '':
+        email = email.split('@')
+        if len(email) == 2:
+            
+            if not is_number(email[0]):  # Sjekk om det forran @ ikke er et tall
+                return "NaN"
+
+            if min_length > len(email[0]) or len(email[0]) > max_length:  # Sjekk om det forran @ ikke har gyldig lengde
+                return "invalidLength"
+
+            if email[1] != domain:  # Sjekker om epost addresse ikke har gyldig domene
+                return "invalid"
+    else:
+        return "empty"
+    return ""
+
+def valid_id(id, min_length=6, max_length=7):
+    if id != '':
+        if is_number(id):  # Sjekker om id er et tall
+            if len(id) < 6 or len(id) > 7:  # Sjekker om antall siffer i id er mindre enn 6 eller større enn 7
+                return "invalidLength"
+        else:
+            return "NaN"
+    else:
+        return "empty"
+    return ""
+
+def valid_name(names, whitelist=string.ascii_letters):
+    if names != '':
+        # Sjekker om samlingen av navn (du kan ha 2 eller flere fornavn, mellomnavn (kan ha 0), etternavn) består av andre symboler enn bokstaver
+        for name in names.split(' '):
+            if not name.isalpha():
+                if not contain_allowed_symbols(s=name, whitelist=whitelist):  # Godtar bindestrek i gatenavn
+                    return "invalid"
+    else:
+        return "empty"
+    return ""
+
+def valid_address(address):
+    # Har vi fått oppgitt en addresse?
+    if address != '':
+        address = address.split(' ')
+    else:
+        return "empty"
+
+    # Sjekker om alle delene av addressen utenom slutten (gatenummeret), består av bokstaver.
+    for field in range(len(address) - 1):
+        if not address[field].isalpha():
+            if not contain_allowed_symbols(s=address[field], whitelist=string.ascii_letters + '-'):  # Godtar bindestrek i gatenavn
+                return "invalid"
+
+    # Kontrollerer at formatet og gatenummeret er gyldig
+    if len(address) >= 2:
+        if not is_number(address[-1]):  # Sjekker om gatenummer ikke er et tall
+
+            # Sjekker om følgende ikke stemmer
+            # Siste symbol i gatenummeret er en bokstav. For eksempel, du bor i 3b, eller 5a
+            # Resten av gatenummeret uten siste symbol (bokstaven) er et tall
+            if not (len(address[-1]) >= 2 and address[-1][-1].isalpha() and is_number(address[-1][:-1])):
+                return "invalidNum"
+    else:
+        return "invalid"
+
+    return ""
+
+def valid_number(number, min_length=1, max_length=8):
+    if is_number(number) and (min_length <= len(number) <= max_length):
+        return True
+    return False
+
+def valid_password(password, min_length=8, max_length=128):
+        if (min_length > len(password) or len(password) > max_length):
+            # print("password length is invalid")
+            return False
+            
+        # Må vurdere hvilke symboler vi kan tillate, og om vi skal se etter ord/kommandoer
+        elif not contain_allowed_symbols(password):
+            # print("password contains invalid characters")
+            return False
+        return True
 
 
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits

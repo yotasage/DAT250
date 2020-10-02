@@ -12,7 +12,7 @@ my_app = WSGIPathInfoDispatcher({'/': app})
 #                    '127.0.0.1'        privat, bare lokal
 #                    '192.168.0.37'     offentlig, tilgjengelig for andre på nettverket (eksempel IPv4 addresse, sett inn din egen)
 #                    '0.0.0.0'          offentlig, tilgjengelig for andre på nettverket (alle IP addressene til maskinen kan brukes for å nå siden)
-server = WSGIServer(('0.0.0.0', 443), my_app)   # For å åpne denne serveren må en skrive https:// forran addressen
+server = WSGIServer(('localhost', 443), my_app)   # For å åpne denne serveren må en skrive https:// forran addressen
 
 ssl_cert = "application/certificate/MyCertificate.crt"
 ssl_key = "application/certificate/MyKey.key"
