@@ -1,18 +1,26 @@
 snakke med magnus om:
 
-Dobbelsjekke at koden funker både for mac og windows
+Dobbelsjekke at koden funker både for mac og windows # sjekke at stien hans er riktig
+
 
 kjøre kode istedenfor å kjøre gjennom terminal
-
 lage en pyfil som kjører databasekoden
+det fins en måte men man må gjøre i terminalen uansett, fins sikkert måte å deploye ved hjelp av en pykode
+flask run oppdaterer seg automatisk
 
-hvor ligger sqlite tkp test.db
+
+hvor ligger sqlite tkp test.db # ls /tkp
 hvor ligger den? og kan vi velge hvor den kan ligge? vil helst ha den liggende på applikasjonen? ved siden av applikasjonen
 vil ha kontroll på db
+det er ikke så viktig med å vite hvor den ligger
+
 
 ta utgangspunkt i app.py, skrive inn databasen inn i app.py
 
+det vi må tenke på er create all, for den vil slette alle eksisterende brukerer for hver gang den kjører
 
 når vi kjører koden, så åpner ikke den filen, unable to open database file
+#stien til windows er annerledes på mac, så må bare skrive riktig sti for å kjøre db koden?
+
 
 

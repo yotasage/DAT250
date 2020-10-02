@@ -17,11 +17,12 @@ class Account(db.Model):
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    tittel = db.Column(db.String, unique=True, nullable=False)
-    dato = db.Column(db.String, unique=True, nullable=False)
-    tidspunkt = db.Column(db.Integer, unique=True, nullable=False)
+    title = db.Column(db.String, unique=True, nullable=False)
+    date = db.Column(db.String, unique=True, nullable=False)
+    time = db.Column(db.Integer, unique=True, nullable=False)
 
-    
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 
         

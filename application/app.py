@@ -7,7 +7,7 @@ from flask import Flask
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 
-#import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
+import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',
@@ -22,14 +22,44 @@ mail_settings = {
 }                                                                   # Disse 2 tingene (mail og passord, i hvert fall passord) er noe vi absolutt ikke vil ha (hardcoded) 
                                                                     # i kildekoden, altså skrevet inn her med tanke på at vi pusher dette til github. Derfor bruker vi environment variabler
 
-# something
 app = Flask(__name__)
 app.config.update(mail_settings)
-#mail = Mail(app)
+mail = Mail(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db' # ls /tmp på terminal for å finne den, for å ha kontroll på hvor den ligger
+# så kan vi lage path etter de tre /// i sqlite:////eksempelpath/tmp/test.db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-#import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
-#import post_handlers
 
+from models import User
+
+db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut når vi er ferdig
+
+db.create_all() # greit for å teste db, men senere så er ikke det så lurt å ha det siden den sletter alle eksisterende brukere
+# når vi har integrert inn login og regin for nettsiden så burde vi fjerne db.create 
+# når fila skal ut i production så skal db.create all være der enda
+
+
+admin = User(user_id=242761, email="242761@uis.no")
+guest = User(user_id=252761, email="252761@uis.no")
+
+db.session.add(admin)
+db.session.add(guest)
+db.session.commit()  # Får problemer her, sqlite3.OperationalError: table user has no column named user_id
+
+print(User.query.all())
+print(User.query.filter_by(user_id=242761).first())
+
+
+# sudo rm /tmp/test.db
+# flask run
+
+import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+import post_handlers
+
+
+# funker ikke å kjøre flask run i app.py
+#if __name__== "__main__":
+    #app.run()
+
+# for å kjøre lagre og lese fra db skriv inn i terminal export FLASK_APP=app.py deretter flask run
