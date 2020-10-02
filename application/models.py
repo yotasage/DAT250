@@ -21,8 +21,7 @@ class Transaction(db.Model):
     dato = db.Column(db.String, unique=True, nullable=False)
     tidspunkt = db.Column(db.Integer, unique=True, nullable=False)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+    
 
 
         
