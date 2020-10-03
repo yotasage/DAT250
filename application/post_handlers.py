@@ -21,9 +21,10 @@ def post_data(data = None):
 
         user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
 
-        print_userdata(user_object)
+        if user_object is not None:
+            print_userdata(user_object)
 
-        if (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password):
+        if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
             # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
             # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
             # A secure cookie is only sent to the server when a request is made with the https: scheme. 
