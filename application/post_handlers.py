@@ -1,14 +1,13 @@
-import datetime
-from flask import render_template, request, redirect, url_for 
+from datetime import datetime, timedelta
+from flask import render_template, request, redirect, url_for, make_response
+from flask_sqlalchemy import SQLAlchemy
 import string
 
-from app import app # Importerer Flask objektet app
-from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
+from app import app, db, cookie_maxAge # Importerer Flask objektet app
+from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata
+from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
 
-# MIDLERTIDIGE VARIABLER SOM MÅ FJERNES FØR VI LEVERER
-# BØR HELST FJERNES ETTER VI HAR FÅTT OPP BRUKER KLASSEN OG DATABASEN
-username = "admin"
-password = "pass"
+from models import User, Cookies
 
 # Denne er bare for POST forespørsler.
 # Her skal vi selvfølgelig ikke bruke variablene username og password, men vi skal bruke User klassen, og sammenligne brukernavn og passord fra den.
@@ -19,8 +18,33 @@ def post_data(data = None):
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
         # Hvis en gyldig bruker skal brukeren få en session cookie, og sendes til startsiden
-        if (request.form.get("uname") == username) & (request.form.get("pswd") == password):
-            return redirect(url_for('startpage'), code=302)
+
+        user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
+
+        print_userdata(user_object)
+
+        if (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password):
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+            # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
+            # A secure cookie is only sent to the server when a request is made with the https: scheme. 
+            # Max-Age=<number>, Number of seconds until the cookie expires.
+            # Forbids JavaScript from accessing the cookie. This mitigates attacks against cross-site scripting (XSS).
+
+            sessionId = random_string_generator(128)
+            expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
+
+            # datetime.strptime(date_string, format)
+            # format = "%Y-%m-%d %H:%M:%S.%f"
+            # datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
+
+            cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
+            db.session.add(cookie)
+            db.session.commit()
+
+            resp = make_response(redirect(url_for('startpage'), code=302))
+            # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + sessionId "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+            resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; HttpOnly")
+            return resp
 
         # Hvis ugyldig bruker, send brukeren "tilbake" til login siden, men vis en feilmelding (se html koden til login.html for hva og hvordan feilkoden vises)
         return redirect(url_for('login', error="True"), code=302)
@@ -30,13 +54,18 @@ def post_data(data = None):
         # Dette må gjøres for å identifisere hvem som prøver å verifisere seg.
         verification_code = request.headers['Referer'].split('verification?code=')[1].replace('&error=True', '')  # request.headers.get('Referer')
 
+        user_object = User.query.filter_by(verification_code=verification_code).first()
+
         pswd = request.form['pswd']
         conf_pswd = request.form['conf_pswd']
 
         # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
-        if pswd == conf_pswd and valid_password(pswd):
-            # Ingen feil med passorde, skal vi gjøre noe nå? Legge det inn i databasen her?
-            pass
+        if pswd == conf_pswd and valid_password(pswd) and user_object is not None:
+            user_object.verification_code = None
+            user_object.hashed_password = pswd  # Passord skal være hashet
+            user_object.salt = None  # Må ha et salt
+            user_object.verified = 1
+            db.session.commit()
         else:
             return redirect(url_for('verification', code=verification_code, error="True"), code=302)
 
@@ -111,7 +140,21 @@ def post_data(data = None):
             # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
             send_mail(recipients=[request.form.get("email")], subject="Account verification", body="TEST_BODY", html=html_template)
 
-            # Lag brukeren og før informasjonen fra registreringssiden inn i databasen, før også koden opp på brukeren
+            user_object = User(   user_id=int(request.form.get("id")), 
+                            email=request.form.get("email"), 
+                            fname=request.form.get("fname"), 
+                            mname=request.form.get("mname"),
+                            lname=request.form.get("lname"), 
+                            phone_num=int(request.form.get("phone_num")), 
+                            dob=request.form.get("dob"), 
+                            city=request.form.get("city"), 
+                            postcode=int(request.form.get("postcode")), 
+                            address=request.form.get("address"), 
+                            verification_code=code,
+                            verified=0)
+
+            db.session.add(user_object)
+            db.session.commit()
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)

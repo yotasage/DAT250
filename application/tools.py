@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime, timedelta
 import threading
 import math
 import string
@@ -7,13 +7,74 @@ import random
 # import time  # For testing
 from flask import copy_current_request_context
 from flask_mail import Message as _Message
+from flask_sqlalchemy import SQLAlchemy
 
-from app import app, mail
+from app import app, mail, db, cookie_maxAge
+from models import Cookies
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'jamvp.tk'
 DEFAULT_MESSAGE_SUBJECT = "Flask test email, sent from server as " + os.environ.get('MAIL_USERNAME_FLASK')
 TEST_BODY="text body"
+
+def valid_cookie(cookie_header):
+    cookie_header = cookie_header.replace('; ','')
+    cookie_list = cookie_header.split('sessionId=')
+
+    for cookie in cookie_list:
+        cookie = Cookies.query.filter_by(session_cookie=cookie).first()
+
+        if cookie is not None:
+            break
+
+    if cookie is None:  # Hvis cookien ikke finnes
+        return False
+    
+    valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")  # datetime object
+
+    if datetime.now() > valid_to:  # Hvis cookien er for gammel
+        db.session.delete(cookie)
+        db.session.commit()
+        return False
+    return True
+
+
+def update_cookie(cookie_header, resp=None):
+    cookie_header = cookie_header.replace('; ','')
+    cookie_list = cookie_header.split('sessionId=')
+
+    for cookie in cookie_list:
+        cookie = Cookies.query.filter_by(session_cookie=cookie).first()
+
+        if cookie is not None:
+            break
+
+    # print(f"cookie.valid_to = {cookie.valid_to}")
+
+    if resp is not None :
+        resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; HttpOnly")
+        # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + cookie.session_cookie "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+    cookie.valid_to = str(datetime.now() + timedelta(seconds=cookie_maxAge))
+    db.session.commit()
+
+def print_userdata(user_object):
+    print("#################  USER DATA - START  ######################")
+    print(f"id = {user_object.id}")
+    print(f"user_id = {user_object.user_id}")
+    print(f"email = {user_object.email}")
+    print(f"fname = {user_object.fname}")
+    print(f"mname = {user_object.mname}")
+    print(f"lname = {user_object.lname}")
+    print(f"phone_num = {user_object.phone_num}")
+    print(f"dob = {user_object.dob}")
+    print(f"city = {user_object.city}")
+    print(f"postcode = {user_object.postcode}")
+    print(f"address = {user_object.address}")
+    print(f"hashed_password = {user_object.hashed_password}")
+    print(f"salt = {user_object.salt}")
+    print(f"verification_code = {user_object.verification_code}")
+    print(f"verified = {user_object.verified}")
+    print("#################  USER DATA - END  ######################")
 
 # Må vurdere hvilke symboler vi kan tillate
 def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + string.punctuation):
@@ -27,7 +88,7 @@ def valid_date(date, separator='-'):
         date = date.split(separator)  # Tar bare datoer med formatet dd-mm-yyyy, separator kan endres
         if len(date) == 3 and (is_number(date[0]) and is_number(date[1]) and is_number(date[2])):  # Datoen må bestå av 3 tall
             try:  # Prøver å konvertere datoen fra brukeren til en dato
-                datetime.datetime(year=int(date[2]),month=int(date[1]),day=int(date[0]))
+                datetime(year=int(date[2]),month=int(date[1]),day=int(date[0]))
             except ValueError:
                 return False
         else:
