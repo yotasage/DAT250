@@ -51,6 +51,28 @@ def startpage():
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
+@app.route("/pages/din_side.html", methods=['GET'])
+def din_side():
+    print("13")
+    resp1 = make_response(render_template("pages/din_side.html"))  # Ønsket side for når vi er innlogget
+    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    
+    try:
+        return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
+        abort(404)  # Returner feilmelding 404
+
+@app.route("/pages/edit.html", methods=['GET'])
+def edit():
+    print("14")
+    resp1 = make_response(render_template("pages/edit.html"))  # Ønsket side for når vi er innlogget
+    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    
+    try:
+        return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
+        abort(404)  # Returner feilmelding 404
+
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 @app.route("/pages/registration.html", methods=['GET'])
 def registration():
