@@ -157,6 +157,61 @@ def post_data(data = None):
             db.session.add(user_object)
             db.session.commit()
 
+    # Verifiser data fra bruker osv
+    elif data == "edit_data": 
+
+        if 'cookie' in request.headers:
+            cookie = request.headers['cookie']
+            cookie = cookie.replace('sessionID=', '')
+            print(cookie)
+
+        
+
+        # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
+        feedback = {'fname': '', 'mname': '', 'lname': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
+
+        # Er fødselsdatoen gyldig?
+        if not valid_date(request.form.get("dob")):
+            feedback["dob"] = "invalid"
+
+        # Er fornavn, mellomnavn og etternavn gyldig?
+        feedback["fname"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
+        if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
+            feedback["mname"] = valid_name(names=request.form.get("mname"))
+        feedback["lname"] = valid_name(names=request.form.get("lname"))
+
+        # Er by navn gyldig?
+        feedback["city"] = valid_name(request.form.get("city"))
+
+        # Er telefonnummer gyldig?
+        if not valid_number(number=request.form.get("phone_num"), min_length=8, max_length=8):
+            feedback["phone_num"] = "NaN"
+
+        # Er post kode gyldig?
+        if not valid_number(number=request.form.get("postcode"), min_length=4, max_length=4):
+            feedback["postcode"] = "NaN"
+
+        # Er addressen gyldig?
+        feedback["address"] = valid_address(request.form.get("address"))
+
+        # Har det oppstått noen feil?
+        error = False
+        for element in feedback:
+            if feedback[element] != '':  # Hvis innholde ikke er tomt, så har det oppstått en feil
+                error = True
+
+        # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
+        # if error:
+        #     return redirect(url_for('registration', fname=feedback["fname"], mname=feedback["mname"], lname=feedback["lname"], 
+        #                                             email=feedback["email"], id=feedback["id"], phone_num=feedback["phone_num"], 
+        #                                             dob=feedback["dob"], city=feedback["city"], postcode=feedback["postcode"], 
+        #                                             address=feedback["address"]), code=302)
+
+        # # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
+        # else:
+        #     db.session.commit()
+
+
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)
 
