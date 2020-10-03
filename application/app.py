@@ -8,7 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
-cookie_maxAge = 120  # Hvor mange sekunder en cookie er gyldig
+cookie_maxAge = 10  # Hvor mange sekunder en cookie er gyldig
+client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',

@@ -5,11 +5,11 @@ import math
 import string
 import random
 # import time  # For testing
-from flask import copy_current_request_context
+from flask import copy_current_request_context, redirect, url_for
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 
-from app import app, mail, db, cookie_maxAge
+from app import app, mail, db, cookie_maxAge, client_maxAge
 from models import Cookies
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
@@ -17,9 +17,15 @@ DOMAIN_NAME = 'jamvp.tk'
 DEFAULT_MESSAGE_SUBJECT = "Flask test email, sent from server as " + os.environ.get('MAIL_USERNAME_FLASK')
 TEST_BODY="text body"
 
-def valid_cookie(cookie_header):
+
+def extract_cookie(cookie_header):
     cookie_header = cookie_header.replace('; ','')
     cookie_list = cookie_header.split('sessionId=')
+    return cookie_list
+
+
+def valid_cookie(cookie_header):
+    cookie_list = extract_cookie(cookie_header)
 
     for cookie in cookie_list:
         cookie = Cookies.query.filter_by(session_cookie=cookie).first()
@@ -28,7 +34,7 @@ def valid_cookie(cookie_header):
             break
 
     if cookie is None:  # Hvis cookien ikke finnes
-        return False
+        return None
     
     valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")  # datetime object
 
@@ -40,8 +46,7 @@ def valid_cookie(cookie_header):
 
 
 def update_cookie(cookie_header, resp=None):
-    cookie_header = cookie_header.replace('; ','')
-    cookie_list = cookie_header.split('sessionId=')
+    cookie_list = extract_cookie(cookie_header)
 
     for cookie in cookie_list:
         cookie = Cookies.query.filter_by(session_cookie=cookie).first()
@@ -52,8 +57,8 @@ def update_cookie(cookie_header, resp=None):
     # print(f"cookie.valid_to = {cookie.valid_to}")
 
     if resp is not None :
-        resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; HttpOnly")
-        # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + cookie.session_cookie "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+        resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
+        # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + cookie.session_cookie "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
     cookie.valid_to = str(datetime.now() + timedelta(seconds=cookie_maxAge))
     db.session.commit()
 

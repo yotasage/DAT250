@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 import string
 
-from app import app, db, cookie_maxAge # Importerer Flask objektet app
+from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
 
@@ -43,8 +43,8 @@ def post_data(data = None):
             db.session.commit()
 
             resp = make_response(redirect(url_for('startpage'), code=302))
-            # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + sessionId "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
-            resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge) + "; SameSite=Strict; HttpOnly")
+            # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + sessionId "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+            resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
             return resp
 
         # Hvis ugyldig bruker, send brukeren "tilbake" til login siden, men vis en feilmelding (se html koden til login.html for hva og hvordan feilkoden vises)
@@ -129,6 +129,9 @@ def post_data(data = None):
                                                     dob=feedback["dob"], city=feedback["city"], postcode=feedback["postcode"], 
                                                     address=feedback["address"]), code=302)
 
+        # Hvis brukeren allerede finnes, send klienten tilbake til index
+        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
+            return redirect(url_for('index'), code=302)
         # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
         else:
             code = random_string_generator(128)             # Generate a random string of 128 symbols, this is the verification code
@@ -156,6 +159,8 @@ def post_data(data = None):
 
             db.session.add(user_object)
             db.session.commit()
+
+            return redirect(url_for('login', v_mail="True"), code=302)
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)

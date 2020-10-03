@@ -15,13 +15,11 @@ from tools import send_mail, valid_cookie, update_cookie
 @app.route('/index', methods=['GET'])
 def index():
     print("1")
-    resp = redirect(url_for('startpage'), code=302)
-    if signed_in(resp):
-        return resp
-
+    resp1 = redirect(url_for('startpage'), code=302)
+    resp2 = make_response(render_template("index.html", date=datetime.datetime.now(), username="Vebjørn"))
+    
     try:
-        resp = make_response(render_template("index.html", date=datetime.datetime.now(), username="Vebjørn"))
-        return resp
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
@@ -29,61 +27,57 @@ def index():
 @app.route("/pages/login.html", methods=['GET'])
 def login(page = None):
     print("2")
-    resp = redirect(url_for('startpage'), code=302)
-    if signed_in(resp):
-        return resp
+    resp1 = redirect(url_for('startpage'), code=302)
 
-    messages = request.args.get('error')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
+    messages_1 = request.args.get('error')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
+    messages_2 = request.args.get('v_mail')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
+    messages_3 = request.args.get('timeout')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
+
+    resp2 = make_response(render_template("pages/login.html", date=datetime.datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3))
+    
     try:
-        resp = make_response(render_template("pages/login.html", date=datetime.datetime.now(), error=messages))
-        return resp
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
 @app.route("/pages/startside.html", methods=['GET'])
 def startpage():
     print("3")
+    resp1 = make_response(render_template("pages/startside.html", date=datetime.datetime.now()))  # Ønsket side for når vi er innlogget
+    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    
     try:
-        resp = make_response(render_template("pages/startside.html", date=datetime.datetime.now()))
-
-        if signed_in(resp):
-            return resp
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
-    return redirect(url_for('login'), code=302)
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 @app.route("/pages/registration.html", methods=['GET'])
 def registration():
     print("4")
-    resp = redirect(url_for('startpage'), code=302)
-    if signed_in(resp):
-        return resp
+    resp1 = redirect(url_for('startpage'), code=302)
 
-    try:
-        # Henter argumenteer fra URL som kommer med forespørselen fra nettleseren til brukeren.
-        fname = request.args.get('fname')
-        mname = request.args.get('mname')
-        lname = request.args.get('lname')
-        email = request.args.get('email')
-        uid = request.args.get('id')
-        phone_num = request.args.get('phone_num')
-        dob = request.args.get('dob')
-        city = request.args.get('city')
-        postcode = request.args.get('postcode')
-        address = request.args.get('address')
+    # Henter argumenteer fra URL som kommer med forespørselen fra nettleseren til brukeren.
+    fname = request.args.get('fname')
+    mname = request.args.get('mname')
+    lname = request.args.get('lname')
+    email = request.args.get('email')
+    uid = request.args.get('id')
+    phone_num = request.args.get('phone_num')
+    dob = request.args.get('dob')
+    city = request.args.get('city')
+    postcode = request.args.get('postcode')
+    address = request.args.get('address')
 
-        # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
-        # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
-        resp = make_response(render_template("pages/registration.html", fname=fname, mname=mname, lname=lname, 
+    # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
+    # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
+    resp2 = make_response(render_template("pages/registration.html", fname=fname, mname=mname, lname=lname, 
                                                                         email=email, id=uid, phone_num=phone_num, 
                                                                         dob=dob, city=city, postcode=postcode, 
-                                                                        address=address))            
-                                                                                    
-        # resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")  # Flyttet dette til def add_headers(resp):
-        # resp.headers.set('Pragma', "no-cache")                                    # Flyttet dette til def add_headers(resp):
-        # resp.headers.set('Expires', "0")                                          # Flyttet dette til def add_headers(resp):
-        return resp
+                                                                        address=address))     
+
+    try:
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet, i tilfellet noen prøver å skrive inn addresser til sider som ikke finnes
         abort(404)  # Returner feilmelding 404
 
@@ -122,7 +116,7 @@ def verification(style = None):
     if user_object is not None and not user_object.verified:
         return render_template("pages/verification.html", error=error)
 
-    abort(404)  # Lage custom 404 side? Tenker da med return to home knapp
+    return redirect(url_for('index'), code=302)
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 # https://stackoverflow.com/questions/29464276/add-response-headers-to-flask-web-app
@@ -140,10 +134,17 @@ def add_headers(resp):
     resp.headers.set('Expires', "0")
     return resp
 
-def signed_in(resp):
-    if 'cookie' in request.headers and valid_cookie(request.headers['cookie']):
-        update_cookie(request.headers['cookie'], resp)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
-        return True
-    return False
+def signed_in(signed_in_page, url_page):
+    if 'cookie' in request.headers:
+
+        valid = valid_cookie(request.headers['cookie'])
+        if valid == False:
+            return redirect(url_for('login', timeout="True"), code=302)
+        elif valid == None:
+            return url_page
+            
+        update_cookie(request.headers['cookie'], signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
+        return signed_in_page
+    return url_page
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
