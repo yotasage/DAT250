@@ -71,8 +71,13 @@
         <form action="action_page.php" method="post">
         
             <div class=center>
+              {% if login %}
+                <br><strong style="color:rgb(0, 70, 0);">You are now allowed to try to login again.</strong><br><br>
+              {% endif %}
 
-              {% if error %}
+              {% if denied %}
+                <br><strong style="color:red;">You have tried and failed to sign in too many times, and therefore your next attempts will not be processed for the next hour.</strong><br><br>
+              {% elif error %}
                 <br><strong style="color:red;">Either User ID or Password is wrong.</strong><br><br>
               {% elif v_mail %}
                 <br><strong style="color:red;">A verification mail has been sent to your email address. To login you must first verify your account.</strong><br><br>
@@ -92,7 +97,13 @@
                 <input type="password" name="pswd" required> <br> <br>
               </div>
 
-              <button type="submit" formaction="../login_data" formmethod="post">Login</button>
+              {% if deactivate_btn %}
+                <button type="button" onclick="location.href='login.html';">Login</button>
+              {% else %}
+                <button type="submit" formaction="../login_data" formmethod="post">Login</button>
+              {% endif %}
+
+              
               <button onclick="location.href='registration.html';" type="button">Register</button> 
                 
               <br><br>

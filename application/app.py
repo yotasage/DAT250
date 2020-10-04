@@ -35,9 +35,9 @@ db = SQLAlchemy(app)
 
 from models import User, Cookies, Account, Transaction, Blacklist
 
-# db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut når vi er ferdig
+db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut når vi er ferdig
 
-# db.create_all() # greit for å teste db, men senere så er ikke det så lurt å ha det siden den sletter alle eksisterende brukere
+db.create_all() # greit for å teste db, men senere så er ikke det så lurt å ha det siden den sletter alle eksisterende brukere
 # når vi har integrert inn login og regin for nettsiden så burde vi fjerne db.create 
 # når fila skal ut i production så skal db.create all være der enda
 
@@ -60,6 +60,7 @@ from models import User, Cookies, Account, Transaction, Blacklist
 # flask run
 
 # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+import request_processing
 import views
 import post_handlers
 

@@ -24,11 +24,13 @@ class User(db.Model):
 class Blacklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String, unique=True, nullable=False)
-    last = db.Column(db.String, unique=True, nullable=False)                        # Sist gang en request ble gjort
-    start = db.Column(db.String, unique=True, nullable=False)                       # Når det begynte å bli for mange requests
-    frequent_request_count = db.Column(db.Integer, unique=True, nullable=False)     # Hvor mange ganger brukeren har sent for hyppige requests
-    wrong_password_count = db.Column(db.Integer, unique=True, nullable=False)       # Hvor mange ganger brukeren har skrevet inn feil passord
-    reason = db.Column(db.String, unique=True, nullable=False)                      
+    last = db.Column(db.String, unique=False, nullable=False)                        # Sist gang en request ble gjort
+    # start = db.Column(db.String, unique=False, nullable=False)                       # Når det begynte å bli for mange requests
+    frequent_request_count = db.Column(db.Integer, unique=False, nullable=False)     # Hvor mange ganger brukeren har sent for hyppige requests
+    wrong_password_count = db.Column(db.Integer, unique=False, nullable=False)       # Hvor mange ganger brukeren har skrevet inn feil passord
+    blocked_until = db.Column(db.String, unique=False, nullable=True)
+    blocked_login_until = db.Column(db.String, unique=False, nullable=True)
+    reason = db.Column(db.String, unique=False, nullable=True)                      
 
 
 class Cookies(db.Model):

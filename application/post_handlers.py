@@ -7,7 +7,10 @@ from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objekte
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
 
-from models import User, Cookies
+from models import User, Cookies, Blacklist
+
+NUMBER_OF_LOGIN_ATTEMPTS = 10
+BLOCK_LOGIN_TIME = 30
 
 # Denne er bare for POST forespørsler.
 # Her skal vi selvfølgelig ikke bruke variablene username og password, men vi skal bruke User klassen, og sammenligne brukernavn og passord fra den.
@@ -21,37 +24,58 @@ def post_data(data = None):
         
         if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
 
-            user_object = User.query.filter_by(user_id=int(user_id)).first()
+            client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
 
-            if user_object is not None:
-                print_userdata(user_object)
-
-            # Hvis brukeren er verifisert
-            if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
-                # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
-                # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
-                # A secure cookie is only sent to the server when a request is made with the https: scheme. 
-                # Max-Age=<number>, Number of seconds until the cookie expires.
-                # Forbids JavaScript from accessing the cookie. This mitigates attacks against cross-site scripting (XSS).
-
-                sessionId = random_string_generator(128)
-                expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
-
-                cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
-                db.session.add(cookie)
+            if client_listing.blocked_login_until is not None and datetime.now() > datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                client_listing.blocked_login_until = None
                 db.session.commit()
+                return redirect(url_for('login', error="True"), code=302)
 
-                resp = make_response(redirect(url_for('startpage'), code=302))
+            if client_listing.blocked_login_until is None:
 
-                if "https://" in request.host_url:
-                    resp.headers.set('Set-Cookie', "__Secure-sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+                user_object = User.query.filter_by(user_id=int(user_id)).first()
+
+                if user_object is not None:
+                    print_userdata(user_object)
+
+                # Hvis brukeren er verifisert
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
+                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+                    # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
+                    # A secure cookie is only sent to the server when a request is made with the https: scheme. 
+                    # Max-Age=<number>, Number of seconds until the cookie expires.
+                    # Forbids JavaScript from accessing the cookie. This mitigates attacks against cross-site scripting (XSS).
+
+                    sessionId = random_string_generator(128)
+                    expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
+
+                    cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
+                    db.session.add(cookie)
+                    db.session.commit()
+
+                    resp = make_response(redirect(url_for('startpage'), code=302))
+
+                    if "https://" in request.host_url:
+                        resp.headers.set('Set-Cookie', "__Secure-sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+                    else:
+                        resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
+                    return resp
+
+                # Hvis brukeren ikke er verifisert
+                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and not user_object.verified:
+                    return redirect(url_for('verification', code=user_object.verification_code), code=302)
+                
                 else:
-                    resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
-                return resp
+                    client_listing.wrong_password_count += 1
 
-            # Hvis brukeren ikke er verifisert
-            elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and not user_object.verified:
-                return redirect(url_for('verification', code=user_object.verification_code), code=302)
+                    if client_listing.wrong_password_count >= NUMBER_OF_LOGIN_ATTEMPTS:
+                        client_listing.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME))
+                        client_listing.wrong_password_count = 0
+
+                    db.session.commit()
+
+            elif client_listing.blocked_login_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                return redirect(url_for('login'), code=302)
             
         # Hvis ugyldig bruker, send brukeren "tilbake" til login siden, men vis en feilmelding (se html koden til login.html for hva og hvordan feilkoden vises)
         return redirect(url_for('login', error="True"), code=302)
