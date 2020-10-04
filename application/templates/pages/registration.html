@@ -47,8 +47,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     
     <div style='text-align: left; width:500px; display: block; margin-left: auto; margin-right: auto;'>
         <br>
-        {% if fname or mname or lname or email or uid or phone_num or dob or city or postcode or address %}
-            {% if fname != '' or mname != '' or lname != '' or email != '' or uid != '' or phone_num != '' or dob != '' or city != '' or postcode != '' or address != '' %}
+        {% if fname or mname or lname or email or id or phone_num or dob or city or postcode or address %}
+            {% if fname != '' or mname != '' or lname != '' or email != '' or id != '' or phone_num != '' or dob != '' or city != '' or postcode != '' or address != '' %}
                 <strong style="color:red;">Something is wrong with the information you have given us:</strong><br><br>
                 {% if fname == 'invalid' %}
                     <p style="color:red;">Error #1: First name is invalid, should consist of letters only.</p>

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import jinja2  # For å kunne håndtere feil som 404
-from flask import request, redirect, url_for, abort
+from flask import render_template, request, redirect, url_for, abort
 
 from models import User, Blacklist
 
@@ -9,7 +9,7 @@ from tools import valid_cookie, update_cookie
 
 MAX_TIME_BETWEEN_REQUESTS = 5  # Seconds
 BLOCK_PERIOD = 30  # Seconds
-NUMBER_OF_FREQUENT_REQUESTS = 50
+NUMBER_OF_FREQUENT_REQUESTS = 10
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 # https://stackoverflow.com/questions/29464276/add-response-headers-to-flask-web-app
@@ -21,6 +21,7 @@ NUMBER_OF_FREQUENT_REQUESTS = 50
 # dette øker trafikken mellom serveren og brukeren (kjedelig for de me mobil data), men sikkerheten øker generelt.
 @app.after_request  # Denne kjører etter route funksjonene
 def add_headers(resp):
+    #if request.path != "/":
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
@@ -67,3 +68,9 @@ def signed_in(signed_in_page, url_page):
         update_cookie(request.headers['cookie'], signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
         return signed_in_page
     return url_page
+
+@app.errorhandler(403)
+def Forbidden(e):
+    # note that we set the 403 status explicitly
+    client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+    return render_template('error/403.html', date=datetime.strptime(client_listing.blocked_until, "%Y-%m-%d %H:%M:%S.%f")), 403

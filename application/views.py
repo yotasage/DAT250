@@ -15,11 +15,10 @@ from request_processing import signed_in
 
 
 @app.route("/", methods=['GET'])
-@app.route('/index', methods=['GET'])
 def index():
     # print("1")
     resp1 = redirect(url_for('startpage'), code=302)
-    resp2 = make_response(render_template("index.html", date=datetime.now(), username="Vebjørn"))
+    resp2 = app.send_static_file("index.html")
     
     try:
         return signed_in(resp1, resp2)
