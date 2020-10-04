@@ -4,10 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 import string
 
 from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
-from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata
+from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
 
-from models import User, Cookies
+from models import User, Cookies, Blacklist
+
+NUMBER_OF_LOGIN_ATTEMPTS = 10
+BLOCK_LOGIN_TIME = 30
 
 # Denne er bare for POST forespørsler.
 # Her skal vi selvfølgelig ikke bruke variablene username og password, men vi skal bruke User klassen, og sammenligne brukernavn og passord fra den.
@@ -17,63 +20,121 @@ def post_data(data = None):
 
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
-        # Hvis en gyldig bruker skal brukeren få en session cookie, og sendes til startsiden
+        user_id = request.form.get("uname")
+        
+        if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
 
-        user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
+            client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
 
-        if user_object is not None:
-            print_userdata(user_object)
+            if client_listing.blocked_login_until is not None and datetime.now() > datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                client_listing.blocked_login_until = None
+                db.session.commit()
+                return redirect(url_for('login', error="True"), code=302)
 
-        if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
-            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
-            # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
-            # A secure cookie is only sent to the server when a request is made with the https: scheme. 
-            # Max-Age=<number>, Number of seconds until the cookie expires.
-            # Forbids JavaScript from accessing the cookie. This mitigates attacks against cross-site scripting (XSS).
+            if client_listing.blocked_login_until is None:
 
-            sessionId = random_string_generator(128)
-            expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
+                user_object = User.query.filter_by(user_id=int(user_id)).first()
 
-            # datetime.strptime(date_string, format)
-            # format = "%Y-%m-%d %H:%M:%S.%f"
-            # datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
+                if user_object is not None:
+                    print_userdata(user_object)
 
-            cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
-            db.session.add(cookie)
-            db.session.commit()
+                # Hvis brukeren er verifisert
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
+                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+                    # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
+                    # A secure cookie is only sent to the server when a request is made with the https: scheme. 
+                    # Max-Age=<number>, Number of seconds until the cookie expires.
+                    # Forbids JavaScript from accessing the cookie. This mitigates attacks against cross-site scripting (XSS).
 
-            resp = make_response(redirect(url_for('startpage'), code=302))
-            # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + sessionId "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
-            resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
-            return resp
+                    sessionId = random_string_generator(128)
+                    expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
 
+                    cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
+                    db.session.add(cookie)
+                    db.session.commit()
+
+                    resp = make_response(redirect(url_for('startpage'), code=302))
+
+                    if "https://" in request.host_url:
+                        resp.headers.set('Set-Cookie', "__Secure-sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+                    else:
+                        resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
+                    return resp
+
+                # Hvis brukeren ikke er verifisert
+                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and not user_object.verified:
+                    return redirect(url_for('verification', code=user_object.verification_code), code=302)
+                
+                else:
+                    client_listing.wrong_password_count += 1
+
+                    if client_listing.wrong_password_count >= NUMBER_OF_LOGIN_ATTEMPTS:
+                        client_listing.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME))
+                        client_listing.wrong_password_count = 0
+
+                    db.session.commit()
+
+            elif client_listing.blocked_login_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                return redirect(url_for('login'), code=302)
+            
         # Hvis ugyldig bruker, send brukeren "tilbake" til login siden, men vis en feilmelding (se html koden til login.html for hva og hvordan feilkoden vises)
         return redirect(url_for('login', error="True"), code=302)
 
     elif data == "verification":
         # Sjekk om den matcher med en bruker i databasen før vi setter passord og authenticator kode for brukeren.
         # Dette må gjøres for å identifisere hvem som prøver å verifisere seg.
-        verification_code = request.headers['Referer'].split('verification?code=')[1].replace('&error=True', '')  # request.headers.get('Referer')
+        if 'Referer' in request.headers:
+            verification_code = request.headers.get('Referer').split('verification?code=')[1].replace('&error=True', '')  # request.headers.get('Referer')
 
-        user_object = User.query.filter_by(verification_code=verification_code).first()
+            if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+                user_object = User.query.filter_by(verification_code=verification_code).first()
 
-        pswd = request.form['pswd']
-        conf_pswd = request.form['conf_pswd']
+                pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
+                conf_pswd = request.form.get('conf_pswd')
 
-        # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
-        if pswd == conf_pswd and valid_password(pswd) and user_object is not None:
-            user_object.verification_code = None
-            user_object.hashed_password = pswd  # Passord skal være hashet
-            user_object.salt = None  # Må ha et salt
-            user_object.verified = 1
-            db.session.commit()
-        else:
-            return redirect(url_for('verification', code=verification_code, error="True"), code=302)
+                # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
+                if pswd == conf_pswd and valid_password(pswd) and user_object.hashed_password != pswd and user_object is not None:
+                    user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
+                    user_object.hashed_password = pswd      # Passord skal være hashet
+                    user_object.salt = None                 # Må ha et salt
+                    user_object.verified = 1                # Marker som verifisert
+                    db.session.commit()                     # Lagre
+                    return redirect(url_for('login'), code=302)
+                else:
+                    return redirect(url_for('verification', code=verification_code, error="True"), code=302)
 
-        # Hvis autentiserings greiene er good, ... fortsett
+    elif data == "reset_request":
+        if valid_id(request.form.get("uname")) == "":
+            user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
+            if user_object is not None and user_object.verified:
+                code = random_string_generator(128)
+                user_object.password_reset_code = code
 
-        # Hvis alt har gått greit til nå, tillat brukeren å logge inn, 
-        # altså marker som verifisert i databasen, fjern også verifiseringskoden fra databasen
+                reset_link = request.host_url + 'reset?code=' + code  # Lager linken brukeren skal få i mailen.
+                html_template = render_template('/mails/password_reset.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, link=reset_link)
+                
+                # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
+                send_mail(recipients=[user_object.email], subject="Password reset", body="TEST_BODY", html=html_template)
+
+                db.session.commit()
+
+    elif data == "reset_password":
+        if 'Referer' in request.headers:
+            password_reset_code = request.headers.get('Referer').split('reset?code=')[1].replace('&error=True', '')
+
+            pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
+            conf_pswd = request.form.get('conf_pswd')
+
+            if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):
+                user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
+
+                if user_object is not None and valid_password(pswd) and pswd == conf_pswd and not (user_object.hashed_password == pswd):
+                    user_object.hashed_password = pswd
+                    user_object.password_reset_code = None
+
+                    db.session.commit()
+                else:
+                    return redirect(url_for('reset', code=password_reset_code, error="True"), code=302)
 
     # Verifiser data fra bruker, lag bruker, sett info inn i databasen, send bekreftelsesmail.
     elif data == "registration_data":
@@ -97,7 +158,7 @@ def post_data(data = None):
         feedback["id"] = valid_id(request.form.get("id"))
 
         # Er fornavn, mellomnavn og etternavn gyldig?
-        feedback["fname"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
+        feedback["fname"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
             feedback["mname"] = valid_name(names=request.form.get("mname"))
         feedback["lname"] = valid_name(names=request.form.get("lname"))
@@ -135,7 +196,7 @@ def post_data(data = None):
         # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
         else:
             code = random_string_generator(128)             # Generate a random string of 128 symbols, this is the verification code
-            temp_password = random_string_generator(20)     # Generate a random string of 20 symbols, considering removing this
+            temp_password = random_string_generator(32)     # Generate a random string of 20 symbols, considering removing this
             validation_link = request.host_url + 'verification?code=' + code  # Lager linken brukeren skal få i mailen.
             html_template = render_template('/mails/account_verification.html', fname=request.form.get("fname"), mname=request.form.get("mname"), 
                                                                                 lname=request.form.get("lname"), link=validation_link,
@@ -144,18 +205,19 @@ def post_data(data = None):
             # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
             send_mail(recipients=[request.form.get("email")], subject="Account verification", body="TEST_BODY", html=html_template)
 
-            user_object = User(   user_id=int(request.form.get("id")), 
-                            email=request.form.get("email"), 
-                            fname=request.form.get("fname"), 
-                            mname=request.form.get("mname"),
-                            lname=request.form.get("lname"), 
-                            phone_num=int(request.form.get("phone_num")), 
-                            dob=request.form.get("dob"), 
-                            city=request.form.get("city"), 
-                            postcode=int(request.form.get("postcode")), 
-                            address=request.form.get("address"), 
-                            verification_code=code,
-                            verified=0)
+            user_object = User( user_id=int(request.form.get("id")), 
+                                email=request.form.get("email"), 
+                                fname=request.form.get("fname"), 
+                                mname=request.form.get("mname"),
+                                lname=request.form.get("lname"), 
+                                phone_num=int(request.form.get("phone_num")), 
+                                dob=request.form.get("dob"), 
+                                city=request.form.get("city"), 
+                                postcode=int(request.form.get("postcode")), 
+                                address=request.form.get("address"), 
+                                hashed_password=temp_password,
+                                verification_code=code,
+                                verified=0)
 
             db.session.add(user_object)
             db.session.commit()
@@ -226,7 +288,6 @@ def post_data(data = None):
 
         db.session.add(user)
         db.session.commit()
-
 
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden

@@ -5,7 +5,7 @@ import math
 import string
 import random
 # import time  # For testing
-from flask import copy_current_request_context, redirect, url_for
+from flask import copy_current_request_context, redirect, url_for, request
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 
@@ -17,6 +17,7 @@ DOMAIN_NAME = 'jamvp.tk'
 DEFAULT_MESSAGE_SUBJECT = "Flask test email, sent from server as " + os.environ.get('MAIL_USERNAME_FLASK')
 TEST_BODY="text body"
 
+Norwegian_characters = "æøåÆØÅ"
 
 def extract_cookie(cookie_header):
     cookie_header = cookie_header.replace('; ','')
@@ -28,14 +29,19 @@ def valid_cookie(cookie_header):
     cookie_list = extract_cookie(cookie_header)
 
     for cookie in cookie_list:
-        cookie = Cookies.query.filter_by(session_cookie=cookie).first()
+        if contain_allowed_symbols(s=cookie, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+            cookie = Cookies.query.filter_by(session_cookie=cookie).first()
 
-        if cookie is not None:
-            break
+            if cookie is not None:
+                break
 
     if cookie is None:  # Hvis cookien ikke finnes
         return None
     
+
+    # datetime.strptime(date_string, format)
+    # format = "%Y-%m-%d %H:%M:%S.%f"
+    # datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
     valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")  # datetime object
 
     if datetime.now() > valid_to:  # Hvis cookien er for gammel
@@ -57,8 +63,11 @@ def update_cookie(cookie_header, resp=None):
     # print(f"cookie.valid_to = {cookie.valid_to}")
 
     if resp is not None :
-        resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
-        # resp.headers.set('__Secure-Set-Cookie', "sessionId=" + cookie.session_cookie "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+        if "https://" in request.host_url:
+            resp.headers.set('Set-Cookie', "__Secure-sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
+        else:
+            resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
+
     cookie.valid_to = str(datetime.now() + timedelta(seconds=cookie_maxAge))
     db.session.commit()
 
@@ -79,10 +88,11 @@ def print_userdata(user_object):
     print(f"salt = {user_object.salt}")
     print(f"verification_code = {user_object.verification_code}")
     print(f"verified = {user_object.verified}")
+    print(f"password_reset_code = {user_object.password_reset_code}")
     print("#################  USER DATA - END  ######################")
 
 # Må vurdere hvilke symboler vi kan tillate
-def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + string.punctuation):
+def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + Norwegian_characters + string.punctuation):
     for c in s:
         if c not in whitelist:
             return False
@@ -131,7 +141,7 @@ def valid_id(id, min_length=6, max_length=7):
         return "empty"
     return ""
 
-def valid_name(names, whitelist=string.ascii_letters):
+def valid_name(names, whitelist=string.ascii_letters + Norwegian_characters):
     if names != '':
         # Sjekker om samlingen av navn (du kan ha 2 eller flere fornavn, mellomnavn (kan ha 0), etternavn) består av andre symboler enn bokstaver
         for name in names.split(' '):
@@ -152,7 +162,7 @@ def valid_address(address):
     # Sjekker om alle delene av addressen utenom slutten (gatenummeret), består av bokstaver.
     for field in range(len(address) - 1):
         if not address[field].isalpha():
-            if not contain_allowed_symbols(s=address[field], whitelist=string.ascii_letters + '-'):  # Godtar bindestrek i gatenavn
+            if not contain_allowed_symbols(s=address[field], whitelist=string.ascii_letters + '-' + Norwegian_characters):  # Godtar bindestrek i gatenavn
                 return "invalid"
 
     # Kontrollerer at formatet og gatenummeret er gyldig

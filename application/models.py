@@ -18,6 +18,19 @@ class User(db.Model):
     salt = db.Column(db.String, unique=False, nullable=True)
     verification_code = db.Column(db.String, unique=True, nullable=True)
     verified = db.Column(db.Boolean, unique=False, nullable=False)
+    password_reset_code = db.Column(db.String, unique=True, nullable=True)
+
+
+class Blacklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip = db.Column(db.String, unique=True, nullable=False)
+    last = db.Column(db.String, unique=False, nullable=False)                        # Sist gang en request ble gjort
+    # start = db.Column(db.String, unique=False, nullable=False)                       # Når det begynte å bli for mange requests
+    frequent_request_count = db.Column(db.Integer, unique=False, nullable=False)     # Hvor mange ganger brukeren har sent for hyppige requests
+    wrong_password_count = db.Column(db.Integer, unique=False, nullable=False)       # Hvor mange ganger brukeren har skrevet inn feil passord
+    blocked_until = db.Column(db.String, unique=False, nullable=True)
+    blocked_login_until = db.Column(db.String, unique=False, nullable=True)
+    reason = db.Column(db.String, unique=False, nullable=True)                      
 
 
 class Cookies(db.Model):

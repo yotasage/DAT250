@@ -2,21 +2,24 @@
 # In Flask handlers are written as Python functions. 
 # Each view function is mapped to one or more request URLs.
 
-import datetime
+from datetime import datetime, timedelta
 import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response
+import string
 
-from models import User, Cookies
+from models import User, Blacklist, Cookies
 
-from app import app # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, extract_cookie
+from app import app, db # Importerer Flask objektet app
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookie
+from request_processing import signed_in
+
 
 @app.route("/", methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    print("1")
+    # print("1")
     resp1 = redirect(url_for('startpage'), code=302)
-    resp2 = make_response(render_template("index.html", date=datetime.datetime.now(), username="Vebjørn"))
+    resp2 = make_response(render_template("index.html", date=datetime.now(), username="Vebjørn"))
     
     try:
         return signed_in(resp1, resp2)
@@ -33,7 +36,16 @@ def login(page = None):
     messages_2 = request.args.get('v_mail')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
     messages_3 = request.args.get('timeout')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
 
-    resp2 = make_response(render_template("pages/login.html", date=datetime.datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3))
+    client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+
+    if client_listing.blocked_login_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+        resp2 = make_response(render_template("pages/login.html", date=datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3, denied=True, deactivate_btn=True))
+    elif client_listing.blocked_login_until is not None:
+        client_listing.blocked_login_until = None
+        db.session.commit()
+        resp2 = make_response(render_template("pages/login.html", date=datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3, login=True, denied=False, deactivate_btn=False))
+    else:
+        resp2 = make_response(render_template("pages/login.html", date=datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3, denied=False, deactivate_btn=False))
     
     try:
         return signed_in(resp1, resp2)
@@ -43,7 +55,7 @@ def login(page = None):
 @app.route("/pages/startside.html", methods=['GET'])
 def startpage():
     print("3")
-    resp1 = make_response(render_template("pages/startside.html", date=datetime.datetime.now()))  # Ønsket side for når vi er innlogget
+    resp1 = make_response(render_template("pages/startside.html", date=datetime.now()))  # Ønsket side for når vi er innlogget
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
     
     try:
@@ -150,14 +162,17 @@ def registration():
 @app.route("/pages/<page>", methods=['GET'])
 def pages(page = None):
     print("5")
+    resp1 = redirect(url_for('startpage'), code=302)  # Ønsket side for når vi er innlogget
+    resp2 = make_response(render_template("pages/" + page))  # Side for når en ikke er innlogget
+
     try:
-        return render_template("pages/" + page, date=datetime.datetime.now())
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
 @app.route("/assets/<asset>")
 def assets(asset = None):
-    print("6")
+    # print("6")
     return app.send_static_file("assets/" + asset)
 
 # Må teste om denne gjør noe
@@ -177,40 +192,29 @@ def verification(style = None):
     verification_code = request.args.get('code')
     error = request.args.get('error')
 
-    # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
-    user_object = User.query.filter_by(verification_code=verification_code).first()
-    if user_object is not None and not user_object.verified:
-        return render_template("pages/verification.html", error=error)
+    if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+
+        # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
+        user_object = User.query.filter_by(verification_code=verification_code).first()
+        if user_object is not None and not user_object.verified:
+            return render_template("pages/verification.html", error=error)
 
     return redirect(url_for('index'), code=302)
 
-# https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
-# https://stackoverflow.com/questions/29464276/add-response-headers-to-flask-web-app
-# Følgende HTTP Respons headers gjør at siden ikke blir lagret (cachet) av nettleseren, 
-# da må siden selvfølgelig bli lastet inn fra serveren hver gang brukeren vil inn på den, og da vil ikke sensitiv informasjon for eksempel, 
-# kunne bli vist me mindre brukeren er ment til å kunne se det.
-#
-# Disse header'ene blir nå lagt til alt som har med nettsiden å gjøre, 
-# dette øker trafikken mellom serveren og brukeren (kjedelig for de me mobil data), men sikkerheten øker generelt.
-@app.after_request  # Denne kjører etter route funksjonene
-def add_headers(resp):
-    print("10")
-    resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
-    resp.headers.set('Pragma', "no-cache")
-    resp.headers.set('Expires', "0")
-    return resp
+@app.route("/reset")
+def reset(style = None):
+    print("15")
+    password_reset_code = request.args.get('code')
+    error = request.args.get('error')
 
-def signed_in(signed_in_page, url_page):
-    if 'cookie' in request.headers:
+    if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
 
-        valid = valid_cookie(request.headers['cookie'])
-        if valid == False:
-            return redirect(url_for('login', timeout="True"), code=302)
-        elif valid == None:
-            return url_page
-            
-        update_cookie(request.headers['cookie'], signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
-        return signed_in_page
-    return url_page
+        # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
+        user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
+        if user_object is not None and user_object.verified:
+            return render_template("pages/password_reset.html", error=error)
+
+    return redirect(url_for('index'), code=302)
+
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
