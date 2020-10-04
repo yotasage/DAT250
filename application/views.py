@@ -10,7 +10,7 @@ import string
 from models import User, Blacklist, Cookies
 
 from app import app, db # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookie
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie
 from request_processing import signed_in
 
 
@@ -65,21 +65,23 @@ def startpage():
 @app.route("/pages/din_side.html", methods=['GET'])
 def din_side():
     print("13")
+    session_cookie = get_valid_cookie()
 
-    if 'cookie' in request.headers:
-        cookies = request.headers['cookie']
-        cookie_list = extract_cookie(cookies)
-        cookie_session = cookie_list[1]
-        print("YO DETTE ER EN COOKIE: " + cookie_session)
-    
-    cookie = Cookies.query.filter_by(session_cookie=cookie_session).first()
-    if Cookies.query.filter_by(session_cookie=cookie_session).first() is not None:
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
         user_id_check = cookie.user_id
         user = User.query.filter_by(user_id=user_id_check).first()
-    else: print("user ikke funnet")
-    resp1 = make_response(render_template("pages/din_side.html", fname=user.fname, mname=user.mname, lname=user.lname,
+
+        resp1 = make_response(render_template("pages/din_side.html", fname=user.fname, mname=user.mname, lname=user.lname,
                                         email=user.email, id=user.user_id, phone_num=user.phone_num,
                                         dob=user.dob, city=user.city, postcode=user.postcode, address=user.address))  # Ønsket side for når vi er innlogget
+    else: 
+        resp1 = make_response(render_template("pages/din_side.html", fname="", mname="", lname="",
+                                        email="", id="", phone_num="",
+                                        dob="", city="", postcode="", address=""))  # Ønsket side for når vi er innlogget
+        print("user ikke funnet")
+    
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
     
     try:
@@ -92,17 +94,6 @@ def din_side():
 @app.route("/pages/edit.html", methods=['GET'])
 def edit():
     print("14")
-    if 'cookie' in request.headers:
-        cookies = request.headers['cookie']
-        cookie_list = extract_cookie(cookies)
-        cookie_session = cookie_list[1]
-        print("YO DETTE ER EN COOKIE HÅPER JEG: " + cookie_session)
-    
-    cookie = Cookies.query.filter_by(session_cookie=cookie_session).first()
-    if Cookies.query.filter_by(session_cookie=cookie_session).first() is not None:
-        user_id_check = cookie.user_id
-        user = User.query.filter_by(user_id=user_id_check).first()
-    else: print("user ikke funnet")
 
     # Henter argumenteer fra URL som kommer med forespørselen fra nettleseren til brukeren.
     fname_error = request.args.get('fname')
@@ -114,13 +105,31 @@ def edit():
     postcode_error = request.args.get('postcode')
     address_error = request.args.get('address')
 
-    resp1 = make_response(render_template("pages/edit.html", fname=user.fname, mname=user.mname, lname=user.lname,
+    session_cookie = get_valid_cookie()
+
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+        user_id_check = cookie.user_id
+        user = User.query.filter_by(user_id=user_id_check).first()
+
+        resp1 = make_response(render_template("pages/edit.html", fname=user.fname, mname=user.mname, lname=user.lname,
                                         email=user.email, id=user.user_id, phone_num=user.phone_num,
                                         dob=user.dob, city=user.city, postcode=user.postcode, address=user.address,
                                         fname_error=fname_error, mname_error=mname_error, lname_error=lname_error,
                                         phone_num_error=phone_num_error, dob_error=dob_error, city_error=city_error,
                                         postcode_error=postcode_error, address_error=address_error
                                         ))  # Ønsket side for når vi er innlogget
+    else:
+        resp1 = make_response(render_template("pages/edit.html", fname="", mname="", lname="",
+                                        email="", id="", phone_num="",
+                                        dob="", city="", postcode="", address="",
+                                        fname_error=fname_error, mname_error=mname_error, lname_error=lname_error,
+                                        phone_num_error=phone_num_error, dob_error=dob_error, city_error=city_error,
+                                        postcode_error=postcode_error, address_error=address_error
+                                        ))  # Ønsket side for når vi er innlogget
+        print("user ikke funnet")
+
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
     
     try:

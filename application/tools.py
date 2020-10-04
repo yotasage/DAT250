@@ -19,57 +19,60 @@ TEST_BODY="text body"
 
 Norwegian_characters = "æøåÆØÅ"
 
-def extract_cookie(cookie_header):
-    cookie_header = cookie_header.replace('; ','')
-    cookie_list = cookie_header.split('sessionId=')
-    return cookie_list
+def get_valid_cookie():
+    for cookie in extract_cookies():
+        if valid_cookie(cookie):
+            return cookie
 
+    return None
 
-def valid_cookie(cookie_header):
-    cookie_list = extract_cookie(cookie_header)
+# Get list of cookies from cookie_header
+def extract_cookies():
+    if 'cookie' in request.headers:
+        cookie_header = request.headers['cookie']
+        cookie_header = cookie_header.replace('__Secure-sessionId=','')
+        cookie_header = cookie_header.replace('sessionId=','')
+        cookie_list = cookie_header.split('; ')
+        return cookie_list
+    return None
 
-    for cookie in cookie_list:
-        if contain_allowed_symbols(s=cookie, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
-            cookie = Cookies.query.filter_by(session_cookie=cookie).first()
+# Check if cookie is valid
+def valid_cookie(cookie_in_question):
+    if contain_allowed_symbols(s=cookie_in_question, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+        cookie = Cookies.query.filter_by(session_cookie=cookie_in_question).first()
 
-            if cookie is not None:
-                break
-
-    if cookie is None:  # Hvis cookien ikke finnes
-        return None
+        if cookie is None:
+            return None  # Hvis cookien ikke finnes i database
     
+        # Hent ut dato og klokkeslett denne cookien er gyldig til
+        valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")
 
-    # datetime.strptime(date_string, format)
-    # format = "%Y-%m-%d %H:%M:%S.%f"
-    # datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
-    valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")  # datetime object
+        if datetime.now() > valid_to:
+            db.session.delete(cookie)
+            db.session.commit()
+            return False  # Hvis cookien er for gammel
+        return True  # Hvis cookien er gyldig
+    return None  # En ugyldig cookie, den inneholder ugyldige tegn, og kan derfor ikke finnes i databasen, return None
 
-    if datetime.now() > valid_to:  # Hvis cookien er for gammel
-        db.session.delete(cookie)
+def update_cookie_clientside(cookie_in_question, resp, age=cookie_maxAge + client_maxAge):
+    if "https://" in request.host_url:
+        resp.headers.set('Set-Cookie', "__Secure-sessionId=" + cookie_in_question + "; Max-Age=" + str(age) + "; SameSite=Strict; Secure; HttpOnly")
+    else:
+        resp.headers.set('Set-Cookie', "sessionId=" + cookie_in_question + "; Max-Age=" + str(age) + "; SameSite=Strict; HttpOnly")
+
+
+def update_cookie_serverside(cookie_in_question, age=cookie_maxAge + client_maxAge):
+    cookie = Cookies.query.filter_by(session_cookie=cookie_in_question).first()
+
+    if cookie is not None:
+        cookie.valid_to = str(datetime.now() + timedelta(seconds=cookie_maxAge))
         db.session.commit()
-        return False
-    return True
+        return True  # Kalrte å oppdatere cookie
+    return False  # Klarte ikke å oppdatere cookie
 
-
-def update_cookie(cookie_header, resp=None):
-    cookie_list = extract_cookie(cookie_header)
-
-    for cookie in cookie_list:
-        cookie = Cookies.query.filter_by(session_cookie=cookie).first()
-
-        if cookie is not None:
-            break
-
-    # print(f"cookie.valid_to = {cookie.valid_to}")
-
-    if resp is not None :
-        if "https://" in request.host_url:
-            resp.headers.set('Set-Cookie', "__Secure-sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; Secure; HttpOnly")
-        else:
-            resp.headers.set('Set-Cookie', "sessionId=" + cookie.session_cookie + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
-
-    cookie.valid_to = str(datetime.now() + timedelta(seconds=cookie_maxAge))
-    db.session.commit()
+def update_cookie(cookie_in_question, response, age=cookie_maxAge + client_maxAge):
+    update_cookie_clientside(cookie_in_question, response, age)
+    update_cookie_serverside(cookie_in_question, age)
 
 def print_userdata(user_object):
     print("#################  USER DATA - START  ######################")

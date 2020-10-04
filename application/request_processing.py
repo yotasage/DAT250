@@ -5,11 +5,11 @@ from flask import render_template, request, redirect, url_for, abort
 from models import User, Blacklist
 
 from app import app, db # Importerer Flask objektet app
-from tools import valid_cookie, update_cookie
+from tools import valid_cookie, update_cookie, extract_cookies, update_cookie_clientside
 
-MAX_TIME_BETWEEN_REQUESTS = 5  # Seconds
+MAX_TIME_BETWEEN_REQUESTS = 5  # Seconds, if a request is performed within a certain amount of time after another, it is considered to frequent
 BLOCK_PERIOD = 30  # Seconds
-NUMBER_OF_FREQUENT_REQUESTS = 10
+NUMBER_OF_FREQUENT_REQUESTS = 100
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 # https://stackoverflow.com/questions/29464276/add-response-headers-to-flask-web-app
@@ -57,17 +57,24 @@ def before_request_func():
         db.session.commit()
 
 def signed_in(signed_in_page, url_page):
-    if 'cookie' in request.headers:
+    cookie_list = extract_cookies()
+    if cookie_list is not None:
+        
+        for cookie in cookie_list:
+            valid = valid_cookie(cookie)
+            if valid is not None:
+                break
 
-        valid = valid_cookie(request.headers['cookie'])
-        if valid == False:
-            return redirect(url_for('login', timeout="True"), code=302)
-        elif valid == None:
+        if valid == None:  # Cookiene vi fikk inn fantes ikke i databasen
             return url_page
-            
-        update_cookie(request.headers['cookie'], signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
-        return signed_in_page
-    return url_page
+        elif valid == False:  # En av cookiene var i databasen, og den var utgått
+            resp = redirect(url_for('login', timeout="True"), code=302)
+            update_cookie_clientside(cookie, resp, 0)
+            return resp
+        elif valid == True:  # Fant cookien i databasen
+            update_cookie(cookie, signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder
+            return signed_in_page
+    return url_page  # Ingen cookies mottatt
 
 @app.errorhandler(403)
 def Forbidden(e):

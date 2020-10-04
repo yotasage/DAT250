@@ -5,7 +5,7 @@ import string
 
 from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
-from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password
+from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 
 from models import User, Cookies, Blacklist
 
@@ -267,27 +267,27 @@ def post_data(data = None):
                                                     city=feedback["city_error"], postcode=feedback["postcode_error"], 
                                                     address=feedback["address_error"]), code=302)
 
-        if 'cookie' in request.headers:
-            cookie_session = request.headers['cookie']
-            cookie_session = cookie_session.replace('sessionId=', '')
-            print(cookie_session)
-        
-        cookie = Cookies.query.filter_by(session_cookie=cookie_session).first()
-        if Cookies.query.filter_by(session_cookie=cookie_session).first() is not None:
-            user_id_check = cookie.user_id
-            user = User.query.filter_by(user_id=user_id_check).first()
-            if User.query.filter_by(user_id=user_id_check).first() is not None:
-                user.fname = request.form.get("fname")
-                user.mname = request.form.get("mname")
-                user.lname = request.form.get("lname")
-                user.phone_num = request.form.get("phone_num")
-                user.dob = request.form.get("dob")
-                user.city = request.form.get("city")
-                user.address = request.form.get("address")
-                user.postcode = request.form.get("postcode")
+        session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
 
-        db.session.add(user)
-        db.session.commit()
+        if session_cookie is not None:  # Om vi fikk en gyldig header
+            cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+            user_id_check = cookie.user_id
+            user = User.query.filter_by(user_id=user_id_check).first()  # Hvis vi har en gyldig cookie så har vi også en gyldig bruker, ingen cookie uten en bruker
+            # if User.query.filter_by(user_id=user_id_check).first() is not None:  # Denne er ikke nødvendig, se forrige linje
+
+            user.fname = request.form.get("fname")
+            user.mname = request.form.get("mname")
+            user.lname = request.form.get("lname")
+            user.phone_num = request.form.get("phone_num")
+            user.dob = request.form.get("dob")
+            user.city = request.form.get("city")
+            user.address = request.form.get("address")
+            user.postcode = request.form.get("postcode")
+
+            db.session.commit()  # Etter endringer er gjort, lagre
+
+            return redirect(url_for('din_side', code=302))
 
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
