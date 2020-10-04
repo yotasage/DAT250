@@ -5,11 +5,13 @@
 import datetime
 import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response
+import string
 
 from models import User
 
 from app import app # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols
+
 
 @app.route("/", methods=['GET'])
 @app.route('/index', methods=['GET'])
@@ -106,8 +108,11 @@ def registration():
 @app.route("/pages/<page>", methods=['GET'])
 def pages(page = None):
     print("5")
+    resp1 = redirect(url_for('startpage'), code=302)  # Ønsket side for når vi er innlogget
+    resp2 = make_response(render_template("pages/" + page))  # Side for når en ikke er innlogget
+
     try:
-        return render_template("pages/" + page, date=datetime.datetime.now())
+        return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
@@ -133,10 +138,27 @@ def verification(style = None):
     verification_code = request.args.get('code')
     error = request.args.get('error')
 
-    # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
-    user_object = User.query.filter_by(verification_code=verification_code).first()
-    if user_object is not None and not user_object.verified:
-        return render_template("pages/verification.html", error=error)
+    if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+
+        # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
+        user_object = User.query.filter_by(verification_code=verification_code).first()
+        if user_object is not None and not user_object.verified:
+            return render_template("pages/verification.html", error=error)
+
+    return redirect(url_for('index'), code=302)
+
+@app.route("/reset")
+def reset(style = None):
+    print("15")
+    password_reset_code = request.args.get('code')
+    error = request.args.get('error')
+
+    if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+
+        # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
+        user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
+        if user_object is not None and user_object.verified:
+            return render_template("pages/password_reset.html", error=error)
 
     return redirect(url_for('index'), code=302)
 
@@ -155,6 +177,16 @@ def add_headers(resp):
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
     return resp
+
+@app.before_request
+def before_request_func():
+    print("16")
+    print(f"request.remote_addr = {request.remote_addr}")
+
+    # Blacklist
+    # if request.remote_addr == "192.168.0.27":
+    #     abort(403)
+
 
 def signed_in(signed_in_page, url_page):
     if 'cookie' in request.headers:

@@ -33,7 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/database.db' # ls /t
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from models import User, Cookies, Account, Transaction
+from models import User, Cookies, Account, Transaction, Blacklist
 
 # db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut når vi er ferdig
 
@@ -62,7 +62,6 @@ from models import User, Cookies, Account, Transaction
 # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
 import views
 import post_handlers
-
 
 # funker ikke å kjøre flask run i app.py
 #if __name__== "__main__":
