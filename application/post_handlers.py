@@ -227,39 +227,32 @@ def post_data(data = None):
     # Verifiser data fra bruker osv
     elif data == "edit_data": 
 
-        if 'cookie' in request.headers:
-            cookie = request.headers['cookie']
-            cookie = cookie.replace('sessionID=', '')
-            print(cookie)
-
-        
-
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
-        feedback = {'fname': '', 'mname': '', 'lname': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
+        feedback = {'fname_error': '', 'mname_error': '', 'lname_error': '', 'phone_num_error': '', 'dob_error': '', 'city_error': '', 'postcode_error': '', 'address_error': ''}
 
         # Er fødselsdatoen gyldig?
         if not valid_date(request.form.get("dob")):
-            feedback["dob"] = "invalid"
+            feedback["dob_error"] = "invalid"
 
         # Er fornavn, mellomnavn og etternavn gyldig?
-        feedback["fname"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
+        feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
         if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname"] = valid_name(names=request.form.get("mname"))
-        feedback["lname"] = valid_name(names=request.form.get("lname"))
+            feedback["mname_error"] = valid_name(names=request.form.get("mname"))
+        feedback["lname_error"] = valid_name(names=request.form.get("lname"))
 
         # Er by navn gyldig?
-        feedback["city"] = valid_name(request.form.get("city"))
+        feedback["city_error"] = valid_name(request.form.get("city"))
 
         # Er telefonnummer gyldig?
         if not valid_number(number=request.form.get("phone_num"), min_length=8, max_length=8):
-            feedback["phone_num"] = "NaN"
+            feedback["phone_num_error"] = "NaN"
 
         # Er post kode gyldig?
         if not valid_number(number=request.form.get("postcode"), min_length=4, max_length=4):
-            feedback["postcode"] = "NaN"
+            feedback["postcode_error"] = "NaN"
 
         # Er addressen gyldig?
-        feedback["address"] = valid_address(request.form.get("address"))
+        feedback["address_error"] = valid_address(request.form.get("address"))
 
         # Har det oppstått noen feil?
         error = False
@@ -267,16 +260,35 @@ def post_data(data = None):
             if feedback[element] != '':  # Hvis innholde ikke er tomt, så har det oppstått en feil
                 error = True
 
-        # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
-        # if error:
-        #     return redirect(url_for('registration', fname=feedback["fname"], mname=feedback["mname"], lname=feedback["lname"], 
-        #                                             email=feedback["email"], id=feedback["id"], phone_num=feedback["phone_num"], 
-        #                                             dob=feedback["dob"], city=feedback["city"], postcode=feedback["postcode"], 
-        #                                             address=feedback["address"]), code=302)
+        # Hvis det har oppstått noen feil, send brukeren "tilbake" til redigeringssiden med feilmeldingene
+        if error:
+            return redirect(url_for('edit', fname=feedback["fname_error"], mname=feedback["mname_error"], lname=feedback["lname_error"], 
+                                                    phone_num=feedback["phone_num_error"], dob=feedback["dob_error"], 
+                                                    city=feedback["city_error"], postcode=feedback["postcode_error"], 
+                                                    address=feedback["address_error"]), code=302)
 
-        # # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
-        # else:
-        #     db.session.commit()
+        if 'cookie' in request.headers:
+            cookie_session = request.headers['cookie']
+            cookie_session = cookie_session.replace('sessionId=', '')
+            print(cookie_session)
+        
+        cookie = Cookies.query.filter_by(session_cookie=cookie_session).first()
+        if Cookies.query.filter_by(session_cookie=cookie_session).first() is not None:
+            user_id_check = cookie.user_id
+            user = User.query.filter_by(user_id=user_id_check).first()
+            if User.query.filter_by(user_id=user_id_check).first() is not None:
+                user.fname = request.form.get("fname")
+                user.mname = request.form.get("mname")
+                user.lname = request.form.get("lname")
+                user.phone_num = request.form.get("phone_num")
+                user.dob = request.form.get("dob")
+                user.city = request.form.get("city")
+                user.address = request.form.get("address")
+                user.postcode = request.form.get("postcode")
+
+        db.session.add(user)
+        db.session.commit()
+
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)
