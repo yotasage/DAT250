@@ -7,7 +7,7 @@ import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response
 import string
 
-from models import User, Blacklist, Cookies
+from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db # Importerer Flask objektet app
 from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie
@@ -188,6 +188,58 @@ def registration():
     try:
         return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet, i tilfellet noen prøver å skrive inn addresser til sider som ikke finnes
+        abort(404)  # Returner feilmelding 404
+
+@app.route("/pages/transaction_view.html", methods=['GET'])
+def transaction_overview(page = None):
+    print("25")
+    resp1 = make_response(render_template("pages/transaction_view.html", len=0, Pokemons=[]))
+    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+
+    session_cookie = get_valid_cookie()
+
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+        user = User.query.filter_by(user_id=cookie.user_id).first()
+
+        accounts = Account.query.filter_by(user_id=user.user_id).first()
+
+        print(accounts)
+
+        transactions = Transaction.query.filter_by(to_acc=accounts.account_number).all() + Transaction.query.filter_by(from_acc=accounts.account_number).all()
+
+        print(transactions)
+
+        transfer_time = []
+        From = []
+        To = []
+        Msg = []
+        Inn = []
+        Out = []
+
+        for transaction in transactions:
+            transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+            Msg.append(transaction.message)
+            From.append(transaction.from_acc)
+            To.append(transaction.to_acc)
+
+            if transaction.to_acc == accounts.account_number:
+                Inn.append(transaction.amount)
+                Out.append("")
+            if transaction.from_acc == accounts.account_number:
+                Inn.append("")
+                Out.append(transaction.amount)
+
+
+
+        liste = ['a', 'b', 'c', 'd']
+
+        resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out))
+
+    try:
+        return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
 @app.route("/pages/<page>", methods=['GET'])

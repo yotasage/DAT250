@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
-cookie_maxAge = 300  # Hvor mange sekunder en cookie er gyldig
+cookie_maxAge = 600  # Hvor mange sekunder en cookie er gyldig
 client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
 mail_settings = {
@@ -41,32 +41,29 @@ from models import User, Cookies, Account, Transaction, Blacklist
 # når vi har integrert inn login og regin for nettsiden så burde vi fjerne db.create 
 # når fila skal ut i production så skal db.create all være der enda
 
-# Test users
-# admin = User(user_id=212761, email="212761@uis.no", fname="aadmin", lname="auser", phone_num="12345678", dob="01-01-2020", city="Stavanger", postcode="4021", address="UiS", verified=1)
-# guest = User(user_id=252761, email="252761@uis.no", fname="bguest", lname="buser", phone_num="12345679", dob="01-01-2020", city="Stavanger", postcode="4021", address="UiS", verified=1)
 
-# db.session.add(admin)
-# db.session.add(guest)
-# db.session.commit()  # Får problemer her, sqlite3.OperationalError: table user has no column named user_id
+# transactions = []
+# transactions.append(Transaction(transfer_time="2020-10-05 18:38:56.356743", from_acc="1442.37.37645", to_acc="1202.37.31655", message="This is fun", amount=50))
+# transactions.append(Transaction(transfer_time="2020-10-03 18:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Savings", amount=443))
+# transactions.append(Transaction(transfer_time="2020-10-02 18:38:56.356743", from_acc="1442.37.37645", to_acc="1202.37.31655", message="KID: 453453256", amount=650))
+# transactions.append(Transaction(transfer_time="2020-09-05 18:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="WOW", amount=1360))
+# transactions.append(Transaction(transfer_time="2020-09-05 18:44:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Yes", amount=60))
+# transactions.append(Transaction(transfer_time="2020-10-01 19:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Such money", amount=5000))
 
-# print(User.query.all())
-# print(User.query.filter_by(user_id=212761).first())
+# for transaction in transactions:
+#     db.session.add(transaction)
+# db.session.commit()
 
-# print(User.query.filter_by(user_id=242761).first().city)
+# accounts = []
 
+# accounts.append(Account(user_id="242761", account_number="1202.37.31655", balance=66000))
 
-
-# sudo rm /tmp/test.db
-# flask run
+# for account in accounts:
+#     db.session.add(account)
+# db.session.commit()
 
 # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
 import request_processing
 import views
 import post_handlers
 import get_handlers
-
-# funker ikke å kjøre flask run i app.py
-#if __name__== "__main__":
-    #app.run()
-
-# for å kjøre lagre og lese fra db skriv inn i terminal export FLASK_APP=app.py deretter flask run
