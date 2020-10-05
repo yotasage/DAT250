@@ -3,7 +3,7 @@
 <head>
 <title>User information | JAMVP Bank</title>
 <link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
-
+<link rel="stylesheet" type="text/css" href="styles\header.css">
 <!-- 
 https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -69,10 +69,28 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
 
     h1 {text-align: center;}
 
+    body {margin: 0;}
+
+  /* Page Content */
+.body_content {
+  position: relative;
+  top: 85px;
+  left: 0;
+
+  width: 100%;
+}
+
 </style>
 
 </head>
 <body>
+
+    <div class="header">
+        <iframe class="headerObj" src="header.html" title="header"></iframe>
+      </div> 
+      
+      <div class="body_content">
+
     <img src="../assets/logo.png" alt="logo"/> <br>
 
     <h1>User information</h1><br>
@@ -230,5 +248,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
             <br>
         </div>
     </div>
+</div>
 </body>
 </html> 

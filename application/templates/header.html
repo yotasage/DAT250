@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JAMVP Bank</title>
+<link rel="icon" type="image/png" href="assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+
+    <style>
+        body {
+            margin: 0;
+            padding: 5px;
+            }
+
+        #HomeBtn {
+            display: inline-block;
+            height: 60px;
+            padding: 0px;
+
+            border: 1px none rgb(255, 255, 255);  /* solid */
+            background-color: #084A83;
+
+            font-size: 26px;
+            color: white;
+        }
+
+        #HomeBtnLogo {
+            vertical-align: middle;
+            width: 50px; 
+            height: 50px;
+            padding: 0px;
+        }
+
+        #User_info {
+            position: absolute;
+            height: 60px;
+
+            width: 300px;
+
+            top: 5px;
+            right: 5px;
+
+            font-size: 20px;
+            color: white;
+
+            border: 1px none rgb(255, 255, 255);  /* solid */
+        }
+    </style>
+
+</head>
+    <body>
+        <button id="HomeBtn" onclick="window.open('/', '_top')" type="button"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+            <span style="vertical-align: middle;">JAMVP Bank</span>
+            <img src="assets/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>
+        </button>
+
+        {% if logged_in %}        
+        <div id="User_info">
+            <span style="vertical-align: middle;">Name: {{fname}} {{mname}} {{lname}}</span><br>
+            <span style="vertical-align: middle;">User ID: {{id}}</span>
+        </div>
+        {% endif %}
+    </body>
+</html> 

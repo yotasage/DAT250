@@ -3,7 +3,6 @@
 <head>
 <title>JAMVP Bank</title>
 <link rel="icon" type="image/png" href="assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
-<link rel="stylesheet" type="text/css" href="styles\header.css">
 
 <style>
   #logo {
@@ -25,27 +24,61 @@
 
   body {margin: 0;}
 
+/* Header/Logo Title */
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    height: 60px;
+    width: 100%;
+    padding: 5px;
+
+    background: #084A83;
+  }
+
   /* Page Content */
-.body_content {
-  position: relative;  /* fixed */
+.content {
+  position: fixed;
   top: 85px;
   left: 0;
 
   width: 100%;
-  
 }
 
+#HomeBtn {
+  display: inline-block;
+  height: 60px;
+  padding: 0px;
+  border: none;
+  background-color: #084A83;
+
+  font-size: 26px;
+  color: white;
+}
+
+#HomeBtnLogo {
+  vertical-align: middle;
+  width: 50px; 
+  height: 50px;
+  padding: 0px;
+}
 </style>
 
 </head>
 <body>
 
+<object type="text/html" data="header.html"></object>
 
 <div class="header">
-  <iframe class="headerObj" src="header.html" title="header"></iframe>
+  
+  <button id="HomeBtn">
+    <span style="vertical-align: middle;">JAMVP Bank</span>
+    <img src="assets/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>
+  </button>
 </div> 
 
-<div class="body_content">
+<div class="content">
   <img src="assets/logo.png" id="logo" alt="logo"/>
 
   <h1 class="center">JAMVP Bank</h1>

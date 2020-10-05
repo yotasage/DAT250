@@ -58,7 +58,7 @@ def before_request_func():
 
 def signed_in(signed_in_page, url_page):
     cookie_list = extract_cookies()
-    if cookie_list is not None:
+    if len(cookie_list) > 0:
         
         for cookie in cookie_list:
             valid = valid_cookie(cookie)

@@ -3,7 +3,7 @@
 <head>
 <title> JAMVP bank</title>
 <link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
-
+<link rel="stylesheet" type="text/css" href="styles\header.css">
 <!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
 <style>
     .container{
@@ -84,10 +84,26 @@
         background-color: #15545c;
         color: white
     }
+
+    body {margin: 0;}
+
+  /* Page Content */
+.body_content {
+  position: relative;
+  top: 85px;
+  left: 0;
+
+  width: 100%;
+}
 </style>
 </head>
 
 <body>
+    <div class="header">
+        <iframe class="headerObj" src="header.html" title="header"></iframe>
+      </div> 
+      
+      <div class="body_content">
     <div>
         <img src="../assets/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
     </div>
@@ -178,6 +194,6 @@
         </div>
 
 </div>
-
+</div>
 </body>
 </html>

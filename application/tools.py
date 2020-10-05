@@ -34,7 +34,7 @@ def extract_cookies():
         cookie_header = cookie_header.replace('sessionId=','')
         cookie_list = cookie_header.split('; ')
         return cookie_list
-    return None
+    return []
 
 # Check if cookie is valid
 def valid_cookie(cookie_in_question):

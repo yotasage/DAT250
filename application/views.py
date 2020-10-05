@@ -16,12 +16,33 @@ from request_processing import signed_in
 
 @app.route("/", methods=['GET'])
 def index():
-    # print("1")
+    print("1")
     resp1 = redirect(url_for('startpage'), code=302)
     resp2 = app.send_static_file("index.html")
     
     try:
         return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
+        abort(404)  # Returner feilmelding 404
+
+@app.route("/header.html", methods=['GET'])
+@app.route("/pages/header.html", methods=['GET'])
+def header():
+    print("20")
+    resp = make_response(render_template("header.html", logged_in=False))
+
+    session_cookie = get_valid_cookie()
+
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+        user_id_check = cookie.user_id
+        user = User.query.filter_by(user_id=user_id_check).first()
+
+        resp = make_response(render_template("header.html", fname=user.fname, mname=user.mname, lname=user.lname, id=user.user_id, logged_in=True))
+    
+    try:
+        return resp
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
@@ -178,6 +199,7 @@ def pages(page = None):
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
+@app.route("/pages/assets/<asset>")
 @app.route("/assets/<asset>")
 def assets(asset = None):
     # print("6")
@@ -189,10 +211,11 @@ def favicon():
     print("7")
     return app.send_static_file("favicon.png")
 
+@app.route("/pages/styles/<style>")
 @app.route("/styles/<style>")
 def styles(style = None):
     print("8")
-    return app.send_static_file("style/" + style)
+    return app.send_static_file("styles/" + style)
 
 @app.route("/verification")
 def verification(style = None):
