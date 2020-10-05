@@ -37,6 +37,7 @@ def post_data(data = None):
 
                 if user_object is not None:
                     print_userdata(user_object)
+                    print(check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt))
 
                 # Hvis brukeren er verifisert
                 if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
@@ -62,7 +63,7 @@ def post_data(data = None):
                     return resp
 
                 # Hvis brukeren ikke er verifisert
-                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and not user_object.verified:
+                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and not user_object.verified:
                     return redirect(url_for('verification', code=user_object.verification_code), code=302)
                 
                 else:
@@ -94,7 +95,7 @@ def post_data(data = None):
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
                 # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
-                if pswd == conf_pswd and valid_password(pswd) and user_object is not None:
+                if pswd == conf_pswd and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object is not None:
                     user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash      # Passord skal være hashet
                     user_object.salt = salt                 # Må ha et salt
@@ -129,8 +130,14 @@ def post_data(data = None):
             if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):
                 user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
 
-                if user_object is not None and valid_password(pswd) and pswd == conf_pswd and not (user_object.hashed_password == pswd):
-                    user_object.hashed_password = pswd
+                
+
+                if user_object is not None and valid_password(pswd) and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
+                    salt = generate_random_salt()
+                    password_hash = generate_password_hash(pswd, salt)
+                    
+                    user_object.hashed_password = password_hash
+                    user_object.salt = salt
                     user_object.password_reset_code = None
 
                     db.session.commit()
@@ -206,6 +213,12 @@ def post_data(data = None):
             # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
             send_mail(recipients=[request.form.get("email")], subject="Account verification", body="TEST_BODY", html=html_template)
 
+            salt = generate_random_salt()
+            password_hash = generate_password_hash(temp_password, salt)
+
+            print(salt)
+            print(password_hash)
+
             user_object = User( user_id=int(request.form.get("id")), 
                                 email=request.form.get("email"), 
                                 fname=request.form.get("fname"), 
@@ -216,7 +229,8 @@ def post_data(data = None):
                                 city=request.form.get("city"), 
                                 postcode=int(request.form.get("postcode")), 
                                 address=request.form.get("address"), 
-                                hashed_password=temp_password,
+                                hashed_password=password_hash,
+                                salt=salt,
                                 verification_code=code,
                                 verified=0)
 
@@ -278,7 +292,9 @@ def post_data(data = None):
             user = User.query.filter_by(user_id=user_id_check).first()  # Hvis vi har en gyldig cookie så har vi også en gyldig bruker, ingen cookie uten en bruker
             # if User.query.filter_by(user_id=user_id_check).first() is not None:  # Denne er ikke nødvendig, se forrige linje
 
-            if request.form.get("pswd") == user.hashed_password:
+            
+
+            if check_password_hash(request.form.get("pswd"), user.hashed_password, user.salt):
                 user.fname = request.form.get("fname")
                 user.mname = request.form.get("mname")
                 user.lname = request.form.get("lname")
@@ -291,9 +307,13 @@ def post_data(data = None):
                 new_pswd = request.form.get("new_pswd")
                 new_pswd2 = request.form.get("new_pswd2")
                 print("passord1: " + new_pswd + "\npassord2: " + new_pswd2)
-                if new_pswd == new_pswd2 != "":
+                if new_pswd == new_pswd2 != "" and valid_password(new_pswd):
                     print("It's true tho")
-                    user.hashed_password = new_pswd
+
+                    salt = generate_random_salt()
+                    password_hash = generate_password_hash(new_pswd, salt)
+                    user.hashed_password = password_hash
+                    user.salt = salt
                 elif new_pswd == new_pswd2 != "" and not valid_password(new_pswd):
                     feedback["new_pswd_error"] = "invalid"
                     return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
