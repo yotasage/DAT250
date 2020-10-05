@@ -1,0 +1,20 @@
+/* Header/Logo Title */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    height: 70px;
+    width: 100%;
+    padding: 0px;
+
+    background: #084A83;
+
+    z-index:999
+  }
+
+  .headerObj {
+    width: 100%;
+    height: inherit;
+    border:none;
+  }

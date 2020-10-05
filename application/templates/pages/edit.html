@@ -63,59 +63,46 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     
     <div style='text-align: left; width:500px; display: block; margin-left: auto; margin-right: auto;'>
         <br>
-        {% if fname or mname or lname or email or id or phone_num or dob or city or postcode or address %}
-            {% if fname != '' or mname != '' or lname != '' or email != '' or id != '' or phone_num != '' or dob != '' or city != '' or postcode != '' or address != '' %}
+        {% if fname_error or mname_error or lname_error or phone_num_error or dob_error or city_error or postcode_error or address_error or pswd_error or new_pswd_error %}
+            {% if fname_error != '' or mname_error != '' or lname_error != '' or phone_num_error != '' or dob_error != '' or city_error != '' or postcode_error != '' or address_error != '' or pswd_error != ''or new_pswd_error != '' %}
                 <strong style="color:red;">Something is wrong with the information you have given us:</strong><br><br>
-                {% if fname == 'invalid' %}
+                {% if fname_error == 'invalid' %}
                     <p style="color:red;">Error #1: First name is invalid, should consist of letters only.</p>
                 {% endif %}
-                {% if mname == 'invalid' %}
+                {% if mname_error == 'invalid' %}
                     <p style="color:red;">Error #2: Middle name is invalid, should consist of letters only.</p>
                 {% endif %}
-                {% if lname == 'invalid' %}
+                {% if lname_error == 'invalid' %}
                     <p style="color:red;">Error #3: Last name is invalid, should consist of letters only.</p>
                 {% endif %}
 
-                {% if email == 'NaN' %}
-                    <p style="color:red;">Error #4: The text in front of @ in the email address is not a number.</p>
-                {% endif %}
-                {% if email == 'invalidLength' %}
-                    <p style="color:red;">Error #5: The text in front of @ in the email address should consist of 6 to 7 digits.</p>
-                {% endif %}
-                {% if email == 'mismatch' %}
-                    <p style="color:red;">Error #6: The text in front of @ in the email address does not match the user identification.</p>
-                {% endif %}
-                {% if email == 'invalid' %}
-                    <p style="color:red;">Error #7: The domain (the text behind @) in the email address is invalid, should be: uis.no</p>
-                {% endif %}
-                {% if id == 'mismatch' %}
-                    <p style="color:red;">Error #8: User identification does not match the text in front of @ in the email address.</p>
-                {% endif %}
-                {% if id == 'NaN' %}
-                    <p style="color:red;">Error #9: Invalid user identification, should be a number.</p>
-                {% endif %}
-                {% if id == 'invalidLength' %}
-                    <p style="color:red;">Error #10: Invalid user identification, should consist of 6 to 7 digits.</p>
-                {% endif %}
-                
-                {% if phone_num == 'NaN' %}
+                {% if phone_num_error == 'NaN' %}
                     <p style="color:red;">Error #11: Invalid phone number, should be a number.</p>
                 {% endif %}
-                {% if dob == 'invalid' %}
+                {% if dob_error == 'invalid' %}
                     <p style="color:red;">Error #12: Date of birth is invalid, make sure to write it in the same format as the example in the input field.</p>
                 {% endif %}
 
-                {% if city == 'invalid' %}
+                {% if city_error == 'invalid' %}
                     <p style="color:red;">Error #13: City name is invalid, should consist of letters only.</p>
                 {% endif %}
-                {% if postcode == 'NaN' %}
+                {% if postcode_error == 'NaN' %}
                     <p style="color:red;">Error #14: Invalid postal code, should be a number.</p>
                 {% endif %}
-                {% if address == 'invalid' %}
+                {% if address_error == 'invalid' %}
                     <p style="color:red;">Error #15: Invalid address, should consist of street name (only letters) and house number, i.e. Haakon VIIs gate 9 or Streetname 3b.</p>
                 {% endif %}
-                {% if address == 'invalidNum' %}
+                {% if address_error == 'invalidNum' %}
                     <p style="color:red;">Error #16: Invalid house number in address, should be a number, and may contain a letter at the end, i.e. Haakon VIIs gate 9 or Streetname 3b.</p>
+                {% endif %}
+                {% if pswd_error == 'incorrect' %}
+                <p style="color:red;">Error #17: Incorrect password.</p>
+                {% endif %}
+                {% if new_pswd_error == 'invalid' %}
+                <p style="color:red;">Error #18: Invalid password.</p>
+                {% endif %}
+                {% if new_pswd_error == 'unmatched' %}
+                <p style="color:red;">Error #19: The passwords do not match.</p>
                 {% endif %}
 
             
@@ -132,67 +119,74 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 <div>
                     <div class="fields">
                         <label for="fname">First name:</label><br>
-                        <input type="text" id="fname" placeholder="First"  name="fname" required>
+                        <input type="text" id="fname" value="{{fname}}"  name="fname" required>
                     </div>
 
                     <div class="fields">
                         <label for="mname">Middle name:</label><br>
-                        <input type="text" id="mname" placeholder="Middle"  name="mname">
+                        <input type="text" id="mname" value="{{mname}}"  name="mname" required>
                     </div>
 
                     <div class="fields">
                         <label for="lname">Last name:</label><br>
-                        <input type="text" id="lname" placeholder="Last"  name="lname" required>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="fields">
-                        <label for="email">E-mail:</label><br>
-                        <input type="email" id="email" placeholder="Identification@uis.no"  name="email" required>
-                    </div>
-
-                    <div class="fields">
-                        <label for="id">User Identification:</label><br>
-                        <input type="text" id="mname" placeholder="Identification"  name="id" required>
+                        <input type="text" id="lname" value="{{lname}}"  name="lname" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="phone_num">Phone number:</label><br>
-                        <input type="text" id="phone_num" placeholder="Phone number"  name="phone_num" required>
+                        <input type="text" id="phone_num" value="{{phone_num}}"  name="phone_num" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="dob">Date of birth:</label><br>
-                        <input type="text" id="dob" placeholder="dd-mm-yyyy"  name="dob" required>
+                        <input type="text" id="dob" value="{{dob}}"  name="dob" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="city">City:</label><br>
-                        <input type="text" id="city" placeholder="City"  name="city" required>
+                        <input type="text" id="city" value="{{city}}"  name="city" required>
                     </div>
 
                     <div class="fields">
                         <label for="postcode">Postal code:</label><br>
-                        <input type="text" id="postcode" placeholder="Postal Code"  name="postcode" required>
+                        <input type="text" id="postcode" value="{{postcode}}"  name="postcode" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="address">Address:</label><br>
-                        <input type="text" id="address" placeholder="Address"  name="address" required>
+                        <input type="text" id="address" value="{{address}}"  name="address" required>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="fields">
+                        <label for="pswd">Current password:</label><br>
+                        <input type="password" id="pswd" placeholder="Current password"  name="pswd" required>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="fields">
+                        <label for="new_pswd">New password:</label><br>
+                        <input type="password" id="new_pswd" placeholder="New password"  name="new_pswd">
+                    </div>
+
+                    <div class="fields">
+                        <label for="new_pswd2">Confirm new password:</label><br>
+                        <input type="password" id="new_pswd2" placeholder="Confirm new password"  name="new_pswd2">
                     </div>
                 </div>
 
                 <br>
-                <button type=submit formaction="../registration_data" formmethod="post">Register</button>
+                <button type=submit formaction="../edit_data" formmethod="post">Submit edits</button>
                 <br>
             </div>
         </form> 

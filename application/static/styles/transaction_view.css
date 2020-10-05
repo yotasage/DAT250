@@ -1,0 +1,53 @@
+.container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+
+    border: 1px  solid rgb(0, 0, 0);
+  }
+
+  .center {
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    border: 1px  solid rgb(0, 0, 0);
+  }
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    text-align: left;
+    border: 1px  solid rgb(0, 0, 0);
+    padding: 5px;
+}
+
+#t_time {
+    width: 20%;
+}
+
+#from {
+    width: 20%;
+}
+
+#to {
+    width: 20%;
+}
+
+#msg {
+    width: 25%;
+}
+
+#inn {
+    width: 8%;
+    text-align: right;
+}
+
+#out {
+    width: 8%;
+    text-align: right;
+}

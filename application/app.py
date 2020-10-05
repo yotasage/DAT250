@@ -4,8 +4,12 @@
 import os
 from flask import Flask
 from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
 
 import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
+
+cookie_maxAge = 600  # Hvor mange sekunder en cookie er gyldig
+client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',
@@ -20,9 +24,46 @@ mail_settings = {
 }                                                                   # Disse 2 tingene (mail og passord, i hvert fall passord) er noe vi absolutt ikke vil ha (hardcoded) 
                                                                     # i kildekoden, altså skrevet inn her med tanke på at vi pusher dette til github. Derfor bruker vi environment variabler
 
-# something
 app = Flask(__name__)
 app.config.update(mail_settings)
 mail = Mail(app)
-import views  # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/database.db' # ls /tmp på terminal for å finne den, for å ha kontroll på hvor den ligger
+# så kan vi lage path etter de tre /// i sqlite:////eksempelpath/tmp/test.db
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+from models import User, Cookies, Account, Transaction, Blacklist
+
+# db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut når vi er ferdig
+
+# db.create_all() # greit for å teste db, men senere så er ikke det så lurt å ha det siden den sletter alle eksisterende brukere
+# når vi har integrert inn login og regin for nettsiden så burde vi fjerne db.create 
+# når fila skal ut i production så skal db.create all være der enda
+
+
+# transactions = []
+# transactions.append(Transaction(transfer_time="2020-10-05 18:38:56.356743", from_acc="1442.37.37645", to_acc="1202.37.31655", message="This is fun", amount=50))
+# transactions.append(Transaction(transfer_time="2020-10-03 18:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Savings", amount=443))
+# transactions.append(Transaction(transfer_time="2020-10-02 18:38:56.356743", from_acc="1442.37.37645", to_acc="1202.37.31655", message="KID: 453453256", amount=650))
+# transactions.append(Transaction(transfer_time="2020-09-05 18:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="WOW", amount=1360))
+# transactions.append(Transaction(transfer_time="2020-09-05 18:44:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Yes", amount=60))
+# transactions.append(Transaction(transfer_time="2020-10-01 19:38:56.356743", from_acc="1202.37.31655", to_acc="1442.37.37645", message="Such money", amount=5000))
+
+# for transaction in transactions:
+#     db.session.add(transaction)
+# db.session.commit()
+
+# accounts = []
+
+# accounts.append(Account(user_id="242761", account_number="1202.37.31655", balance=66000))
+
+# for account in accounts:
+#     db.session.add(account)
+# db.session.commit()
+
+# Placed here to avoid circular references, views module needs to import the app variable defined in this script.
+import request_processing
+import views
 import post_handlers
+import get_handlers

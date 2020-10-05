@@ -6,6 +6,8 @@ backup
 mail_user_config.py
 application/certificate
 .pem
-.certificate
-.key
+**/certificate
+**/__pycache__
+*.key
 .pyc*
+*.crt

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JAMVP Bank</title>
+<link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+<link rel="stylesheet" type="text/css" href="/header.css">
+<link rel="stylesheet" type="text/css" href="/body.css">
+<link rel="stylesheet" type="text/css" href="/transaction_view.css">
+
+</head>
+  <body>
+    <div class="header">
+      <iframe class="headerObj" src="header.html" title="header"></iframe>
+    </div>
+    
+    <div class="body_content">
+      <div class="container">
+
+        <table> 
+          <!-- Table headers -->
+          <tr> 
+            <th>Date</th> 
+            <th>From</th> 
+            <th>To</th> 
+            <th>Message</th> 
+            <th>Inn</th> 
+            <th>Out</th> 
+          </tr> 
+
+          <!-- For loop logic of jinja template -->
+          {%for i in range(0, len)%} 
+            
+            <!-- table rows -->
+            <tr> 
+              <td id="t_time">{{transfer_time[i]}}</td>
+              <td id="from">{{From[i]}}</td>
+              <td id="to">{{To[i]}}</td>
+              <td id="msg">{{Msg[i]}}</td>
+              <td id="inn">{{Inn[i]}}</td>
+              <td id="out">{{Out[i]}}</td>
+            </tr> 
+          {%endfor%} 
+        </table> 
+      </div>
+    </div>
+  </body>
+</html> 

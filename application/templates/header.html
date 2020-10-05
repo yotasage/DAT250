@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JAMVP Bank</title>
+        <link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+        <link rel="stylesheet" type="text/css" href="/header_int.css">
+    </head>
+    <body>
+        <img src = "/logo_no_white2.png" alt="preloaded_image" style="display: none;"/>
+        <div class=right>
+            <div id="HomeBtn" onclick="window.open('/', '_top')"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+                <span id="HomeBtnText">JAMVP Bank</span>
+                <img src="/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>
+            </div>
+        </div>
+
+        {% if logged_in %}
+        <div class=left>
+            <div id="User_info">
+                <span id="User_info_text">Name: {{fname}} {{mname}} {{lname}}</span><br>
+                <span id="User_info_text">User ID: {{id}}</span>
+            </div>
+            <div id="LogoutBtn_container" onclick="window.open('/logout', '_top')">
+                <div id="LogoutBtn_content"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+                    <img src="/logout.png" id="LogoutBtnLogo" alt="logout image"/>
+                    <span id="LogoutBtnText">Log Out</span>
+                </div>
+        </div>
+            
+        </div>        
+        
+        {% endif %}
+    </body>
+</html> 

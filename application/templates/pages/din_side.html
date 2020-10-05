@@ -1,53 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>JAMVP - Din side</title>
-<link rel="icon" type="image/png" href="../assets/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
-
-<!--  <meta http-equiv="refresh" content="3"/> --> <!-- Brukes under utvikling av siden for å refreshe den slik at vi kan se endringer "live" -->
+<title>User information | JAMVP Bank</title>
+<link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+<link rel="stylesheet" type="text/css" href="/header.css">
+<!-- 
+https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ -->
 
 <style>
-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;
+    }
 
-button {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    .container {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:500px; 
+        text-align:left;
+        border-style: solid;  /* solid */
+        border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
+        background-color:  rgb(173, 173, 173);
+    }
 
-.center {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
-}
+    button {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align:center;
+    }
 
-.sidebyside {
-    float: left;
-    border-spacing: 30px 2px;
-}
+    .fields {
+        padding: 8px;
+        display: inline-block;
+    }
 
-table {
-  font-family: arial, sans-serif;
-  width: 20%;
-}
+    .linje {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+    }
 
-.field {
-    border-style: solid;
-}
+    table.pos {
+        table-layout: fixed;
+        width: 100%;
+    }
 
-td, th {
-  /*border: 1px solid #dddddd;*/
-  text-align: left;
-  padding: 8px;
-}
+    table.nr {
+        table-layout: fixed;
+        width: 31%;
+    }    
 
-tr:nth-child(even) {
-  background-color: #dddddd;
+    td, th {
+        text-align: left;
+    }
+
+    .info {
+        border-style: solid;
+        border-width: thin;
+        border-color: rgb(0, 0, 0);
+        background-color:  rgb(255, 255, 255);
+    }
+
+    h1 {text-align: center;}
+
+    body {margin: 0;}
+
+  /* Page Content */
+.body_content {
+  position: relative;
+  top: 85px;
+  left: 0;
+
+  width: 100%;
 }
 
 </style>
@@ -55,47 +85,169 @@ tr:nth-child(even) {
 </head>
 <body>
 
+    <div class="header">
+        <iframe class="headerObj" src="header.html" title="header"></iframe>
+      </div> 
+      
+      <div class="body_content">
 
-<img src="../assets/logo.png" alt="logo"/>
+    <img src="/logo.png" alt="logo"/> <br>
 
-<h1 class="center">Your page</h1>
-
-<div class='center'>
-    <div class='center'>
-        <table class='sidebyside'>
-            <tr>
-                <th>Username</th>
-            </tr>
-            <tr>
-                <td class='field'>{{username}}</td>
-            </tr>
-        </table>
-    </div>
-
-    <div class='center'>
-        <table class='sidebyside'>
-            <tr>
-                <th>Email</th>
-            </tr>
-            <tr>
-                <td class='field'>{{email}}</td>
-            </tr>
-        </table>
-    </div>
-
+    <h1>User information</h1><br>
+    
     <div>
-        <table class='sidebyside'>
-            <tr>
-                <th>Phone number</th>
-            </tr>
-            <tr>
-                <td class='field'>{{phone_number}}</td>
-            </tr>
-        </table>
+        <div class="container">
+            <div class="linje">
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>First name:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{fname}}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>Middle name:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{mname}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>Last name:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{lname}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="linje">
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>Email:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{email}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>User Identification:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{id}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Tom tabell for å posisjonere riktig -->
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="linje">
+                <div class="fields">
+                    <table class="nr">
+                        <tr>
+                            <td>Phone number:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{phone_num}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="linje">
+                <div class="fields">
+                    <table class="nr">
+                        <tr>
+                            <td>Date of birth:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{dob}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="linje">
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>City:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{city}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td>Postal code:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{postcode}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Tom tabell for å posisjonere riktig -->
+                <div class="fields">
+                    <table class="pos">
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="linje">
+                <div class="fields">
+                    <table class="nr">
+                        <tr>
+                            <td>Address:</td>
+                        </tr>
+                        <tr>
+                            <td class="info">{{address}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <br>
+            <button onclick="location.href='edit.html';" type="button">Edit info</button>
+            <br>
+        </div>
     </div>
-
 </div>
-
-
 </body>
 </html> 
