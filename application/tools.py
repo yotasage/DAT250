@@ -21,7 +21,9 @@ Norwegian_characters = "æøåÆØÅ"
 
 def get_valid_cookie():
     for cookie in extract_cookies():
-        if valid_cookie(cookie):
+        valid = valid_cookie(cookie)
+        print(f"get_valid_cookie = {valid}")
+        if valid:
             return cookie
 
     return None

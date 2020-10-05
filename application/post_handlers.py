@@ -216,9 +216,6 @@ def post_data(data = None):
             salt = generate_random_salt()
             password_hash = generate_password_hash(temp_password, salt)
 
-            print(salt)
-            print(password_hash)
-
             user_object = User( user_id=int(request.form.get("id")), 
                                 email=request.form.get("email"), 
                                 fname=request.form.get("fname"), 
@@ -294,7 +291,7 @@ def post_data(data = None):
 
             
 
-            if check_password_hash(request.form.get("pswd"), user.hashed_password, user.salt):
+            if valid_password(request.form.get("pswd")) and check_password_hash(request.form.get("pswd"), user.hashed_password, user.salt):
                 user.fname = request.form.get("fname")
                 user.mname = request.form.get("mname")
                 user.lname = request.form.get("lname")
@@ -312,11 +309,14 @@ def post_data(data = None):
 
                     salt = generate_random_salt()
                     password_hash = generate_password_hash(new_pswd, salt)
-                    user.hashed_password = password_hash
+
                     user.salt = salt
+                    user.hashed_password = password_hash
+
                 elif new_pswd == new_pswd2 != "" and not valid_password(new_pswd):
                     feedback["new_pswd_error"] = "invalid"
                     return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
+
                 elif new_pswd != new_pswd2:
                     feedback["new_pswd_error"] = "unmatched"
                     return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))

@@ -60,6 +60,7 @@ def before_request_func():
 
 def signed_in(signed_in_page, url_page):
     cookie_list = extract_cookies()
+    print(cookie_list)
     if len(cookie_list) > 0:
         
         for cookie in cookie_list:
@@ -67,6 +68,8 @@ def signed_in(signed_in_page, url_page):
             if valid is not None:
                 break
 
+        print(f"valid = {valid}")
+        
         if valid == None:  # Cookiene vi fikk inn fantes ikke i databasen
             return url_page
         elif valid == False:  # En av cookiene var i databasen, og den var utgått

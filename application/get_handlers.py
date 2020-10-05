@@ -18,9 +18,9 @@ BLOCK_LOGIN_TIME = 30
 def get_data(data = None):
     print("21")
 
-    if data == "logout": 
+    if data == "logout":
         session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
-
+        print(f"logout - {session_cookie}")
         if session_cookie is not None:  # Om vi fikk en gyldig header
             resp = redirect(url_for('login'), code=302)
             delete_cookie(session_cookie)
