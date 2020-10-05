@@ -227,7 +227,8 @@ def post_data(data = None):
     elif data == "edit_data": 
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
-        feedback = {'fname_error': '', 'mname_error': '', 'lname_error': '', 'phone_num_error': '', 'dob_error': '', 'city_error': '', 'postcode_error': '', 'address_error': ''}
+        feedback = {'fname_error': '', 'mname_error': '', 'lname_error': '', 'phone_num_error': '',
+                     'dob_error': '', 'city_error': '', 'postcode_error': '', 'address_error': '', 'pswd_error': '', 'new_pswd_error': ''}
 
         # Er fødselsdatoen gyldig?
         if not valid_date(request.form.get("dob")):
@@ -275,14 +276,31 @@ def post_data(data = None):
             user = User.query.filter_by(user_id=user_id_check).first()  # Hvis vi har en gyldig cookie så har vi også en gyldig bruker, ingen cookie uten en bruker
             # if User.query.filter_by(user_id=user_id_check).first() is not None:  # Denne er ikke nødvendig, se forrige linje
 
-            user.fname = request.form.get("fname")
-            user.mname = request.form.get("mname")
-            user.lname = request.form.get("lname")
-            user.phone_num = request.form.get("phone_num")
-            user.dob = request.form.get("dob")
-            user.city = request.form.get("city")
-            user.address = request.form.get("address")
-            user.postcode = request.form.get("postcode")
+            if request.form.get("pswd") == user.hashed_password:
+                user.fname = request.form.get("fname")
+                user.mname = request.form.get("mname")
+                user.lname = request.form.get("lname")
+                user.phone_num = request.form.get("phone_num")
+                user.dob = request.form.get("dob")
+                user.city = request.form.get("city")
+                user.address = request.form.get("address")
+                user.postcode = request.form.get("postcode")
+
+                new_pswd = request.form.get("new_pswd")
+                new_pswd2 = request.form.get("new_pswd2")
+                print("passord1: " + new_pswd + "\npassord2: " + new_pswd2)
+                if new_pswd == new_pswd2 != "":
+                    print("It's true tho")
+                    user.hashed_password = new_pswd
+                elif new_pswd == new_pswd2 != "" and not valid_password(new_pswd):
+                    feedback["new_pswd_error"] = "invalid"
+                    return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
+                elif new_pswd != new_pswd2:
+                    feedback["new_pswd_error"] = "unmatched"
+                    return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
+            else:
+                feedback["pswd_error"] = "incorrect"
+                return redirect(url_for('edit', pswd=feedback["pswd_error"], code=302))
 
             db.session.commit()  # Etter endringer er gjort, lagre
 

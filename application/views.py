@@ -125,6 +125,8 @@ def edit():
     city_error = request.args.get('city')
     postcode_error = request.args.get('postcode')
     address_error = request.args.get('address')
+    pswd_error = request.args.get('pswd')
+    new_pswd_error = request.args.get('new_pswd')
 
     session_cookie = get_valid_cookie()
 
@@ -139,8 +141,8 @@ def edit():
                                         dob=user.dob, city=user.city, postcode=user.postcode, address=user.address,
                                         fname_error=fname_error, mname_error=mname_error, lname_error=lname_error,
                                         phone_num_error=phone_num_error, dob_error=dob_error, city_error=city_error,
-                                        postcode_error=postcode_error, address_error=address_error
-                                        ))  # Ønsket side for når vi er innlogget
+                                        postcode_error=postcode_error, address_error=address_error, pswd_error=pswd_error,
+                                        new_pswd_error=new_pswd_error))  # Ønsket side for når vi er innlogget
     else:
         resp1 = make_response(render_template("pages/edit.html", fname="", mname="", lname="",
                                         email="", id="", phone_num="",
