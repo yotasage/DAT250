@@ -48,8 +48,6 @@ def valid_cookie(cookie_in_question):
         valid_to = datetime.strptime(cookie.valid_to, "%Y-%m-%d %H:%M:%S.%f")
 
         if datetime.now() > valid_to:
-            db.session.delete(cookie)
-            db.session.commit()
             return False  # Hvis cookien er for gammel
         return True  # Hvis cookien er gyldig
     return None  # En ugyldig cookie, den inneholder ugyldige tegn, og kan derfor ikke finnes i databasen, return None
