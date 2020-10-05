@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 import string
+from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
 from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
@@ -38,7 +39,7 @@ def post_data(data = None):
                     print_userdata(user_object)
 
                 # Hvis brukeren er verifisert
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) & (request.form.get("pswd") == user_object.hashed_password) and user_object.verified:
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
                     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
@@ -90,12 +91,13 @@ def post_data(data = None):
 
                 pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
                 conf_pswd = request.form.get('conf_pswd')
-
+                salt = generate_random_salt()
+                password_hash = generate_password_hash(pswd, salt)
                 # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
-                if pswd == conf_pswd and valid_password(pswd) and user_object.hashed_password != pswd and user_object is not None:
+                if pswd == conf_pswd and valid_password(pswd) and user_object is not None:
                     user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
-                    user_object.hashed_password = pswd      # Passord skal være hashet
-                    user_object.salt = None                 # Må ha et salt
+                    user_object.hashed_password = password_hash      # Passord skal være hashet
+                    user_object.salt = salt                 # Må ha et salt
                     user_object.verified = 1                # Marker som verifisert
                     db.session.commit()                     # Lagre
                     return redirect(url_for('login'), code=302)
