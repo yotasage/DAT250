@@ -9,10 +9,10 @@
 </head>
     <body>
         <div class=right>
-            <button id="HomeBtn" onclick="window.open('/', '_top')" type="button"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+            <div id="HomeBtn" onclick="window.open('/', '_top')"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
                 <span id="HomeBtnText">JAMVP Bank</span>
                 <img src="assets/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>
-            </button>
+            </div>
         </div>
 
         {% if logged_in %}
@@ -21,12 +21,12 @@
                 <span id="User_info_text">Name: {{fname}} {{mname}} {{lname}}</span><br>
                 <span id="User_info_text">User ID: {{id}}</span>
             </div>
-            <div id="LogoutBtn_container" >
-            <button id="LogoutBtn" onclick="window.open('/logout', '_top')" type="button"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
-                <img src="assets/logout.png" id="LogoutBtnLogo" alt="logout image"/>
-                <span id="LogoutBtnText">Log Out</span>
-                <!-- <img src="assets/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>  -->
-            </button>
+            <div id="LogoutBtn_container" onclick="window.open('/logout', '_top')">
+                <div id="LogoutBtn_content"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+                    <img src="assets/logout.png" id="LogoutBtnLogo" alt="logout image"/>
+                    <span id="LogoutBtnText">Log Out</span>
+                    <!-- <img src="assets/logo_no_white.png" id="HomeBtnLogo" alt="logo"/>  -->
+                </div>
         </div>
             
         </div>        
