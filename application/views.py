@@ -10,7 +10,7 @@ import string
 from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions
 from request_processing import signed_in
 
 
@@ -218,6 +218,8 @@ def transaction_overview(page = None):
         Inn = []
         Out = []
 
+        insertion_sort_transactions(transactions)
+
         for transaction in transactions:
             transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
             Msg.append(transaction.message)
@@ -231,11 +233,7 @@ def transaction_overview(page = None):
                 Inn.append("")
                 Out.append(transaction.amount)
 
-
-
-        liste = ['a', 'b', 'c', 'd']
-
-        resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out))
+        resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts.account_number))
 
     try:
         return signed_in(resp1, resp2)
