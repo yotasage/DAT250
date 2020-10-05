@@ -6,6 +6,7 @@ from models import User, Blacklist
 
 from app import app, db # Importerer Flask objektet app
 from tools import valid_cookie, update_cookie, extract_cookies, update_cookie_clientside
+from tasks import delete_cookie
 
 MAX_TIME_BETWEEN_REQUESTS = 5  # Seconds, if a request is performed within a certain amount of time after another, it is considered to frequent
 BLOCK_PERIOD = 30  # Seconds
@@ -25,6 +26,7 @@ def add_headers(resp):
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
+
     return resp
 
 @app.before_request
@@ -70,6 +72,7 @@ def signed_in(signed_in_page, url_page):
         elif valid == False:  # En av cookiene var i databasen, og den var utgått
             resp = redirect(url_for('login', timeout="True"), code=302)
             update_cookie_clientside(cookie, resp, 0)
+            delete_cookie(cookie)
             return resp
         elif valid == True:  # Fant cookien i databasen
             update_cookie(cookie, signed_in_page)  # Øker gyldigheten av en cookie med cookie_maxAge sekunder

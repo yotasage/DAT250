@@ -13,7 +13,6 @@ NUMBER_OF_LOGIN_ATTEMPTS = 10
 BLOCK_LOGIN_TIME = 30
 
 # Denne er bare for POST forespørsler.
-# Her skal vi selvfølgelig ikke bruke variablene username og password, men vi skal bruke User klassen, og sammenligne brukernavn og passord fra den.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
 def post_data(data = None):
     print("11")
