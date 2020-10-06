@@ -2,11 +2,13 @@ from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 import string
+import random
 from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
 from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
+from tools import generate_account_numbers
 
 from models import User, Cookies, Blacklist, Account
 
@@ -93,12 +95,18 @@ def post_data(data = None):
                 password_hash = generate_password_hash(pswd, salt)
                 # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
                 if pswd == conf_pswd and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object is not None:
-                    user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
+                    # user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash      # Passord skal være hashet
                     user_object.salt = salt                 # Må ha et salt
-                    user_object.verified = 1                # Marker som verifisert
+                    # user_object.verified = 1                # Marker som verifisert
 
                     # Oppretter brukskonto og sparekonto for brukeren
+                    account_numbers = generate_account_numbers(amount=2)
+                    regular_account = Account(user_id=str(user_object.user_id), account_number=account_numbers[0], account_name="Main", balance=8421)
+                    savings_account = Account(user_id=str(user_object.user_id), account_number=account_numbers[1], account_name="Savings", balance=22458)
+
+                    db.session.add(regular_account)
+                    db.session.add(savings_account)
 
                     db.session.commit()                     # Lagre
                     return redirect(url_for('login'), code=302)
