@@ -3,8 +3,11 @@ import pyotp
 from PIL import Image
 
 
-secret_key = pyotp.random_base32()
-secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name='250631', issuer_name='JAMVP Bank')
+secret_key = pyotp.random_base32() + pyotp.random_base32() + pyotp.random_base32()
+
+
+secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=str(user.fname) + '(' + str(user.id) + ')', issuer_name='JAMVP Bank')
+
 # Hente inn secret_key fra databasen hos brukeren, sette inn id til brukeren. issuer name er banken
 
 qr = qrcode.QRCode(
@@ -13,13 +16,13 @@ qr = qrcode.QRCode(
     box_size=10,
     border=4,
 )
-qr.add_data(secret_uri)
+qr.add_data('led.uis.no')
 qr.make(fit=True)
 print(secret_key)
 img = qr.make_image(fill_color="black", back_color="white")
 width, height = img.size
 
-logo_size = 75 # Max 75
+logo_size = 100
 logo = Image.open('application/static/assets/logo_no_white.png')
 xmin = ymin = int((width / 2) - (logo_size / 2))
 xmax = ymax = int((width / 2) + (logo_size / 2))
