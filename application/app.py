@@ -14,6 +14,9 @@ import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne
 cookie_maxAge = 600  # Hvor mange sekunder en cookie er gyldig
 client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
+NUMBER_OF_LOGIN_ATTEMPTS = 10
+BLOCK_LOGIN_TIME = 30
+
 mail_settings = {
     "MAIL_SERVER": 'smtp.office365.com',
     "MAIL_PORT": 587,
@@ -90,3 +93,4 @@ import request_processing
 import views
 import post_handlers
 import get_handlers
+import get_files

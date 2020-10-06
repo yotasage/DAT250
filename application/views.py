@@ -240,22 +240,6 @@ def transaction_overview(page = None):
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
-@app.route("/<asset>.png")
-def assets(asset = None):
-    print("6")
-    return app.send_static_file("assets/" + asset + ".png")
-
-# Må teste om denne gjør noe
-@app.route("/favicon.ico")
-def favicon():
-    print("7")
-    return app.send_static_file("favicon.png")
-
-@app.route("/<style>.css")
-def styles(style = None):
-    print("8")
-    return app.send_static_file("styles/" + style + ".css")
-
 @app.route("/verification")
 def verification(style = None):
     print("9")

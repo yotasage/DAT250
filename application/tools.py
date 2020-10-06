@@ -32,7 +32,6 @@ def insertion_sort_transactions(transaction_list):
 def get_valid_cookie():
     for cookie in extract_cookies():
         valid = valid_cookie(cookie)
-        print(f"get_valid_cookie = {valid}")
         if valid:
             return cookie
 
@@ -84,6 +83,7 @@ def update_cookie(cookie_in_question, response, age=cookie_maxAge + client_maxAg
     update_cookie_clientside(cookie_in_question, response, age)
     update_cookie_serverside(cookie_in_question, age)
 
+# Brukes for debugging, printer ut det vi har om brukeren
 def print_userdata(user_object):
     print("#################  USER DATA - START  ######################")
     print(f"id = {user_object.id}")
