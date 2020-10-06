@@ -95,10 +95,10 @@ def post_data(data = None):
                 password_hash = generate_password_hash(pswd, salt)
                 # Hvis passordene er like, og gyldige, lagre det nye passorde i databasen
                 if pswd == conf_pswd and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object is not None:
-                    user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
+                    # user_object.verification_code = None    # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash      # Passord skal være hashet
                     user_object.salt = salt                 # Må ha et salt
-                    user_object.verified = 1                # Marker som verifisert
+                    # user_object.verified = 1                # Marker som verifisert
 
                     # Oppretter brukskonto og sparekonto for brukeren
                     account_numbers = generate_account_numbers(amount=2)
@@ -335,7 +335,11 @@ def post_data(data = None):
             db.session.commit()  # Etter endringer er gjort, lagre
 
             return redirect(url_for('din_side', code=302))
-
+    #Betalingsfunksjon
+    elif data == "payment":
+         #eventuelle feilmeldinger som kan komme under betalingsfunksjonen
+         feedback= {'account_num_error':'', 'date_error':'', 'account_balance_error': '', 'amount_error': ''}
+         
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)
 
