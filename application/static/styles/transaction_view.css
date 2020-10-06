@@ -1,0 +1,57 @@
+.container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+
+    border: 1px  solid rgb(0, 0, 0);
+  }
+
+  .center {
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    border: 1px  solid rgb(0, 0, 0);
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    text-align: left;
+    border: 1px  solid rgb(0, 0, 0);
+    padding: 5px;
+}
+
+#t_time {
+    width: 160px;
+}
+
+#from {
+    width: 120px;
+}
+
+#to {
+    width: 120px;
+}
+
+#msg {
+    width: 394px;
+}
+
+#inn {
+    width: 70px;
+    text-align: right;
+}
+
+#out {
+    width: 70px;
+    text-align: right;
+}

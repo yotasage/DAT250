@@ -10,7 +10,7 @@ from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
-from models import Cookies
+from models import Cookies, Account
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'jamvp.tk'
@@ -19,9 +19,50 @@ TEST_BODY="text body"
 
 Norwegian_characters = "æøåÆØÅ"
 
+def generate_account_numbers(amount=1, base="1337"):
+    accounts = Account.query.all()
+    
+    account_numbers = set()
+    new_account_numbers = []
+
+    for account in accounts:
+        account_numbers.add(account.account_number)
+
+    created = 0
+    while created < amount:
+        suggestion = generate_account_number(base="1337")
+        if suggestion not in account_numbers:
+            new_account_numbers.append(suggestion)
+            created += 1
+
+    return new_account_numbers
+
+def generate_account_number(base="1337"):
+    two_digit = str(random.randint(1, 99))
+    five_digit = str(random.randint(1, 99999))
+
+    while len(two_digit) < 2:
+        two_digit = "0" + two_digit
+
+    while len(five_digit) < 5:
+        five_digit = "0" + five_digit
+
+    return base + "." + two_digit + "." + five_digit
+
+def insertion_sort_transactions(transaction_list):
+    for element in range(1, len(transaction_list)):                    # Theta(n)
+        index = element                                     # Theta(n)
+        while transaction_list[index].transfer_time > transaction_list[index-1].transfer_time and index > 0:  # Worst case går tilbake til start hver gang
+                                                            # Best case sammenlikning slår aldri til
+            temp = transaction_list[index]
+            transaction_list[index] = transaction_list[index-1]
+            transaction_list[index-1] = temp
+            index -= 1
+
 def get_valid_cookie():
     for cookie in extract_cookies():
-        if valid_cookie(cookie):
+        valid = valid_cookie(cookie)
+        if valid:
             return cookie
 
     return None
@@ -72,6 +113,7 @@ def update_cookie(cookie_in_question, response, age=cookie_maxAge + client_maxAg
     update_cookie_clientside(cookie_in_question, response, age)
     update_cookie_serverside(cookie_in_question, age)
 
+# Brukes for debugging, printer ut det vi har om brukeren
 def print_userdata(user_object):
     print("#################  USER DATA - START  ######################")
     print(f"id = {user_object.id}")

@@ -1,0 +1,10 @@
+body {margin: 0;}
+
+  /* Page Content */
+  .body_content {
+  position: relative;
+  top: 85px;
+  left: 0;
+
+  width: 100%;
+  }

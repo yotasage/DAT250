@@ -7,10 +7,10 @@ import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response
 import string
 
-from models import User, Blacklist, Cookies
+from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions
 from request_processing import signed_in
 
 
@@ -26,7 +26,6 @@ def index():
         abort(404)  # Returner feilmelding 404
 
 @app.route("/header.html", methods=['GET'])
-@app.route("/pages/header.html", methods=['GET'])
 def header():
     print("20")
     resp = make_response(render_template("header.html", logged_in=False))
@@ -47,10 +46,10 @@ def header():
         abort(404)  # Returner feilmelding 404
 
 # Denne er bare for GET forespørsler.
-@app.route("/pages/login.html", methods=['GET'])
+@app.route("/login.html", methods=['GET'])
 def login(page = None):
     print("2")
-    resp1 = redirect(url_for('startpage'), code=302)
+    resp1 = redirect(url_for('startpage'), code=302)  # Side for når en  er innlogget
 
     messages_1 = request.args.get('error')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
     messages_2 = request.args.get('v_mail')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
@@ -58,6 +57,7 @@ def login(page = None):
 
     client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
 
+    # Side for når en ikke er innlogget
     if client_listing.blocked_login_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
         resp2 = make_response(render_template("pages/login.html", date=datetime.now(), error=messages_1, v_mail=messages_2, timeout=messages_3, denied=True, deactivate_btn=True))
     elif client_listing.blocked_login_until is not None:
@@ -72,7 +72,7 @@ def login(page = None):
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
-@app.route("/pages/startside.html", methods=['GET'])
+@app.route("/startside.html", methods=['GET'])
 def startpage():
     print("3")
     resp1 = make_response(render_template("pages/startside.html", date=datetime.now()))  # Ønsket side for når vi er innlogget
@@ -83,7 +83,7 @@ def startpage():
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
 
-@app.route("/pages/din_side.html", methods=['GET'])
+@app.route("/din_side.html", methods=['GET'])
 def din_side():
     print("13")
     session_cookie = get_valid_cookie()
@@ -112,7 +112,7 @@ def din_side():
 
     
 
-@app.route("/pages/edit.html", methods=['GET'])
+@app.route("/edit.html", methods=['GET'])
 def edit():
     print("14")
 
@@ -161,7 +161,7 @@ def edit():
         abort(404)  # Returner feilmelding 404
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
-@app.route("/pages/registration.html", methods=['GET'])
+@app.route("/registration.html", methods=['GET'])
 def registration():
     print("4")
     resp1 = redirect(url_for('startpage'), code=302)
@@ -190,34 +190,55 @@ def registration():
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet, i tilfellet noen prøver å skrive inn addresser til sider som ikke finnes
         abort(404)  # Returner feilmelding 404
 
-@app.route("/pages/<page>", methods=['GET'])
-def pages(page = None):
-    print("5")
-    resp1 = redirect(url_for('startpage'), code=302)  # Ønsket side for når vi er innlogget
-    resp2 = make_response(render_template("pages/" + page))  # Side for når en ikke er innlogget
+@app.route("/transaction_view.html", methods=['GET'])
+def transaction_overview(page = None):
+    print("25")
+    resp1 = make_response(render_template("pages/transaction_view.html", len=0, Pokemons=[]))
+    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+
+    session_cookie = get_valid_cookie()
+
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+        user = User.query.filter_by(user_id=cookie.user_id).first()
+
+        accounts = Account.query.filter_by(user_id=user.user_id).first()
+
+        print(accounts)
+
+        transactions = Transaction.query.filter_by(to_acc=accounts.account_number).all() + Transaction.query.filter_by(from_acc=accounts.account_number).all()
+
+        print(transactions)
+
+        transfer_time = []
+        From = []
+        To = []
+        Msg = []
+        Inn = []
+        Out = []
+
+        insertion_sort_transactions(transactions)
+
+        for transaction in transactions:
+            transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+            Msg.append(transaction.message)
+            From.append(transaction.from_acc)
+            To.append(transaction.to_acc)
+
+            if transaction.to_acc == accounts.account_number:
+                Inn.append(transaction.amount)
+                Out.append("")
+            if transaction.from_acc == accounts.account_number:
+                Inn.append("")
+                Out.append(transaction.amount)
+
+        resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts.account_number))
 
     try:
         return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
-
-@app.route("/pages/assets/<asset>")
-@app.route("/assets/<asset>")
-def assets(asset = None):
-    # print("6")
-    return app.send_static_file("assets/" + asset)
-
-# Må teste om denne gjør noe
-@app.route("/favicon.ico")
-def favicon():
-    print("7")
-    return app.send_static_file("favicon.png")
-
-@app.route("/pages/styles/<style>")
-@app.route("/styles/<style>")
-def styles(style = None):
-    print("8")
-    return app.send_static_file("styles/" + style)
 
 @app.route("/verification")
 def verification(style = None):
@@ -233,6 +254,17 @@ def verification(style = None):
             return render_template("pages/verification.html", error=error)
 
     return redirect(url_for('index'), code=302)
+
+@app.route("/password_reset_request.html")
+def password_reset_request(style = None):
+    print("29")
+    resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", len=0, Pokemons=[]))  # Side for når en ikke er innlogget
+
+    try:
+        return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
+        abort(404)  # Returner feilmelding 404
 
 @app.route("/reset")
 def reset(style = None):

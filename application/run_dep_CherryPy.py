@@ -34,3 +34,5 @@ if __name__ == '__main__':
 
 # https://www.linode.com/docs/security/ssl/create-a-self-signed-tls-certificate/
 # req -new -newkey rsa:4096 -x509 -sha256 -days 100 -nodes -out MyCertificate.crt -keyout MyKey.key
+
+# https://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl

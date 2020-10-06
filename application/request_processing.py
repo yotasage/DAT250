@@ -23,6 +23,7 @@ NUMBER_OF_FREQUENT_REQUESTS = 100
 @app.after_request  # Denne kjører etter route funksjonene
 def add_headers(resp):
     #if request.path != "/":
+    resp.headers.set('Strict-Transport-Security', "max-age=2629743")            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
@@ -66,7 +67,7 @@ def signed_in(signed_in_page, url_page):
             valid = valid_cookie(cookie)
             if valid is not None:
                 break
-
+        
         if valid == None:  # Cookiene vi fikk inn fantes ikke i databasen
             return url_page
         elif valid == False:  # En av cookiene var i databasen, og den var utgått
