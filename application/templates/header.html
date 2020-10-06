@@ -4,8 +4,14 @@
         <title>JAMVP Bank</title>
         <link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
         <link rel="stylesheet" type="text/css" href="/header_int.css">
+
+        {% if logged_in %}
+        <script>
+            setTimeout(function() { alert("Your session is about to expire due to inactivity. Time remaining of the session after this window popped up is: {{session_remaining}} minutes"); }, {{session_duration}});
+        </script>
+        {% endif %}
     </head>
-    <body>
+    <body onload="startCount()">
         <img src = "/logo_no_white2.png" alt="preloaded_image" style="display: none;"/>
         <div class=left>
             <div id="HomeBtn" onclick="window.open('/', '_top')"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->

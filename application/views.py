@@ -9,7 +9,7 @@ import string
 
 from models import User, Blacklist, Cookies, Account, Transaction
 
-from app import app, db # Importerer Flask objektet app
+from app import app, db, cookie_maxAge # Importerer Flask objektet app
 from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number
 from request_processing import signed_in
 
@@ -36,7 +36,7 @@ def header():
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
         user = User.query.filter_by(user_id=cookie.user_id).first()
 
-        resp = make_response(render_template("header.html", fname=user.fname.split(' ')[0], mname=user.mname.split(' ')[0], lname=user.lname.split(' ')[0], id=user.user_id, logged_in=True))
+        resp = make_response(render_template("header.html", fname=user.fname.split(' ')[0], mname=user.mname.split(' ')[0], lname=user.lname.split(' ')[0], id=user.user_id, logged_in=True, session_duration=cookie_maxAge * 1000 * 0.8, session_remaining = cookie_maxAge * 0.2 / 60))  # session_duration [ms]
     
     try:
         return resp
