@@ -45,6 +45,7 @@ class Account(db.Model):
     user_id = db.Column(db.Integer, unique=True, nullable=False)
     balance = db.Column(db.Integer, unique=True, nullable=False)
     account_number = db.Column(db.String, unique=True, nullable=False)
+    account_name = db.Column(db.String, unique=True, nullable=False)
 
 
 class Transaction(db.Model):
