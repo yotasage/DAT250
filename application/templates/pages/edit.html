@@ -42,6 +42,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
 
     body {margin: 0;}
 
+    h1 {text-align: center;}
+
   /* Page Content */
 .body_content {
   position: relative;
@@ -59,7 +61,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
       </div> 
       
       <div class="body_content">
-    <img src="/logo.png" alt="logo"/>
+
+        <h1>Edit information</h1>
     
     <div style='text-align: left; width:500px; display: block; margin-left: auto; margin-right: auto;'>
         <br>
@@ -171,6 +174,11 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                         <label for="pswd">Current password:</label><br>
                         <input type="password" id="pswd" placeholder="Current password"  name="pswd" required>
                     </div>
+
+                    <div class="fields">
+                        <label for="auth">Authenticator code:</label><br>
+                        <input type="text" id="auth" placeholder="Authenticator code"  name="auth">
+                    </div>
                 </div>
 
                 <div>
@@ -190,6 +198,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 <br>
             </div>
         </form> 
+        <br><br>
     </div>
 </div>
 </body>
