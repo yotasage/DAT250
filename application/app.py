@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
-cookie_maxAge = 600  # Hvor mange sekunder en cookie er gyldig
+cookie_maxAge = 900  # Hvor mange sekunder en cookie er gyldig
 client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
 NUMBER_OF_LOGIN_ATTEMPTS = 10

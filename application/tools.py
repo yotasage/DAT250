@@ -19,6 +19,23 @@ TEST_BODY="text body"
 
 Norwegian_characters = "æøåÆØÅ"
 
+def valid_account_number(account_number):
+    divided = account_number.split('.')
+
+    if len(divided) != 3 and not contain_allowed_symbols(account_number, whitelist=string.digits + '.'):
+        return False
+
+    if valid_number(divided[0], min_length=4, max_length=4):
+        return False
+
+    if valid_number(divided[1], min_length=2, max_length=2):
+        return False
+
+    if valid_number(divided[2], min_length=5, max_length=5):
+        return False
+    
+    return True
+
 def generate_account_numbers(amount=1, base="1337"):
     accounts = Account.query.all()
     
@@ -97,7 +114,6 @@ def update_cookie_clientside(cookie_in_question, resp, age=cookie_maxAge + clien
         resp.headers.set('Set-Cookie', "__Secure-sessionId=" + cookie_in_question + "; Max-Age=" + str(age) + "; SameSite=Strict; Secure; HttpOnly")
     else:
         resp.headers.set('Set-Cookie', "sessionId=" + cookie_in_question + "; Max-Age=" + str(age) + "; SameSite=Strict; HttpOnly")
-
 
 def update_cookie_serverside(cookie_in_question, age=cookie_maxAge + client_maxAge):
     cookie = Cookies.query.filter_by(session_cookie=cookie_in_question).first()

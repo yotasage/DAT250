@@ -10,15 +10,15 @@ import string
 from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number
 from request_processing import signed_in
 
 
 @app.route("/", methods=['GET'])
 def index():
     print("1")
-    resp1 = redirect(url_for('startpage'), code=302)
-    resp2 = app.send_static_file("index.html")
+    resp1 = redirect(url_for('startpage'), code=302)    # Last inn denne hvis vi er innlogget
+    resp2 = app.send_static_file("index.html")          # Last inn denne hvis vi ikke er innlogget
     
     try:
         return signed_in(resp1, resp2)
@@ -34,9 +34,7 @@ def header():
 
     if session_cookie is not None:
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-
-        user_id_check = cookie.user_id
-        user = User.query.filter_by(user_id=user_id_check).first()
+        user = User.query.filter_by(user_id=cookie.user_id).first()
 
         resp = make_response(render_template("header.html", fname=user.fname.split(' ')[0], mname=user.mname.split(' ')[0], lname=user.lname.split(' ')[0], id=user.user_id, logged_in=True))
     
@@ -76,29 +74,37 @@ def login(page = None):
 def startpage():
     print("3")
     resp1 = make_response()  # Ønsket side for når vi er innlogget
-    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
 
     session_cookie = get_valid_cookie()
     if session_cookie is not None:
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-
         user = User.query.filter_by(user_id=cookie.user_id).first()
-
         accounts = Account.query.filter_by(user_id=user.user_id).all()
 
         ac_name= []
         ac_nr= []
         ac_balance=[]
 
+        transactions = set()  # Bruker set for å fjerne duplikater
+
         for account in accounts:
             ac_name.append(account.account_name)
             ac_nr.append(account.account_number)
             ac_balance.append(account.balance)
 
+            for transaction in Transaction.query.filter_by(to_acc=account.account_number).all():
+                transactions.add(transaction)
 
-        transactions = Transaction.query.filter_by(to_acc=accounts[0].account_number).all() + Transaction.query.filter_by(from_acc=accounts[0].account_number).all()
+            for transaction in Transaction.query.filter_by(from_acc=account.account_number).all():
+                transactions.add(transaction)
 
-        print(transactions)
+        transactions_list = []
+
+        for transaction in transactions:
+            transactions_list.append(transaction)
+
+        insertion_sort_transactions(transactions_list)  # Sorterer transaksjonene, synkende rekkefølge
 
         transfer_time = []
         From = []
@@ -106,23 +112,25 @@ def startpage():
         Msg = []
         Inn = []
         Out = []
+        
+        for transaction in transactions_list:
+            for account in accounts:
+                if transaction.to_acc == account.account_number:
+                    transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+                    Msg.append(transaction.message)
+                    From.append(transaction.from_acc)
+                    To.append(transaction.to_acc)
+                    Inn.append(transaction.amount)
+                    Out.append("")
+                if transaction.from_acc == account.account_number:
+                    Inn.append("")
+                    Out.append(transaction.amount)
+                    transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+                    Msg.append(transaction.message)
+                    From.append(transaction.from_acc)
+                    To.append(transaction.to_acc)
 
-        insertion_sort_transactions(transactions)
-
-        for transaction in transactions:
-            transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
-            Msg.append(transaction.message)
-            From.append(transaction.from_acc)
-            To.append(transaction.to_acc)
-
-            if transaction.to_acc == accounts.account_number:
-                Inn.append(transaction.amount)
-                Out.append("")
-            if transaction.from_acc == accounts.account_number:
-                Inn.append("")
-                Out.append(transaction.amount)
-
-        resp1 = make_response(render_template("pages/startside.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance))
+        resp1 = make_response(render_template("pages/startside.html", len=len(transactions_list), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance))
 
     try:
         return signed_in(resp1, resp2)
@@ -136,27 +144,20 @@ def din_side():
 
     if session_cookie is not None:
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-
-        user_id_check = cookie.user_id
-        user = User.query.filter_by(user_id=user_id_check).first()
+        user = User.query.filter_by(user_id=cookie.user_id).first()
 
         resp1 = make_response(render_template("pages/din_side.html", fname=user.fname, mname=user.mname, lname=user.lname,
                                         email=user.email, id=user.user_id, phone_num=user.phone_num,
                                         dob=user.dob, city=user.city, postcode=user.postcode, address=user.address))  # Ønsket side for når vi er innlogget
     else: 
-        resp1 = make_response(render_template("pages/din_side.html", fname="", mname="", lname="",
-                                        email="", id="", phone_num="",
-                                        dob="", city="", postcode="", address=""))  # Ønsket side for når vi er innlogget
-        print("user ikke funnet")
+        resp1 = make_response()  # Tom respons, denne skal ikke trigge uansett siden brukeren ikke er logget inn. Ønsket side for når vi er innlogget
     
-    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
     
     try:
         return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
         abort(404)  # Returner feilmelding 404
-
-    
 
 @app.route("/edit.html", methods=['GET'])
 def edit():
@@ -178,9 +179,7 @@ def edit():
 
     if session_cookie is not None:
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-
-        user_id_check = cookie.user_id
-        user = User.query.filter_by(user_id=user_id_check).first()
+        user = User.query.filter_by(user_id=cookie.user_id).first()
 
         resp1 = make_response(render_template("pages/edit.html", fname=user.fname, mname=user.mname, lname=user.lname,
                                         email=user.email, id=user.user_id, phone_num=user.phone_num,
@@ -190,16 +189,9 @@ def edit():
                                         postcode_error=postcode_error, address_error=address_error, pswd_error=pswd_error,
                                         new_pswd_error=new_pswd_error))  # Ønsket side for når vi er innlogget
     else:
-        resp1 = make_response(render_template("pages/edit.html", fname="", mname="", lname="",
-                                        email="", id="", phone_num="",
-                                        dob="", city="", postcode="", address="",
-                                        fname_error=fname_error, mname_error=mname_error, lname_error=lname_error,
-                                        phone_num_error=phone_num_error, dob_error=dob_error, city_error=city_error,
-                                        postcode_error=postcode_error, address_error=address_error
-                                        ))  # Ønsket side for når vi er innlogget
-        print("user ikke funnet")
+        resp1 = make_response()  # Tom respons, denne skal ikke trigge uansett siden brukeren ikke er logget inn. Ønsket side for når vi er innlogget
 
-    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
     
     try:
         return signed_in(resp1, resp2)
@@ -240,46 +232,46 @@ def registration():
 def transaction_overview(page = None):
     print("25")
     resp1 = make_response(render_template("pages/transaction_view.html", len=0))
-    resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
+    resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
 
+    # Les ut variabler
+    account_number = request.args.get('cnr')
     session_cookie = get_valid_cookie()
 
-    if session_cookie is not None:
+    if session_cookie is not None and valid_account_number(account_number):
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-
         user = User.query.filter_by(user_id=cookie.user_id).first()
+        account = Account.query.filter_by(account_number=account_number).first()
 
-        accounts = Account.query.filter_by(user_id=user.user_id).first()
+        # Sjekker om dette er brukeren sin konto
+        if account.user_id == user.user_id:
 
-        print(accounts)
+            transactions = Transaction.query.filter_by(to_acc=account.account_number).all() + Transaction.query.filter_by(from_acc=account.account_number).all()
 
-        transactions = Transaction.query.filter_by(to_acc=accounts.account_number).all() + Transaction.query.filter_by(from_acc=accounts.account_number).all()
+            transfer_time = []
+            From = []
+            To = []
+            Msg = []
+            Inn = []
+            Out = []
 
-        print(transactions)
+            insertion_sort_transactions(transactions)  # Sorterer transaksjonene, synkende rekkefølge
 
-        transfer_time = []
-        From = []
-        To = []
-        Msg = []
-        Inn = []
-        Out = []
+            for transaction in transactions:
+                transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+                Msg.append(transaction.message)
+                From.append(transaction.from_acc)
+                To.append(transaction.to_acc)
 
-        insertion_sort_transactions(transactions)
+                if transaction.to_acc == account.account_number:
+                    Inn.append(transaction.amount)
+                    Out.append("")
 
-        for transaction in transactions:
-            transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
-            Msg.append(transaction.message)
-            From.append(transaction.from_acc)
-            To.append(transaction.to_acc)
+                if transaction.from_acc == account.account_number:
+                    Inn.append("")
+                    Out.append(transaction.amount)
 
-            if transaction.to_acc == accounts.account_number:
-                Inn.append(transaction.amount)
-                Out.append("")
-            if transaction.from_acc == accounts.account_number:
-                Inn.append("")
-                Out.append(transaction.amount)
-
-        resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts.account_number))
+            resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=account.account_number))
 
     try:
         return signed_in(resp1, resp2)

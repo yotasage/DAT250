@@ -20,5 +20,4 @@ def get_data(data = None):
             update_cookie_clientside(session_cookie, resp, 0)
             return resp
 
-
     return redirect(url_for('index'), code=302)

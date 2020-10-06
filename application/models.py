@@ -19,6 +19,9 @@ class User(db.Model):
     verification_code = db.Column(db.String, unique=True, nullable=True)
     verified = db.Column(db.Boolean, unique=False, nullable=False)
     password_reset_code = db.Column(db.String, unique=True, nullable=True)
+    secret_key = db.Column(db.String, unique=True, nullable=False)
+    failed_logins = db.Column(db.Integer, unique=False, nullable=False)
+    blocked_login_until = db.Column(db.String, unique=False, nullable=True)
 
 
 class Blacklist(db.Model):

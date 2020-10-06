@@ -104,9 +104,7 @@
       </div> 
       
       <div class="body_content">
-    <div>
-        <img src="/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
-    </div>
+
 
 
     <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
@@ -123,16 +121,40 @@
                 <th> <img src="/pleikan.png" alt="paykan" class="paykan"></th>
             </tr>
             <tr>
-                <td><input type="number" placeholder="Your account number" name="account_num" required></td>
-                <td><input type="number" placeholder="Account number to" name="account_num_to" required> </td>
-                <td> <input type="text" placeholder="KID" name="kidnr" required></td>
-                <td> <input type="number" placeholder="amount" name="belop"></td>
-                <td> <button type="submit" formaction="../payment" formmethod="post"> Pay</button></td>
+                <td><input type="text" placeholder="Your account number" name="account_num" required></td>
+                <td><input type="text" placeholder="Account number to" name="account_num_to" required> </td>
+                <td> <input type="text" placeholder="KID" name="kidnr"></td>
+                <td> <input type="number" placeholder="amount" name="belop" required></td>
+                <td> <button type="submit" formaction="../payment" formmethod="post">Pay</button></td>
             </tr>
         </table>
 
         </div>
+        <div>
+            <table style="width:50%">
+                <caption><h1>My accounts</h1></caption>
+                <tr>
+                <th>Name</th>
+                <th>Account number</th>
+                <th>Balance</th>
+                <th> Account overview </th>
+                </tr>
 
+                <tr>
+                <td id="ac_name">{{ac_name[0]}}</td>
+                <td id="ac_nr">{{ac_nr[0]}}</td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td id="ac_balance">{{ac_balance[0]}}</td>
+                <td> <button onclick="location.href='transaction_view.html?cnr={{ac_nr[0]}}';" type="button">Transactions {{ac_name[0]}} </button></td>
+                </tr>
+
+                <tr>
+                <td id= "ac_name">{{ac_name[1]}}</td>
+                <td id="ac_nr">{{ac_nr[1]}}</td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td id="ac_balance">{{ac_balance[1]}}</td>
+                <td> <button onclick="location.href='transaction_view.html?cnr={{ac_nr[1]}}';" type="button">Transactions {{ac_name[1]}} </button></td>
+                </tr>
+            </table>
+        </div>
         <div>
             <table style="width:50%">
                 <caption><h1>Payment overview</h1></caption>
@@ -157,28 +179,7 @@
             </table> 
         </div>
 
-        <div>
-            <table style="width:50%">
-                <caption><h1>My accounts</h1></caption>
-                <tr>
-                <th>Name</th>
-                <th>Account number</th>
-                <th>Balance</th>
-                </tr>
-
-                <tr>
-                <td id="ac_name">{{ac_name[0]}} </td>
-                <td id="ac_nr">{{ac_nr[0]}} </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                <td id="ac_balance">{{ac_balance[0]}}</td>
-                </tr>
-
-                <tr>
-                <td id= "ac_name">{{ac_name[1]}}</td>
-                <td id="ac_nr">{{ac_nr[1]}} </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                <td id="ac_balance">{{ac_balance[1]}}</td>
-                </tr>
-            </table>
-        </div>
+ 
     </form> 
 </div>
 
@@ -188,12 +189,9 @@
         </div>
 
         <div>
-        <button class="btn shrtbtn" onclick="location.href='transaction_view.html';" type="submit">Transaction Overview</button>
-        </div>
-
-        <div>
         <button class="btn shrtbtn" onclick="location.href='din_side.html';" type="submit">Your page</button>
         </div>
+
 
 </div>
 </div>
