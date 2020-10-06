@@ -6,3 +6,4 @@ threading
 authenticator
 pyotp
 flask-sqlalchemy
+flask-scrypt
