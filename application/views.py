@@ -193,7 +193,7 @@ def registration():
 @app.route("/transaction_view.html", methods=['GET'])
 def transaction_overview(page = None):
     print("25")
-    resp1 = make_response(render_template("pages/transaction_view.html", len=0, Pokemons=[]))
+    resp1 = make_response(render_template("pages/transaction_view.html"))
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
 
     session_cookie = get_valid_cookie()
@@ -259,7 +259,7 @@ def verification(style = None):
 def password_reset_request(style = None):
     print("29")
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
-    resp2 = make_response(render_template("pages/password_reset_request.html", len=0, Pokemons=[]))  # Side for når en ikke er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html"))  # Side for når en ikke er innlogget
 
     try:
         return signed_in(resp1, resp2)
