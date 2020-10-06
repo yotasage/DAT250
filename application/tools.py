@@ -25,13 +25,13 @@ def valid_account_number(account_number):
     if len(divided) != 3 and not contain_allowed_symbols(account_number, whitelist=string.digits + '.'):
         return False
 
-    if valid_number(divided[0], min_length=4, max_length=4):
+    if not valid_number(divided[0], min_length=4, max_length=4):
         return False
 
-    if valid_number(divided[1], min_length=2, max_length=2):
+    if not valid_number(divided[1], min_length=2, max_length=2):
         return False
 
-    if valid_number(divided[2], min_length=5, max_length=5):
+    if not valid_number(divided[2], min_length=5, max_length=5):
         return False
     
     return True
