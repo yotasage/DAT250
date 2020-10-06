@@ -108,9 +108,7 @@
         <img src="/logo.png" alt="Logo" class="logo"> <br /> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
     </div>
 
-    <div>
-        <strong>Welcome user!</strong> It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
-    </div>
+
     <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
 <div class="container">
     <form action="action_page.php" method="post">
@@ -120,7 +118,7 @@
             <tr>
                 <th><b>Pay from</b></th>
                 <th><b>Pay to</b></th>
-                <th><b>KID number</b></th>
+                <th><b>Message or KID</b></th>
                 <th><b>Amount (kr)</b></th>
                 <th> <img src="/pleikan.png" alt="paykan" class="paykan"></th>
             </tr>
@@ -128,8 +126,8 @@
                 <td><input type="number" placeholder="Your account number" name="account_num" required></td>
                 <td><input type="number" placeholder="Account number to" name="account_num_to" required> </td>
                 <td> <input type="text" placeholder="KID" name="kidnr" required></td>
-                <td> <input type="number" placeholder="Amount" name="belop"></td>
-                <td> <button onclick="location.href='startside.html';" type="submit"> Pay</button></td>
+                <td> <input type="number" placeholder="amount" name="belop"></td>
+                <td> <button type="submit" formaction="../payment" formmethod="post"> Pay</button></td>
             </tr>
         </table>
 
@@ -142,16 +140,20 @@
                     <th>Date</th>
                     <th>From</th>
                     <th>To</th>
-                    <th>Amount (kr)</th>
-                    <th>Status</th>
+                    <th> Message </th>
+                    <th>Inn</th>
+                    <th>Out </th>
                 </tr>
+                {%for i in range(0, 5)%} 
                 <tr>
-                    <td>20.09.2020</td>
-                    <td>brukskonto</td>
-                    <td> UiS </td>
-                    <td>100</td>
-                    <td>Payed</td>
+                    <td id="t_time">{{transfer_time[i]}}</td>
+                    <td id="from">{{From[i]}} </td>
+                    <td id="to">{{To[i]}}</td>
+                    <td id="msg">{{Msg[i]}}</td>
+                    <td id="inn">{{Inn[i]}}</td>
+                    <td id="out">{{Out[i]}}</td>
                 </tr>
+                {%endfor%} 
             </table> 
         </div>
 
@@ -165,15 +167,15 @@
                 </tr>
 
                 <tr>
-                <td>Use</td>
-                <td>1234.12.12345 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                <td>1000</td>
+                <td id="ac_name">{{ac_name[0]}} </td>
+                <td id="ac_nr">{{ac_nr[0]}} </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td id="ac_balance">{{ac_balance[0]}}</td>
                 </tr>
 
                 <tr>
-                <td>Savings</td>
-                <td>3948.38.09374 </td> <!-- burde vel ha et tilfeldig generert kontonr-->
-                <td>79000</td>
+                <td id= "ac_name">{{ac_name[1]}}</td>
+                <td id="ac_nr">{{ac_nr[1]}} </td> <!-- burde vel ha et tilfeldig generert kontonr-->
+                <td id="ac_balance">{{ac_balance[1]}}</td>
                 </tr>
             </table>
         </div>

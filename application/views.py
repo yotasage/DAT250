@@ -75,9 +75,55 @@ def login(page = None):
 @app.route("/startside.html", methods=['GET'])
 def startpage():
     print("3")
-    resp1 = make_response(render_template("pages/startside.html", date=datetime.now()))  # Ønsket side for når vi er innlogget
+    resp1 = make_response()  # Ønsket side for når vi er innlogget
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
-    
+
+    session_cookie = get_valid_cookie()
+    if session_cookie is not None:
+        cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+
+        user = User.query.filter_by(user_id=cookie.user_id).first()
+
+        accounts = Account.query.filter_by(user_id=user.user_id).all()
+
+        ac_name= []
+        ac_nr= []
+        ac_balance=[]
+
+        for account in accounts:
+            ac_name.append(account.account_name)
+            ac_nr.append(account.account_number)
+            ac_balance.append(account.balance)
+
+
+        transactions = Transaction.query.filter_by(to_acc=accounts[0].account_number).all() + Transaction.query.filter_by(from_acc=accounts[0].account_number).all()
+
+        print(transactions)
+
+        transfer_time = []
+        From = []
+        To = []
+        Msg = []
+        Inn = []
+        Out = []
+
+        insertion_sort_transactions(transactions)
+
+        for transaction in transactions:
+            transfer_time.append(str(datetime.strptime(transaction.transfer_time, "%Y-%m-%d %H:%M:%S.%f").strftime("%Y-%m-%d, %H:%M:%S")))
+            Msg.append(transaction.message)
+            From.append(transaction.from_acc)
+            To.append(transaction.to_acc)
+
+            if transaction.to_acc == accounts.account_number:
+                Inn.append(transaction.amount)
+                Out.append("")
+            if transaction.from_acc == accounts.account_number:
+                Inn.append("")
+                Out.append(transaction.amount)
+
+        resp1 = make_response(render_template("pages/startside.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance))
+
     try:
         return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
@@ -193,7 +239,7 @@ def registration():
 @app.route("/transaction_view.html", methods=['GET'])
 def transaction_overview(page = None):
     print("25")
-    resp1 = make_response(render_template("pages/transaction_view.html"))
+    resp1 = make_response(render_template("pages/transaction_view.html", len=0, Pokemons=[]))
     resp2 = redirect(url_for('login'), code=302)  # Side for når en ikke er innlogget
 
     session_cookie = get_valid_cookie()
@@ -259,7 +305,7 @@ def verification(style = None):
 def password_reset_request(style = None):
     print("29")
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
-    resp2 = make_response(render_template("pages/password_reset_request.html"))  # Side for når en ikke er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", len=0, Pokemons=[]))  # Side for når en ikke er innlogget
 
     try:
         return signed_in(resp1, resp2)
