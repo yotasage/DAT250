@@ -19,10 +19,19 @@ TEST_BODY="text body"
 
 Norwegian_characters = "æøåÆØÅ"
 
+def insertion_sort_transactions(transaction_list):
+    for element in range(1, len(transaction_list)):                    # Theta(n)
+        index = element                                     # Theta(n)
+        while transaction_list[index].transfer_time > transaction_list[index-1].transfer_time and index > 0:  # Worst case går tilbake til start hver gang
+                                                            # Best case sammenlikning slår aldri til
+            temp = transaction_list[index]
+            transaction_list[index] = transaction_list[index-1]
+            transaction_list[index-1] = temp
+            index -= 1
+
 def get_valid_cookie():
     for cookie in extract_cookies():
         valid = valid_cookie(cookie)
-        print(f"get_valid_cookie = {valid}")
         if valid:
             return cookie
 
@@ -74,6 +83,7 @@ def update_cookie(cookie_in_question, response, age=cookie_maxAge + client_maxAg
     update_cookie_clientside(cookie_in_question, response, age)
     update_cookie_serverside(cookie_in_question, age)
 
+# Brukes for debugging, printer ut det vi har om brukeren
 def print_userdata(user_object):
     print("#################  USER DATA - START  ######################")
     print(f"id = {user_object.id}")

@@ -4,19 +4,16 @@ from flask_sqlalchemy import SQLAlchemy
 import string
 from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
-from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
+from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 
 from models import User, Cookies, Blacklist
 
-NUMBER_OF_LOGIN_ATTEMPTS = 10
-BLOCK_LOGIN_TIME = 30
-
 # Denne er bare for POST forespørsler.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
 def post_data(data = None):
-    print("11")
+    print("post_handlers - 1")
 
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
@@ -327,7 +324,6 @@ def post_data(data = None):
             db.session.commit()  # Etter endringer er gjort, lagre
 
             return redirect(url_for('din_side', code=302))
-
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
     return redirect(url_for('index'), code=302)
