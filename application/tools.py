@@ -50,10 +50,9 @@ def generate_account_number(base="1337"):
     return base + "." + two_digit + "." + five_digit
 
 def insertion_sort_transactions(transaction_list):
-    for element in range(1, len(transaction_list)):                    # Theta(n)
-        index = element                                     # Theta(n)
-        while transaction_list[index].transfer_time > transaction_list[index-1].transfer_time and index > 0:  # Worst case går tilbake til start hver gang
-                                                            # Best case sammenlikning slår aldri til
+    for element in range(1, len(transaction_list)):
+        index = element
+        while transaction_list[index].transfer_time > transaction_list[index-1].transfer_time and index > 0:
             temp = transaction_list[index]
             transaction_list[index] = transaction_list[index-1]
             transaction_list[index-1] = temp
