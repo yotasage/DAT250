@@ -8,7 +8,7 @@ from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS,
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 
-from models import User, Cookies, Blacklist
+from models import User, Cookies, Blacklist, Account
 
 # Denne er bare for POST forespørsler.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
@@ -97,6 +97,9 @@ def post_data(data = None):
                     user_object.hashed_password = password_hash      # Passord skal være hashet
                     user_object.salt = salt                 # Må ha et salt
                     user_object.verified = 1                # Marker som verifisert
+
+                    # Oppretter brukskonto og sparekonto for brukeren
+
                     db.session.commit()                     # Lagre
                     return redirect(url_for('login'), code=302)
                 else:

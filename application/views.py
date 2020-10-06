@@ -255,6 +255,17 @@ def verification(style = None):
 
     return redirect(url_for('index'), code=302)
 
+@app.route("/password_reset_request.html")
+def password_reset_request(style = None):
+    print("29")
+    resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", len=0, Pokemons=[]))  # Side for når en ikke er innlogget
+
+    try:
+        return signed_in(resp1, resp2)
+    except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
+        abort(404)  # Returner feilmelding 404
+
 @app.route("/reset")
 def reset(style = None):
     print("15")
