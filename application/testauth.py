@@ -1,5 +1,5 @@
 # Bruk denne filen for å sjekke hva TOTP-en er til enhver tid
 
 import pyotp
-totp = pyotp.TOTP("FX7OI3AS7VBGDDTKMOYZ3Z6KRQ6JQF66CNCUJQAJRKGFB7Y7")
+totp = pyotp.TOTP("6ZIU4RBAIEQGCF27BGSIHMQBOAVMK2IN")
 print("Current OTP:", totp.now())
