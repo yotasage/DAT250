@@ -38,7 +38,7 @@ def header():
         user_id_check = cookie.user_id
         user = User.query.filter_by(user_id=user_id_check).first()
 
-        resp = make_response(render_template("header.html", fname=user.fname, mname=user.mname, lname=user.lname, id=user.user_id, logged_in=True))
+        resp = make_response(render_template("header.html", fname=user.fname.split(' ')[0], mname=user.mname.split(' ')[0], lname=user.lname.split(' ')[0], id=user.user_id, logged_in=True))
     
     try:
         return resp

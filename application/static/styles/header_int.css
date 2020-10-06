@@ -86,11 +86,12 @@ body {
     }
 
 #User_info {
-    position: relative;
+    position: absolute;
     display: inline-block;
     height: 60px;
 
-    width: 260px;
+    /*width: 360px;*/
+    right: 120px;
 
     font-size: 20px;
     color: white;
@@ -102,19 +103,19 @@ body {
     vertical-align: middle;
 }
 
-.right {
+.left {
     border: 1px  none rgb(255, 255, 255);   
     position: absolute;
-    width: 400px;
+    width: 250px;
     padding: 0px;
     top: 5px;
     left: 5px;
 }
 
-.left {
+.right {
     border: 1px  none rgb(255, 255, 255);   
     position: absolute;
-    width: 400px;
+    width: 800px;
     padding: 0px;
     top: 5px;
     right: 5px;
