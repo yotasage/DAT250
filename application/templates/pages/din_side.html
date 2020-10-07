@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>User information | JAMVP Bank</title>
+<title>JAMVP Bank</title>
 <link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
 <link rel="stylesheet" type="text/css" href="/header.css">
 <!-- 
@@ -21,8 +21,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         display: block;
         margin-left: auto;
         margin-right: auto;
-        width: 500px;
-        text-align:left;
+        width:600px; 
         border-style: solid;  /* solid */
         border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
         background-color:  rgb(173, 173, 173);
@@ -40,204 +39,126 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         display: inline-block;
     }
 
-    .linje {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
+    .midtstill {
+
     }
 
-    table.pos {
-        table-layout: fixed;
-        width: 100%;
-    }
+    body {margin: 0;}
 
-    table.nr {
-        table-layout: fixed;
-        width: 31%;
-    }    
+    h1 {text-align: center;}
 
-    td, th {
-        text-align: left;
-    }
-
-    .info {
+    .textarea{
+        width: 160px;
+        white-space: nowrap;
         border-style: solid;
         border-width: thin;
         border-color: rgb(0, 0, 0);
         background-color:  rgb(255, 255, 255);
     }
 
-    h1 {text-align: center;}
-
-    body {margin: 0;}
+    .textarea:hover{
+        overflow: visible;
+    }
 
   /* Page Content */
-.body_content {
-  position: relative;
-  top: 85px;
-  left: 0;
-
-  width: 100%;
-}
-
+    .body_content {
+        position: relative;
+        top: 85px;
+        width: 100%;
+    }
 </style>
 
 </head>
 <body>
-
     <div class="header">
         <iframe class="headerObj" src="header.html" title="header"></iframe>
-      </div> 
+    </div> 
       
-      <div class="body_content">
+<div class="body_content">
 
-    <h1>User information</h1><br>
-    
-    <div>
-        <div class="container">
-            <div class="linje">
+    <h1>User information</h1>
+
+    <div class="container">
+        <div class="midtstill">
+            <div>
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>First name:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{fname}}</td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>Middle name:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{mname}}</td>
-                        </tr>
-                    </table>
+                    <label>First name:</label><br>
+                    <div class="textarea" >
+                        <label>{{fname}}</label>
+                    </div>
                 </div>
 
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>Last name:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{lname}}</td>
-                        </tr>
-                    </table>
+                    <label>Middle name:</label><br>
+                    <div class="textarea">
+                        <label>{{mname}}</label>
+                    </div>
+                </div>
+
+                <div class="fields">
+                    <label>Last name:</label><br>
+                    <div class="textarea">
+                        <label>{{lname}}</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="linje">
+            <div>
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>Email:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{email}}</td>
-                        </tr>
-                    </table>
+                    <label>Email:</label><br>
+                    <div class="textarea">
+                        <label>{{email}}</label>
+                    </div>
                 </div>
 
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>User Identification:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{id}}</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Tom tabell for å posisjonere riktig -->
-                <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </table>
+                    <label>User ID:</label><br>
+                    <div class="textarea">
+                        <label>{{id}}</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="linje">
+            <div>
                 <div class="fields">
-                    <table class="nr">
-                        <tr>
-                            <td>Phone number:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{phone_num}}</td>
-                        </tr>
-                    </table>
+                    <label>Phone number:</label><br>
+                    <div class="textarea">
+                        <label>{{phone_num}}</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="linje">
+            <div>
                 <div class="fields">
-                    <table class="nr">
-                        <tr>
-                            <td>Date of birth:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{dob}}</td>
-                        </tr>
-                    </table>
+                    <label>Date of birth:</label><br>
+                    <div class="textarea">
+                        <label>{{dob}}</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="linje">
+            <div>
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>City:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{city}}</td>
-                        </tr>
-                    </table>
+                    <label>City:</label><br>
+                    <div class="textarea">
+                        <label>{{city}}</label>
+                    </div>
                 </div>
 
                 <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td>Postal code:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{postcode}}</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Tom tabell for å posisjonere riktig -->
-                <div class="fields">
-                    <table class="pos">
-                        <tr>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </table>
+                    <label>Postal code:</label><br>
+                    <div class="textarea">
+                        <label>{{postcode}}</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="linje">
+            <div>
                 <div class="fields">
-                    <table class="nr">
-                        <tr>
-                            <td>Address:</td>
-                        </tr>
-                        <tr>
-                            <td class="info">{{address}}</td>
-                        </tr>
-                    </table>
+                    <label>Address:</label><br>
+                    <div class="textarea">
+                        <label>{{address}}</label>
+                    </div>
                 </div>
             </div>
 
@@ -245,8 +166,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
             <button onclick="location.href='edit.html';" type="button">Edit info</button>
             <br>
         </div>
-        <br><br>
     </div>
+    <br><br>
 </div>
 </body>
-</html> 
+</html>
