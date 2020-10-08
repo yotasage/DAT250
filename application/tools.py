@@ -256,8 +256,8 @@ def valid_password(password, min_length=8, max_length=128):
 
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits/23728630#23728630
-def random_string_generator(size=6, chars=string.ascii_letters + string.digits):  # string.ascii_letters + string.digits + string.punctuation
-    return ''.join(random.choice(chars) for _ in range(size))
+def random_string_generator(size=6, chars=string.ascii_letters + string.digits):    # string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.SystemRandom().choice(chars) for _ in range(size))        # Forgot to use .SystemRandom(). Using this is more cryptographically secure, this mistake was found by running bandit
 
 
 def is_number(num):

@@ -32,6 +32,12 @@ def add_headers(resp):
 
 @app.before_request
 def before_request_func():
+
+    # print(f"request.is_secure = {request.is_secure}")
+    # print(f"request.host_url = {request.host_url}")
+    # print(f"request.host = {request.host}")
+    
+
     client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
 
     if client_listing is not None:
