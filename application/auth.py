@@ -14,8 +14,6 @@ def generate_QR(fname, id):
     )
     qr.add_data(secret_uri)
     qr.make(fit=True)
-    #print(secret_key)
-    #print(secret_uri)
     img = qr.make_image(fill_color="black", back_color="white")
     width, height = img.size
     logo_size = 80
@@ -24,8 +22,7 @@ def generate_QR(fname, id):
     xmax = ymax = int((width / 2) + (logo_size / 2))
     logo = logo.resize((xmax - xmin, ymax - ymin))
     img.paste(logo, (xmin, ymin, xmax, ymax))
-
-    img.show()
+    return secret_key, img
 
 # https://www.cryptomathic.com/news-events/blog/classification-of-cryptographic-keys-functions-and-properties
 

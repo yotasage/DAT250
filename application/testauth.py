@@ -1,7 +1,10 @@
 # Bruk denne filen for å sjekke hva TOTP-en er til enhver tid
-navn='Martin'
+
+navn='Martin Gjerde'
 from auth import generate_QR
-generate_QR(navn, 12)
+secret_key = generate_QR(navn, 12)
 import pyotp
-totp = pyotp.TOTP(generate_QR.secret_key)
+print(secret_key)
+totp = pyotp.TOTP(secret_key)
 print("Current OTP:", totp.now())
+generate_QR.img.show()
