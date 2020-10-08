@@ -342,9 +342,9 @@ def post_data(data = None):
         to_acc = request.form.get('account_num_to')
         msg = request.form.get('kidnr')                # Stor risk for SQL Injection, hvilke symboler skal vi tillate, eventuelt, skal vi søke etter SQL kommandoer i teksten?
         
-        # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall
-        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')):
-            amount = int(request.form.get('belop'))
+        # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall og at det er større enn 0
+        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop') and int(request.form.get('belop')) > 0):
+            amount = int(request.form.get('belop'))            
 
             #Vertifiser bruker
             session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
