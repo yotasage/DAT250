@@ -178,6 +178,7 @@ def print_userdata(user_object):
     print(f"verification_code = {user_object.verification_code}")
     print(f"verified = {user_object.verified}")
     print(f"password_reset_code = {user_object.password_reset_code}")
+    print(f"secret_key = {user_object.secret_key}")
     print("#################  USER DATA - END  ######################")
 
 # Må vurdere hvilke symboler vi kan tillate
