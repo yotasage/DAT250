@@ -319,5 +319,20 @@ def reset(style = None):
 
     return redirect(url_for('index'), code=302)
 
+@app.route("/QR.png")
+def reset(style = None):
+    print("15")
+    password_reset_code = request.args.get('code')
+    error = request.args.get('error')
+
+    if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+
+        # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
+        user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
+        if user_object is not None and user_object.verified:
+            return render_template("pages/password_reset.html", error=error)
+
+    return redirect(url_for('index'), code=302)
+
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
