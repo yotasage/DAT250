@@ -37,10 +37,15 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     .fields {
         padding: 8px;
         display: inline-block;
+        border: 1px  solid rgb(255, 255, 255);   
     }
 
-    .midtstill {
-
+    .middlefield {
+        padding: 8px;
+        display: inline-block;
+        border: 1px  solid rgb(255, 255, 255);   
+        position: relative;
+        top:0px;
     }
 
     body {margin: 0;}
@@ -49,12 +54,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
 
     .textarea{
         width: 160px;
+        height: 20px;
         white-space: nowrap;
         border-style: solid;
         border-width: thin;
         border-color: rgb(0, 0, 0);
         background-color:  rgb(255, 255, 255);
     }
+
 
     .textarea:hover{
         overflow: visible;
@@ -79,7 +86,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     <h1>User information</h1>
 
     <div class="container">
-        <div class="midtstill">
+        <div>
             <div>
                 <div class="fields">
                     <label>First name:</label><br>
@@ -88,10 +95,10 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                     </div>
                 </div>
 
-                <div class="fields">
+                <div class="middlefield">
                     <label>Middle name:</label><br>
                     <div class="textarea">
-                        <label>{{mname}}</label>
+                        <div>{{mname}}</div>
                     </div>
                 </div>
 
