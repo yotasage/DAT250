@@ -4,13 +4,13 @@
 
 from datetime import datetime, timedelta
 import jinja2  # For å kunne håndtere feil som 404
-from flask import render_template, request, redirect, url_for, abort, make_response
+from flask import render_template, request, redirect, url_for, abort, make_response, send_file
 import string
 
 from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR
 from request_processing import signed_in
 
 
@@ -289,7 +289,7 @@ def verification(style = None):
         # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
         user_object = User.query.filter_by(verification_code=verification_code).first()
         if user_object is not None and not user_object.verified:
-            return render_template("pages/verification.html", error=error)
+            return render_template("pages/verification.html", error=error, vkey=verification_code)
 
     return redirect(url_for('index'), code=302)
 
@@ -320,19 +320,18 @@ def reset(style = None):
     return redirect(url_for('index'), code=302)
 
 @app.route("/QR.png")
-def reset(style = None):
-    print("15")
-    password_reset_code = request.args.get('code')
-    error = request.args.get('error')
+def QR(style = None):
+    print("35")
+    vkey = request.args.get('vkey')
 
-    if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
-
+    if contain_allowed_symbols(s=vkey, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
         # Hent brukeren med koden i url'en, hvis det ikke er noen bruker med den koden så vil user_object = None
-        user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
-        if user_object is not None and user_object.verified:
-            return render_template("pages/password_reset.html", error=error)
+        user_object = User.query.filter_by(verification_code=vkey).first()
+        if user_object is not None and not user_object.verified:
+            _, qr = generate_QR(user_object.fname, user_object.user_id, user_object.secret_key)
+            return send_file(qr, mimetype="image/png")
 
-    return redirect(url_for('index'), code=302)
+    abort(404)
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP

@@ -11,6 +11,7 @@ from flask import copy_current_request_context, redirect, url_for, request
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
+from io import BytesIO
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
 from models import Cookies, Account
@@ -89,7 +90,12 @@ def generate_QR(fname, id, secret_key=None):
     xmax = ymax = int((width / 2) + (logo_size / 2))
     logo = logo.resize((xmax - xmin, ymax - ymin))
     img.paste(logo, (xmin, ymin, xmax, ymax))
-    return secret_key, img
+
+    img_io = BytesIO()
+    img.save(img_io, 'PNG', quality=100)
+    img_io.seek(0)
+
+    return secret_key, img_io
 
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):
