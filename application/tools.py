@@ -4,10 +4,13 @@ import threading
 import math
 import string
 import random
+import pyotp
+import qrcode
 # import time  # For testing
 from flask import copy_current_request_context, redirect, url_for, request
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
+from PIL import Image
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
 from models import Cookies, Account
@@ -65,6 +68,28 @@ def generate_account_number(base="1337"):
         five_digit = "0" + five_digit
 
     return base + "." + two_digit + "." + five_digit
+
+def generate_QR(fname, id, secret_key=None):
+    if secret_key is None:
+        secret_key = pyotp.random_base32(length=32) # Using 256 bits secret key, see source below
+    secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ' (' + str(id) + ')'), issuer_name='JAMVP Bank')
+    qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4,
+    )
+    qr.add_data(secret_uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    width, height = img.size
+    logo_size = 80
+    logo = Image.open('application/static/assets/logo_no_white.png')
+    xmin = ymin = int((width / 2) - (logo_size / 2))
+    xmax = ymax = int((width / 2) + (logo_size / 2))
+    logo = logo.resize((xmax - xmin, ymax - ymin))
+    img.paste(logo, (xmin, ymin, xmax, ymax))
+    return secret_key, img
 
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):

@@ -2,9 +2,10 @@
 
 navn='Martin Gjerde'
 from auth import generate_QR
-secret_key = generate_QR(navn, 12)
 import pyotp
+
+secret_key, img = generate_QR(navn, 12)
 print(secret_key)
 totp = pyotp.TOTP(secret_key)
 print("Current OTP:", totp.now())
-generate_QR.img.show()
+img.show()

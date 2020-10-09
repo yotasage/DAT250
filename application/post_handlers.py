@@ -8,7 +8,7 @@ from flask_scrypt import generate_random_salt, generate_password_hash, check_pas
 from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
-from tools import generate_account_numbers, valid_account_number
+from tools import generate_account_numbers, valid_account_number, generate_QR
 
 from models import User, Cookies, Blacklist, Account, Transaction
 
@@ -225,6 +225,7 @@ def post_data(data = None):
 
             salt = generate_random_salt()
             password_hash = generate_password_hash(temp_password, salt)
+            secret_key,_ = generate_QR(request.form.get("fname"), request.form.get("id"))
 
             user_object = User( user_id=int(request.form.get("id")), 
                                 email=request.form.get("email"), 
@@ -240,7 +241,7 @@ def post_data(data = None):
                                 salt=salt,
                                 verification_code=code,
                                 verified=0,
-                                secret_key=password_hash,
+                                secret_key=secret_key,
                                 failed_logins=0)
 
             db.session.add(user_object)

@@ -4,7 +4,6 @@ from PIL import Image
 
 def generate_QR(fname, id):
     secret_key = pyotp.random_base32(length=32) # Using 256 bits secret key, see source below
-    #secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=str(user.fname) + '(' + str(user.id) + ')', issuer_name='JAMVP Bank')
     secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ' (' + str(id) + ')'), issuer_name='JAMVP Bank')
     qr = qrcode.QRCode(
     version=1,
