@@ -1,27 +1,30 @@
 from app import db
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import EncryptedType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
+secret_key = 'secretkey1234'
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=True, nullable=False)
-    email = db.Column(db.String, unique=True, nullable=False)
-    fname = db.Column(db.String, unique=False, nullable=False)
-    mname = db.Column(db.String, unique=False, nullable=True)
-    lname = db.Column(db.String, unique=False, nullable=False)
-    phone_num = db.Column(db.Integer, unique=True, nullable=False)
-    dob = db.Column(db.String, unique=False, nullable=False)
-    city = db.Column(db.String, unique=False, nullable=False)
-    postcode = db.Column(db.Integer, unique=False, nullable=False)
-    address = db.Column(db.String, unique=False, nullable=False)
-    hashed_password = db.Column(db.String, unique=False, nullable=True)
-    salt = db.Column(db.String, unique=False, nullable=True)
-    verification_code = db.Column(db.String, unique=True, nullable=True)
-    verified = db.Column(db.Boolean, unique=False, nullable=False)
-    password_reset_code = db.Column(db.String, unique=True, nullable=True)
-    secret_key = db.Column(db.String, unique=True, nullable=True)
-    failed_logins = db.Column(db.Integer, unique=False, nullable=False)
-    blocked_login_until = db.Column(db.String, unique=False, nullable=True)
+    user_id = db.Column(EncryptedType(db.Integer, secret_key, AesEngine, 'oneandzeroes'), unique=True, nullable=False)
+    email = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=False)
+    fname = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    mname = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=True)
+    lname = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    phone_num = db.Column(EncryptedType(db.Integer, secret_key, AesEngine, 'oneandzeroes'), unique=True, nullable=False)
+    dob = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    city = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    postcode = db.Column(EncryptedType(db.Integer, secret_key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
+    address = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    hashed_password = db.Column(db.String, unique=False, nullable=True) # Funker ikke å kryptere hashed_password, får feilmeldingen --> TypeError: a bytes-like object is required, not 'str'
+    salt = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=True)
+    verification_code = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=True)
+    verified = db.Column(EncryptedType(db.Boolean, secret_key, AesEngine, 'zeroes'), unique=False, nullable=False)
+    password_reset_code = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=True)
+    secret_key = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=True)
+    failed_logins = db.Column(db.Integer, unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
+    blocked_login_until = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=True)
 
 
 class Blacklist(db.Model):
