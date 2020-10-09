@@ -6,6 +6,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
+############################################################################################
+#
+#
+#   Et eksempelscript på kryptering av databaser.
+#
+#
+############################################################################################
+
 secret_key = 'secretkey1234'
 # setup
 engine = create_engine('sqlite:///etc/test_database.db')
