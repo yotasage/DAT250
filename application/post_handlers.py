@@ -40,11 +40,8 @@ def post_data(data = None):
                     print_userdata(user_object)
 
                 # Hvis brukeren er verifisert
-                secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
-                totp = pyotp.TOTP(secret_key).now()
-                print(totp)
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and totp == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
                     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
@@ -105,7 +102,7 @@ def post_data(data = None):
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
                 print(totp)
-                print(authenticator_code)
+                print(authenticator_code)   
                 print_userdata(user_object)
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
                 if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
@@ -114,7 +111,6 @@ def post_data(data = None):
                     user_object.salt = salt
                     
                     user_object.verified = 1                        # Marker som verifisert
-
                     # Oppretter brukskonto og sparekonto for brukeren
                     account_numbers = generate_account_numbers(amount=2)
                     regular_account = Account(user_id=str(user_object.user_id), account_number=account_numbers[0], account_name="Main", balance=8421)
