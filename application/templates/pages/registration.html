@@ -204,7 +204,15 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                     </div>
                 </div>
 
-                <br>
+                <div class="fields" id="address_field"> 
+                    <label for="captcha_input">Type in what you see in the image below:</label><br>
+                    <input type="text" id="captcha_input" placeholder="Captcha"  name="captcha_input" required>
+                </div>
+
+                <img src="/Captcha.png" alt="Captcha Image"> <br>
+
+                <button onclick="location.href='/registration.html';" type="button">Refresh Page/Captcha(?)</button><br><br>
+
                 <button type=submit formaction="../registration_data" formmethod="post">Register</button>
                 <br>
             </div>

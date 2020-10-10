@@ -1,7 +1,29 @@
 import qrcode
 import pyotp
 from PIL import Image
+from captcha.image import ImageCaptcha
+import random
+import string
 
+def random_string_generator(size=6, chars=string.ascii_letters + string.digits):    # string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.SystemRandom().choice(chars) for _ in range(size)) 
+
+def generateCaptcha():
+    length = random.randint(6,8)
+    captchatext = random_string_generator(length)
+    image = ImageCaptcha(str(captchatext))
+    image = image.generate_image()
+    return image, captchatext
+
+
+
+
+def generate_Captcha():
+    length = random.randint(6,8)
+    captchatext = random_string_generator(length)
+    image = ImageCaptcha()
+    return image, captchatext
+'''
 def generate_QR(fname, id):
     secret_key = pyotp.random_base32(length=32) # Using 256 bits secret key, see source below
     secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ' (' + str(id) + ')'), issuer_name='JAMVP Bank')
@@ -28,7 +50,7 @@ def generate_QR(fname, id):
 
 # Hente inn secret_key fra databasen hos brukeren, sette inn id til brukeren, både userid og fornavn
 
-
+'''
 
 
 

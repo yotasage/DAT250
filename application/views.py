@@ -10,7 +10,7 @@ import string
 from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
-from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR
+from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR, generate_Captcha
 from request_processing import signed_in
 
 
@@ -332,6 +332,12 @@ def QR(style = None):
             return send_file(qr, mimetype="image/png")
 
     abort(404)
+
+@app.route("/Captcha.png")
+def Captcha(style = None):
+    print("12")
+    captcha_image, _ = generate_Captcha()
+    return send_file(captcha_image, mimetype="image/png")
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
