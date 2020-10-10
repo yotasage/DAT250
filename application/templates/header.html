@@ -21,6 +21,15 @@
         </div>
 
         {% if logged_in %}
+        <div class= middle>
+            <div id="Din_sideBtn" onclick="window.open('/din_side.html','_top')">
+                <div id="Yourpagebtn_content">
+                    <img src="/logo_no_white.png" id="Din_sideLogo" alt="pf image"/>
+                    <span id="YourPageBtntext">Your page</span>
+                </div>
+            </div>
+        </div>
+
         <div class=right>
             <div id="User_info">
                 <span id="User_info_text">Name: {{fname}} {{mname}} {{lname}}</span><br>
@@ -31,7 +40,7 @@
                     <img src="/logout.png" id="LogoutBtnLogo" alt="logout image"/>
                     <span id="LogoutBtnText">Log Out</span>
                 </div>
-        </div>
+            </div>
             
         </div>        
         

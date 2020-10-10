@@ -23,8 +23,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         margin-right: auto;
         width:600px; 
         border-style: solid;  /* solid */
-        border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
-        background-color:  rgb(173, 173, 173);
+        border-color: #f8f6f6;  /* 87, 140, 250 */
+        background-color:  #f8f6f6;
     }
 
     button {
@@ -49,6 +49,15 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
 
     .textarea{
         width: 160px;
+        white-space: nowrap;
+        border-style: solid;
+        border-width: thin;
+        border-color: rgb(0, 0, 0);
+        background-color:  rgb(255, 255, 255);
+    }
+
+    .address_textarea {
+        width: 342px;
         white-space: nowrap;
         border-style: solid;
         border-width: thin;
@@ -156,7 +165,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
             <div>
                 <div class="fields">
                     <label>Address:</label><br>
-                    <div class="textarea">
+                    <div class="address_textarea">
                         <label>{{address}}</label>
                     </div>
                 </div>

@@ -9,18 +9,9 @@
 <style>
     .container{
         display: block;
-        float: left;;
-        width:950px;
-        border-style: none;
-        background-color: #f8f6f6;
-        padding-left:15px; 
-        padding-right:15px;
-    }
-
-    .shrtcut{
-        display: block;
-        float: left;
-        width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        width:1200px;
         border-style: none;
         background-color: #f8f6f6;
         padding-left:15px; 
@@ -77,15 +68,6 @@
     display: inline-block;
     }
 
-    .shrtbtn{
-        color: #15545c;
-    }
-
-    .shrtbtn:hover{
-        background-color: #15545c;
-        color: white
-    }
-
     body {margin: 0;}
 
   /* Page Content */
@@ -107,7 +89,7 @@
       <div class="body_content">
 
 
-    <!-- her har jeg (prøvd) å laget en betalingsgreie, men dette blir ikke i et table fordi jeg fant ikke ut av hvordan man gjør det, og den mangler en knapp -->
+
 <div class="container">
     <form action="action_page.php" method="post">
         <div>
@@ -118,13 +100,15 @@
                 <th><b>Pay to</b></th>
                 <th><b>Message or KID</b></th>
                 <th><b>Amount (kr)</b></th>
+                <th>Authenticator code</th>
                 <th> <img src="/pleikan.png" alt="paykan" class="paykan"></th>
             </tr>
             <tr>
                 <td><input type="text" placeholder="Your account number" name="account_num" required></td>
                 <td><input type="text" placeholder="Account number to" name="account_num_to" required> </td>
                 <td> <input type="text" placeholder="KID" name="kidnr"></td>
-                <td> <input type="number" placeholder="amount" name="belop" required></td>
+                <td> <input type="number" placeholder="Amount" name="belop" required></td>
+                <td><input type="number" placeholder="Authenticator code" name="auth_code"></td></td>
                 <td> <button type="submit" formaction="../payment" formmethod="post">Pay</button></td>
             </tr>
         </table>
@@ -183,17 +167,7 @@
     </form> 
 </div>
 
-<div class="shrtcut">
-        <div>
-            <h2 style="color:#15545c;">Shortcuts</h2>
-        </div>
 
-        <div>
-        <button class="btn shrtbtn" onclick="location.href='din_side.html';" type="submit">Your page</button>
-        </div>
-
-
-</div>
 </div>
 </body>
 </html>
