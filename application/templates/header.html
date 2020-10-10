@@ -22,12 +22,7 @@
 
         {% if logged_in %}
         <div class= middle>
-            <div id="Din_sideBtn" onclick="window.open('/din_side.html','_top')">
-                <div id="Yourpagebtn_content">
-                    <span id="YourPageBtntext">Your page</span>
-                    <img src="/person.png" id="YourpageBtnLogo" alt="pf image"/>
-                </div>
-            </div>
+            
         </div>
 
         <div class=right>
@@ -35,6 +30,14 @@
                 <span id="User_info_text">Name: {{fname}} {{mname}} {{lname}}</span><br>
                 <span id="User_info_text">User ID: {{id}}</span>
             </div>
+
+            <div id="Din_sideBtn_container" onclick="window.open('/din_side.html', '_top')">
+                <div id="Yourpagebtn_content"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
+                    <img src="/person.png" id="YourpageBtnLogo" alt="pf_image"/>
+                    <span id="YourPageBtntext">Your page</span>
+                </div>
+            </div>
+
             <div id="LogoutBtn_container" onclick="window.open('/logout', '_top')">
                 <div id="LogoutBtn_content"> <!-- _top gjør at det ikke er iframe'en som laster inn siden, men selve hoved vinduet -->
                     <img src="/logout.png" id="LogoutBtnLogo" alt="logout image"/>

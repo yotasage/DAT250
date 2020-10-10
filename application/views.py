@@ -7,7 +7,7 @@ import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response, send_file
 import string
 
-from models import User, Blacklist, Cookies, Account, Transaction
+from models import User, Blacklist, Cookies, Account, Transaction, CaptchaBase
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
 from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR, generate_Captcha
@@ -336,8 +336,16 @@ def QR(style = None):
 @app.route("/Captcha.png")
 def Captcha(style = None):
     print("12")
-    captcha_image, _ = generate_Captcha()
-    return send_file(captcha_image, mimetype="image/png")
+    # captcha_image, captcha_string = generate_Captcha()
+
+    # db.session.add(CaptchaBase(ip=request.remote_addr, captcha=captcha_string))
+    # db.session.commit()
+
+    # print(f"captcha_string = {captcha_string}")
+
+    abort(404)
+
+    # return send_file(captcha_image, mimetype="image/png")
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP

@@ -27,6 +27,13 @@ class User(db.Model):
     failed_logins = db.Column(db.Integer, unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
     blocked_login_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
 
+
+class CaptchaBase(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip = db.Column(db.String, unique=False, nullable=False)
+    captcha = db.Column(db.String, unique=False, nullable=False)
+
+
 # Uten kryptering:
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)

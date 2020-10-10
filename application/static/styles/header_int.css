@@ -3,13 +3,15 @@ body {
     padding: 0px;
     }
 
+    /* HOME BUTTON */
+
     #HomeBtn {
         display: inline-block;
         height: 60px;
         padding: 0px;
     
         border-radius: 15px;
-        border: 1px  solid rgb(255, 255, 255);   
+        border: 1px  none white;   
         background-color: #084A83;
     
         font-size: 26px;
@@ -18,78 +20,6 @@ body {
 
     #HomeBtn:hover {
         background-color: #5077bd;
-    }
-
-    #Din_sideBtn {
-        display: inline-block;
-        height: 60px;
-        padding: 0px;
-    
-        background-color: #084A83;
-    
-        border-radius: 15px;
-        border: 1px  solid rgb(255, 255, 255);
-        background-color: #084A83;
-    
-        font-size: 26px;
-        color: white;
-    
-    }
-
-    #Din_sideBtn:hover {
-        background-color: #5077bd;
-    }
-
-    #Din_sideLogo{
-        vertical-align: middle;
-        width: 50px; 
-        height: 50px;
-        padding: 5px;
-        background: url(/person.png);
-    }
-
-    #Yourpagebtn_content{
-        height: 100%;
-        width: 100%;
-        padding: 0px;
-    
-        background-color: Transparent;
-
-        border: 1px  solid none;   
-    
-        font-size: 26px;
-        color: white;
-    }
-
-    #LogoutBtn_content {
-        height: 100%;
-        width: 100%;
-        padding: 0px;
-    
-        background-color: Transparent;
-
-        border: 1px  solid none;   
-    
-        font-size: 16px;
-        color: white;
-    }
-
-    #LogoutBtn_container:hover {
-        background-color: #5077bd;
-    }
-
-    #LogoutBtn_container {
-        position: absolute;
-        top: 8px;
-        right: 5px;
-        height: 34px;
-        padding: 5px;
-
-        background-color: #084A83;
-    
-        border-radius: 15px;
-        border: 1px  solid rgb(255, 255, 255);   
-    
     }
 
     #HomeBtnLogo {
@@ -114,11 +44,87 @@ body {
         vertical-align: middle;
         padding: 5px;
     }
+
+    /* DIN SIDE */
+
+    #Din_sideBtn_container {
+        position: absolute;
+        top: 8px;
+        right: 125px;
+        height: 34px;
+        padding: 5px;
+
+        background-color: #1f6caf;
     
+        border-radius: 15px;
+        border: 1px  none white;   
+    }
+
+    #Din_sideBtn_container:hover {
+        background-color: #5077bd;
+    }
+
+    #Yourpagebtn_content {
+        height: 100%;
+        width: 100%;
+        padding: 0px;
+    
+        background-color: Transparent;
+
+        border: 1px  none white;   
+    
+        font-size: 16px;
+        color: white;
+    }
+
+    #YourpageBtnLogo {
+        vertical-align: middle;
+        padding: 5px;
+        border: 1px  none white;   
+        vertical-align: middle;
+    }
+
+    #YourPageBtntext {
+        vertical-align: middle;
+        padding:5px;
+    }
+
+    /* LOGG UT */
+
+    #LogoutBtn_container {
+        position: absolute;
+        top: 8px;
+        right: 5px;
+        height: 34px;
+        padding: 5px;
+
+        background-color: #1f6caf;  /*084A83*/
+    
+        border-radius: 15px;
+        border: 1px  none white;   
+    }
+
+    #LogoutBtn_container:hover {
+        background-color: #5077bd;
+    }
+
+    #LogoutBtn_content {
+        height: 100%;
+        width: 100%;
+        padding: 0px;
+    
+        background-color: Transparent;
+
+        border: 1px  none white;   
+    
+        font-size: 16px;
+        color: white;
+    }
+
     #LogoutBtnLogo {
         vertical-align: middle;
         padding: 5px;
-        border: 1px  none;   
+        border: 1px  none white;   
         vertical-align: middle;
     }
 
@@ -127,40 +133,30 @@ body {
         padding:5px;
     }
 
-    #YourPageBtntext{
-        vertical-align: middle;
-        padding:5px;
+    /* USER INFO */
+
+    #User_info {
+        position: absolute;
+        display: inline-block;
+        height: 60px;
+
+        /*width: 360px;*/
+        right: 265px;
+
+        font-size: 20px;
+        color: white;
+
+        border: 1px  none white;   
     }
-    #YourpageBtnLogo {
-        vertical-align: middle;
-        width: 25px; 
-        height: 25px;
-        padding: 5px;
-        background: none;
+
+    #User_info_text {
         vertical-align: middle;
     }
-#User_info {
-    position: absolute;
-    display: inline-block;
-    height: 60px;
 
-    /*width: 360px;*/
-    right: 120px;
-
-    font-size: 20px;
-    color: white;
-
-    border: 1px  none;   
-}
-
-#User_info_text {
-    vertical-align: middle;
-}
-
-
+/* HEADER */
 
 .left {
-    border: 1px  none;   
+    border: 1px  none white;   
     position: absolute;
     width: 250px;
     padding: 0px;
@@ -169,16 +165,15 @@ body {
 }
 
 .middle{
-    border: 1px  none;
+    border: 1px  none white;
     position: absolute;
     width: 200px;
     padding: 0px;
     right: calc(50% - 100px);
-    /*left: 255px;*/
     top: 5px;
 }
 .right {
-    border: 1px  none;   
+    border: 1px  none white;   
     position: absolute;
     width: 600px;
     padding: 0px;

@@ -10,8 +10,9 @@ from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS,
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR, generate_Captcha
+from tools import make_user
 
-from models import User, Cookies, Blacklist, Account, Transaction
+from models import User, Cookies, Blacklist, Account, Transaction, CaptchaBase
 
 # Denne er bare for POST forespørsler.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
@@ -20,6 +21,7 @@ def post_data(data = None):
 
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
+        make_user()
         user_id = request.form.get("uname")
         
         if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
@@ -167,6 +169,18 @@ def post_data(data = None):
 
     # Verifiser data fra bruker, lag bruker, sett info inn i databasen, send bekreftelsesmail.
     elif data == "registration_data":
+        
+        # captcha_input = request.form.get("captcha_input")
+
+        # if contain_allowed_symbols(s=captcha_input, whitelist=string.ascii_letters + string.digits):
+        #     captcha = CaptchaBase.query.filter_by(captcha=captcha_input).all()  # henter alle captcha koder som er lik den som ble skrevet inn
+
+        #     if captcha is not None:  # Hvis det finnes en captcha kode som er lik den som ble skrevet inn
+        #         for code in captcha:
+        #             if code.ip == request.remote_addr:  # Hvis captcha koden tilhører klienten sin IP
+        #                 db.session.delete(code)  # Slett den fra databasen
+        #                 db.session.commit()
+
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
 
@@ -260,6 +274,12 @@ def post_data(data = None):
             print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
 
+        #             else:
+        #                 print("INVALID CAPTCHA - 2")
+        #     else:
+        #         print("NO MATCHING CAPTCHA - 1")
+        # else:
+        #     print("INVALID CAPTCHA - 1")
     # Verifiser data fra bruker osv
     elif data == "edit_data": 
 
