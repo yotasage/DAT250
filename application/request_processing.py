@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort
 
-from models import User, Blacklist
+from models import User, Blacklist, Cookies
 
 from app import app, db # Importerer Flask objektet app
 from tools import valid_cookie, update_cookie, extract_cookies, update_cookie_clientside
@@ -77,7 +77,13 @@ def signed_in(signed_in_page, url_page):
         if valid == None:  # Cookiene vi fikk inn fantes ikke i databasen
             return url_page
         elif valid == False:  # En av cookiene var i databasen, og den var utgått
-            resp = redirect(url_for('login', timeout="True"), code=302)
+            cookie_object = Cookies.query.filter_by(session_cookie=cookie).first()
+
+            if cookie_object.ip != request.remote_addr:
+                resp = redirect(url_for('login'), code=302)
+            else:
+                resp = redirect(url_for('login', timeout="True"), code=302)
+
             update_cookie_clientside(cookie, resp, 0)
             delete_cookie(cookie)
             return resp

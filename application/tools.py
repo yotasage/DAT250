@@ -7,14 +7,14 @@ import random
 import pyotp
 import qrcode
 # import time  # For testing
-from flask import copy_current_request_context, redirect, url_for, request
+from flask import copy_current_request_context, redirect, url_for, request, render_template
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
 from io import BytesIO
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
-from models import Cookies, Account
+from models import Cookies, Account, User
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'jamvp.tk'
@@ -128,6 +128,18 @@ def extract_cookies():
 def valid_cookie(cookie_in_question):
     if contain_allowed_symbols(s=cookie_in_question, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
         cookie = Cookies.query.filter_by(session_cookie=cookie_in_question).first()
+
+        # Cookies er koblet opp mot ip til klienten, om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
+        # Returnerer False, da vil cookie bli slettet en eller annen gang, og brukeren blir da også logget ut
+        if cookie.ip != request.remote_addr:
+            user_object = User.query.filter_by(user_id=cookie.user_id).first()
+
+            html_template = render_template('/mails/stolen_cookie.html', fname=user_object.fname, mname=user_object.mname, 
+                                                                                lname=user_object.lname, ip=request.remote_addr,
+                                                                                date=datetime.now())
+
+            send_mail(recipients=[user_object.email], subject="Someone tried to sign in to your account", body="", html=html_template)
+            return False
 
         if cookie is None:
             return None  # Hvis cookien ikke finnes i database
