@@ -52,7 +52,7 @@ def post_data(data = None):
                     sessionId = random_string_generator(128)
                     expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
 
-                    cookie = Cookies(user_id=user_object.user_id,session_cookie=sessionId, valid_to=str(expiration_date))
+                    cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
 
@@ -176,7 +176,7 @@ def post_data(data = None):
 
         # Matcher bruker id og epost?
         email = request.form.get("email").split('@')
-        if feedback["email"] != '' and email[0] != request.form.get("id"): # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
+        if feedback["email"] == '' and email[0] != request.form.get("id"): # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
             feedback["email"] = "mismatch"
             feedback["id"] = "mismatch"
 

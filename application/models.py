@@ -64,6 +64,7 @@ class Blacklist(db.Model):
 class Cookies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, unique=False, nullable=False)
+    ip = db.Column(db.String, unique=False, nullable=False)
     session_cookie = db.Column(db.String, unique=True, nullable=False)
     valid_to = db.Column(db.String, unique=False, nullable=False)
 
