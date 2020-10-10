@@ -18,7 +18,7 @@ class User(db.Model):
     postcode = db.Column(EncryptedType(db.Integer, secret_key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
     address = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=False)
     hashed_password = db.Column(db.String, unique=False, nullable=True) # Funker ikke å kryptere hashed_password, får feilmeldingen --> TypeError: a bytes-like object is required, not 'str'
-    salt = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=False, nullable=True)
+    salt = db.Column(db.String, unique=False, nullable=True)
     verification_code = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=True)
     verified = db.Column(EncryptedType(db.Boolean, secret_key, AesEngine, 'zeroes'), unique=False, nullable=False)
     password_reset_code = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), unique=True, nullable=True)
