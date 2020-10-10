@@ -27,6 +27,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         border-color: #f8f6f6;  /* 87, 140, 250 */
         background-color:  #f8f6f6;
     }
+    .imgborder {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;        
+        border-style: double;
+        border-color: #5077bd; 
+    }
 
     button {
         display: block;
@@ -208,8 +216,11 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                     <label for="captcha_input">Type in what you see in the image below:</label><br>
                     <input type="text" id="captcha_input" placeholder="Captcha"  name="captcha_input" required>
                 </div>
-
-                <img src="/Captcha.png" alt="Captcha Image"> <br>
+                <br><br>
+                <div class="imgborder">
+                    <img src="/Captcha.png" alt="Captcha Image">
+                </div>
+                <br>
 
                 <button onclick="location.href='/registration.html';" type="button">Refresh Page/Captcha(?)</button><br><br>
 
