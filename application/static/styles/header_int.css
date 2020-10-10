@@ -21,7 +21,7 @@ body {
     }
 
     #Din_sideBtn {
-        position: relative;
+        display: inline-block;
         height: 60px;
         padding: 0px;
     
@@ -129,8 +129,16 @@ body {
 
     #YourPageBtntext{
         vertical-align: middle;
+        padding:5px;
     }
-
+    #YourpageBtnLogo {
+        vertical-align: middle;
+        width: 25px; 
+        height: 25px;
+        padding: 5px;
+        background: none;
+        vertical-align: middle;
+    }
 #User_info {
     position: absolute;
     display: inline-block;
