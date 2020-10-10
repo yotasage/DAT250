@@ -24,8 +24,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         width:600px; 
         text-align:left;
         border-style: solid;  /* solid */
-        border-color: rgb(150, 150, 150);  /* 87, 140, 250 */
-        background-color:  rgb(173, 173, 173);
+        border-color: #f8f6f6;  /* 87, 140, 250 */
+        background-color:  #f8f6f6;
     }
 
     button {
@@ -40,6 +40,23 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         display: inline-block;
     }
 
+    #address {
+        width: 345px;
+        white-space: nowrap;
+        border-style: solid;
+        border-width: thin;
+        border-color: rgb(0, 0, 0);
+        background-color:  rgb(255, 255, 255);
+    }
+
+    #textbox{
+        width: 160px;
+        white-space: nowrap;
+        border-style: solid;
+        border-width: thin;
+        border-color: rgb(0, 0, 0);
+        background-color:  rgb(255, 255, 255);
+    }
     body {margin: 0;}
 
     h1 {text-align: center;}
@@ -122,41 +139,41 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 <div>
                     <div class="fields">
                         <label for="fname">First name:</label><br>
-                        <input type="text" id="fname" value="{{fname}}"  name="fname" required>
+                        <input type="text" id="textbox" value="{{fname}}"  name="fname" required>
                     </div>
 
                     <div class="fields">
                         <label for="mname">Middle name:</label><br>
-                        <input type="text" id="mname" value="{{mname}}"  name="mname">
+                        <input type="text" id="textbox" value="{{mname}}"  name="mname">
                     </div>
 
                     <div class="fields">
                         <label for="lname">Last name:</label><br>
-                        <input type="text" id="lname" value="{{lname}}"  name="lname" required>
+                        <input type="text" id="textbox" value="{{lname}}"  name="lname" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="phone_num">Phone number:</label><br>
-                        <input type="text" id="phone_num" value="{{phone_num}}"  name="phone_num" required>
+                        <input type="text" id="textbox" value="{{phone_num}}"  name="phone_num" required>
                     </div>
 
                     <div class="fields">
                         <label for="dob">Date of birth:</label><br>
-                        <input type="text" id="dob" value="{{dob}}"  name="dob" required>
+                        <input type="text" id="textbox" value="{{dob}}"  name="dob" required>
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="city">City:</label><br>
-                        <input type="text" id="city" value="{{city}}"  name="city" required>
+                        <input type="text" id="textbox" value="{{city}}"  name="city" required>
                     </div>
 
                     <div class="fields">
                         <label for="postcode">Postal code:</label><br>
-                        <input type="text" id="postcode" value="{{postcode}}"  name="postcode" required>
+                        <input type="text" id="textbox" value="{{postcode}}"  name="postcode" required>
                     </div>
                 </div>
 
@@ -170,24 +187,24 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 <div>
                     <div class="fields">
                         <label for="pswd">Current password:</label><br>
-                        <input type="password" id="pswd" placeholder="Current password"  name="pswd" required>
+                        <input type="password" id="textbox" placeholder="Current password"  name="pswd" required>
                     </div>
 
                     <div class="fields">
                         <label for="auth">Authenticator code:</label><br>
-                        <input type="text" id="auth" placeholder="Authenticator code"  name="auth">
+                        <input type="text" id="textbox" placeholder="Authenticator code"  name="auth">
                     </div>
                 </div>
 
                 <div>
                     <div class="fields">
                         <label for="new_pswd">New password:</label><br>
-                        <input type="password" id="new_pswd" placeholder="New password"  name="new_pswd">
+                        <input type="password" id="textbox" placeholder="New password"  name="new_pswd">
                     </div>
 
                     <div class="fields">
                         <label for="new_pswd2">Confirm new password:</label><br>
-                        <input type="password" id="new_pswd2" placeholder="Confirm new password"  name="new_pswd2">
+                        <input type="password" id="textbox" placeholder="Confirm new password"  name="new_pswd2">
                     </div>
                 </div>
 

@@ -9,7 +9,7 @@ body {
         padding: 0px;
     
         border-radius: 15px;
-        border: 1px  none rgb(255, 255, 255);   
+        border: 1px  solid rgb(255, 255, 255);   
         background-color: #084A83;
     
         font-size: 26px;
@@ -20,6 +20,47 @@ body {
         background-color: #5077bd;
     }
 
+    #Din_sideBtn {
+        position: relative;
+        height: 60px;
+        padding: 0px;
+    
+        background-color: #084A83;
+    
+        border-radius: 15px;
+        border: 1px  solid rgb(255, 255, 255);
+        background-color: #084A83;
+    
+        font-size: 26px;
+        color: white;
+    
+    }
+
+    #Din_sideBtn:hover {
+        background-color: #5077bd;
+    }
+
+    #Din_sideLogo{
+        vertical-align: middle;
+        width: 50px; 
+        height: 50px;
+        padding: 5px;
+        background: url(/person.png);
+    }
+
+    #Yourpagebtn_content{
+        height: 100%;
+        width: 100%;
+        padding: 0px;
+    
+        background-color: Transparent;
+
+        border: 1px  solid none;   
+    
+        font-size: 26px;
+        color: white;
+    }
+
     #LogoutBtn_content {
         height: 100%;
         width: 100%;
@@ -27,7 +68,7 @@ body {
     
         background-color: Transparent;
 
-        border: 1px  none rgb(255, 255, 255);   
+        border: 1px  solid none;   
     
         font-size: 16px;
         color: white;
@@ -47,7 +88,7 @@ body {
         background-color: #084A83;
     
         border-radius: 15px;
-        border: 1px  none rgb(255, 255, 255);   
+        border: 1px  solid rgb(255, 255, 255);   
     
     }
 
@@ -77,11 +118,16 @@ body {
     #LogoutBtnLogo {
         vertical-align: middle;
         padding: 5px;
-        border: 1px  none rgb(255, 255, 255);   
+        border: 1px  none;   
         vertical-align: middle;
     }
 
     #LogoutBtnText {
+        vertical-align: middle;
+        padding:5px;
+    }
+
+    #YourPageBtntext{
         vertical-align: middle;
     }
 
@@ -96,15 +142,17 @@ body {
     font-size: 20px;
     color: white;
 
-    border: 1px  none rgb(255, 255, 255);   
+    border: 1px  none;   
 }
 
 #User_info_text {
     vertical-align: middle;
 }
 
+
+
 .left {
-    border: 1px  none rgb(255, 255, 255);   
+    border: 1px  none;   
     position: absolute;
     width: 250px;
     padding: 0px;
@@ -112,10 +160,19 @@ body {
     left: 5px;
 }
 
-.right {
-    border: 1px  none rgb(255, 255, 255);   
+.middle{
+    border: 1px  none;
     position: absolute;
-    width: 800px;
+    width: 200px;
+    padding: 0px;
+    right: calc(50% - 100px);
+    /*left: 255px;*/
+    top: 5px;
+}
+.right {
+    border: 1px  none;   
+    position: absolute;
+    width: 600px;
     padding: 0px;
     top: 5px;
     right: 5px;
