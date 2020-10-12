@@ -229,14 +229,11 @@ def post_data(data = None):
         for i in range(len(formgets)):
             print("inputfelt nr." + str(i) + ": " + formgets[i])
         
-        # captcha_input = request.form.get("captcha_input")
-
         # reCaptcha
         captcha_response = request.form.get('g-recaptcha-response')
 
         if not is_human(captcha_response):
             return redirect(url_for('registration'), code=302)
-            
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
@@ -294,6 +291,13 @@ def post_data(data = None):
 
         # Hvis brukeren allerede finnes, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
         elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
+            user_object = User.query.filter_by(user_id=int(request.form.get("id"))).first()
+            html_template = render_template('/mails/register_existing_user.html', fname=user_object.fname, mname=user_object.mname, 
+                                                                        lname=user_object.lname, ip=request.remote_addr,
+                                                                        date=datetime.now())
+
+            send_mail(recipients=[user_object.email], subject="Someone tried to register an account using your email", body="", html=html_template)
+
             return redirect(url_for('login', v_mail="True"), code=302)
         # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
         else:
@@ -333,13 +337,6 @@ def post_data(data = None):
             db.session.commit()
             print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
-
-        #             else:
-        #                 print("INVALID CAPTCHA - 2")
-        #     else:
-        #         print("NO MATCHING CAPTCHA - 1")
-        # else:
-        #     print("INVALID CAPTCHA - 1")
 
     # Verifiser data som skal endres av bruker
     elif data == "edit_data": 
