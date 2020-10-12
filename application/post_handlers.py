@@ -232,9 +232,6 @@ def post_data(data = None):
         # reCaptcha
         captcha_response = request.form.get('g-recaptcha-response')
 
-        if not is_human(captcha_response):
-            return redirect(url_for('registration'), code=302)
-
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
 
@@ -281,7 +278,7 @@ def post_data(data = None):
                 error = True
 
         # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
-        if error:
+        if error or not is_human(captcha_response):
             return redirect(url_for('registration', fname=fname, mname=mname, lname=lname, email=email, id=user_id, 
                                                     phone_num=phone_num, dob=dob, city=city, postcode=postcode, address=address, 
                                                     fname_error=feedback["fname"], mname_error=feedback["mname"], lname_error=feedback["lname"], 
