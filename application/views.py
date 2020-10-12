@@ -7,7 +7,7 @@ import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response, send_file
 import string
 
-from models import User, Blacklist, Cookies, Account, Transaction, CaptchaBase
+from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
 from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR

@@ -1,0 +1,8 @@
+<p>Hello {{fname}} {{mname}} {{lname}}</p>
+
+<p>You or someone else failed to sign into your account at JAMVP Bank too many times.</p>
+<p>For that reason we are now blocking every login attempt for your user.</p>
+<p>you can sign in again after {{ blocked_until.strftime("%A, %d %B, %Y at %X") }}</p><br>
+<p>We have also signed you out and deleted your current session.</p><br>
+<br>
+<p>The login attempt was made {{ date.strftime("%A, %d %B, %Y at %X") }}, from IP: {{ ip }}</p>

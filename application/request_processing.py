@@ -5,12 +5,12 @@ from flask import render_template, request, redirect, url_for, abort
 from models import User, Blacklist, Cookies
 
 from app import app, db # Importerer Flask objektet app
+
+# Constants
+from app import MAX_TIME_BETWEEN_REQUESTS, BLOCK_PERIOD, NUMBER_OF_FREQUENT_REQUESTS
+
 from tools import valid_cookie, update_cookie, extract_cookies, update_cookie_clientside
 from tasks import delete_cookie
-
-MAX_TIME_BETWEEN_REQUESTS = 5  # Seconds, if a request is performed within a certain amount of time after another, it is considered to frequent
-BLOCK_PERIOD = 30  # Seconds
-NUMBER_OF_FREQUENT_REQUESTS = 100
 
 # https://stackoverflow.com/questions/49547/how-do-we-control-web-page-caching-across-all-browsers
 # https://stackoverflow.com/questions/29464276/add-response-headers-to-flask-web-app
@@ -22,7 +22,6 @@ NUMBER_OF_FREQUENT_REQUESTS = 100
 # dette øker trafikken mellom serveren og brukeren (kjedelig for de me mobil data), men sikkerheten øker generelt.
 @app.after_request  # Denne kjører etter route funksjonene
 def add_headers(resp):
-    #if request.path != "/":
     resp.headers.set('Strict-Transport-Security', "max-age=2629743")            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
@@ -32,12 +31,6 @@ def add_headers(resp):
 
 @app.before_request
 def before_request_func():
-
-    # print(f"request.is_secure = {request.is_secure}")
-    # print(f"request.host_url = {request.host_url}")
-    # print(f"request.host = {request.host}")
-    
-
     client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
 
     if client_listing is not None:

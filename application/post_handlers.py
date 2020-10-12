@@ -6,14 +6,18 @@ import random
 import pyotp
 from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
-from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
+from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objektet app
+
+# Constants
+from app import NUMBER_OF_LOGIN_ATTEMPTS_IP, NUMBER_OF_LOGIN_ATTEMPTS_USER, BLOCK_LOGIN_TIME_IP, BLOCK_LOGIN_TIME_USER, RESTRIC_PASSWORD_RESET
+
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR
 # from tools import generate_Captcha
 from tools import make_user
 
-from models import User, Cookies, Blacklist, Account, Transaction, CaptchaBase
+from models import User, Cookies, Blacklist, Account, Transaction
 
 # Denne er bare for POST forespørsler.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
@@ -32,7 +36,7 @@ def post_data(data = None):
             if client_listing.blocked_login_until is not None and datetime.now() > datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                 client_listing.blocked_login_until = None
                 db.session.commit()
-                return redirect(url_for('login'), code=302)
+                print("DENNE KLIENTEN ER IKKE LENGER BLOKKERT")
 
             # Hvis clienten ikke er blokka
             if client_listing.blocked_login_until is None:
@@ -40,11 +44,18 @@ def post_data(data = None):
                 user_object = User.query.filter_by(user_id=int(user_id)).first()
 
                 if user_object is not None:
-                    print_userdata(user_object)
+                    pass
+                    # print_userdata(user_object)
 
-                # Hvis brukeren er verifisert
+                # Hvis login for denne brukerkontoen har vært blokket, og ikke lenger er det
+                if user_object is not None and user_object.blocked_login_until is not None and datetime.now() > datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                    user_object.blocked_login_until = None
+                    db.session.commit()
+                    print("DENNE BRUKEREN ER IKKE LENGER BLOKKERT")
+
+                # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
                     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
@@ -67,6 +78,10 @@ def post_data(data = None):
                         resp.headers.set('Set-Cookie', "sessionId=" + sessionId + "; Max-Age=" + str(cookie_maxAge + client_maxAge) + "; SameSite=Strict; HttpOnly")
                     return resp
 
+                # Hvis brukeren er blokka
+                elif user_object is not None and user_object.blocked_login_until is not None and datetime.now() <= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                    return redirect(url_for('login', error="True"), code=302)
+                
                 # Hvis brukeren ikke er verifisert, og oppgir riktig midlertidig passord
                 elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and not user_object.verified:
                     return redirect(url_for('verification', code=user_object.verification_code), code=302)
@@ -76,9 +91,25 @@ def post_data(data = None):
                     client_listing.wrong_password_count += 1
                     print(f"client_listing.wrong_password_count = {client_listing.wrong_password_count}")
 
-                    if client_listing.wrong_password_count >= NUMBER_OF_LOGIN_ATTEMPTS:
-                        client_listing.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME))
+                    if client_listing.wrong_password_count >= NUMBER_OF_LOGIN_ATTEMPTS_IP:
+                        client_listing.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_IP))
                         client_listing.wrong_password_count = 0
+
+                    if user_object is not None:
+                        user_object.failed_logins +=1
+                        print(f"user_object.failed_logins = {user_object.failed_logins}")
+
+                        if user_object.failed_logins >= NUMBER_OF_LOGIN_ATTEMPTS_USER:
+                            user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
+                            user_object.failed_logins = 0
+
+                            blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
+
+                            html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
+                                                                                                lname=user_object.lname, ip=request.remote_addr,
+                                                                                                date=datetime.now(), blocked_until=blocked_until)
+
+                            send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
 
                     db.session.commit()
 
@@ -133,7 +164,9 @@ def post_data(data = None):
     elif data == "reset_request":
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
-            if user_object is not None and user_object.verified:
+            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"):
+                user_object.last_password_reset_request = str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET))
+
                 code = random_string_generator(128)
                 user_object.password_reset_code = code
 
@@ -144,6 +177,8 @@ def post_data(data = None):
                 send_mail(recipients=[user_object.email], subject="Password reset", body="TEST_BODY", html=html_template)
 
                 db.session.commit()
+
+        print(datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"))
 
     elif data == "reset_password":
         if 'Referer' in request.headers:
@@ -267,7 +302,8 @@ def post_data(data = None):
                                 verification_code=code,
                                 verified=0,
                                 secret_key=secret_key,
-                                failed_logins=0)
+                                failed_logins=0,
+                                last_password_reset_request=str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET)))
 
             db.session.add(user_object)
             db.session.commit()

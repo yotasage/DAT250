@@ -12,11 +12,14 @@ from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image, ImageFont
 from io import BytesIO
-from captcha.image import ImageCaptcha
+# from captcha.image import ImageCaptcha
 from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
+
+from app import RESTRIC_PASSWORD_RESET
+
 from models import Cookies, Account, User
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
@@ -407,7 +410,8 @@ def make_user():
                             verification_code=None,
                             verified=1,
                             secret_key=secret_key,
-                            failed_logins=0)
+                            failed_logins=0,
+                            last_password_reset_request=str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET)))
 
         account_numbers = generate_account_numbers(amount=2)
         regular_account = Account(user_id=100001, account_number=account_numbers[0], account_name="Main", balance=8421)

@@ -21,11 +21,6 @@
     margin-right: auto;
   }
 
-  /*img.avatar {
-    width: 100%;
-    border-radius: 50%;
-  }*/
-
   button {
     display: inline-block;
   }
@@ -117,12 +112,7 @@
                 <input type="text" name="auth_code" required> <br> <br>
               </div>
 
-              {% if deactivate_btn %}
-                <button type="button" onclick="location.href='login.html';">Login</button>
-              {% else %}
-                <button type="submit" formaction="../login_data" formmethod="post">Login</button>
-              {% endif %}
-
+              <button type="submit" formaction="../login_data" formmethod="post">Login</button>
               
               <button onclick="location.href='registration.html';" type="button">Register</button> 
                 
