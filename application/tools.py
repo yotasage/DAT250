@@ -14,7 +14,7 @@ from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image, ImageFont
 from io import BytesIO
-from captcha.image import ImageCaptcha
+# from captcha.image import ImageCaptcha
 from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
 
 
