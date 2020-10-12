@@ -15,7 +15,7 @@ from tools import send_mail, is_number, random_string_generator, contain_allowed
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR, is_human
 # from tools import generate_Captcha
-from tools import make_user
+from tools import make_user, Norwegian_characters
 
 from models import User, Cookies, Blacklist, Account, Transaction
 
@@ -439,7 +439,7 @@ def post_data(data = None):
         msg = request.form.get('kidnr')                # Stor risk for SQL Injection, hvilke symboler skal vi tillate, eventuelt, skal vi søke etter SQL kommandoer i teksten?
 
         # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall og at det er større enn 0
-        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0 and contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' '):
+        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0 and contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' ' + Norwegian_characters):
             amount = int(request.form.get('belop'))            
 
             #Vertifiser bruker

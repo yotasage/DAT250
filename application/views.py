@@ -253,7 +253,7 @@ def registration():
 @app.route("/transaction_view.html", methods=['GET'])
 def transaction_overview(page = None):
     print("25")
-    resp1 = make_response(render_template("pages/transaction_view.html", len=0))
+    resp1 = make_response(render_template("pages/transaction_view.html", len=0))  # Side for når en er innlogget
     resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
 
     # Les ut variabler
