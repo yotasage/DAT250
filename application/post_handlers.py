@@ -9,7 +9,8 @@ from flask_scrypt import generate_random_salt, generate_password_hash, check_pas
 from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
-from tools import generate_account_numbers, valid_account_number, generate_QR, generate_Captcha
+from tools import generate_account_numbers, valid_account_number, generate_QR
+# from tools import generate_Captcha
 from tools import make_user
 
 from models import User, Cookies, Blacklist, Account, Transaction, CaptchaBase
@@ -40,7 +41,7 @@ def post_data(data = None):
 
                 if user_object is not None:
                     print_userdata(user_object)
-
+                    
                 # Hvis brukeren er verifisert
                 authenticator_code = request.form.get('auth_code')
                 if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
@@ -101,13 +102,12 @@ def post_data(data = None):
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
                 ############################
-                captcha_input = request.form.get('captcha_input')
+                # captcha_input = request.form.get('captcha_input')
                 ############################
                 totp = pyotp.TOTP(secret_key).now()
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
-                print(totp)
-                print(authenticator_code)   
+  
                 print_userdata(user_object)
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
                 if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
@@ -377,7 +377,7 @@ def post_data(data = None):
         #authenticator_code = request.form.get('auth_code')
         totp = pyotp.TOTP(secret_key).now()
         # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall og at det er større enn 0
-        if from_acc != to_acc and valid_account_number(from_acc) and request.form.get('auth_code') == totp and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0:
+        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0 and contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' '):
             amount = int(request.form.get('belop'))            
 
             #Vertifiser bruker
