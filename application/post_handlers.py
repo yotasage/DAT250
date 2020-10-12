@@ -41,7 +41,7 @@ def post_data(data = None):
 
                 if user_object is not None:
                     print_userdata(user_object)
-                    
+
                 # Hvis brukeren er verifisert
                 authenticator_code = request.form.get('auth_code')
                 if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
@@ -373,7 +373,7 @@ def post_data(data = None):
         from_acc = request.form.get('account_num')
         to_acc = request.form.get('account_num_to')
         msg = request.form.get('kidnr')                # Stor risk for SQL Injection, hvilke symboler skal vi tillate, eventuelt, skal vi søke etter SQL kommandoer i teksten?
-        
+
         # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall og at det er større enn 0
         if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0 and contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' '):
             amount = int(request.form.get('belop'))            
@@ -384,9 +384,13 @@ def post_data(data = None):
                 cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
                 user = User.query.filter_by(user_id=cookie.user_id).first()
 
-                # Sjekk om brukeren prøver å sende penger fra en av sine kontoer
+                secret_key = user.secret_key
+                authenticator_code = request.form.get('auth_code')
+                totp = str(pyotp.TOTP(secret_key).now())
+
+                # Sjekk om brukeren prøver å sende penger fra en av sine kontoer, og om autentiseringskoden er riktig
                 account_from = Account.query.filter_by(account_number=from_acc).first()
-                if account_from is not None and account_from.user_id == user.user_id:
+                if account_from is not None and account_from.user_id == user.user_id and totp == authenticator_code:
                     
                     #Sjekk at belopet er gyldig (ikke mer enn det de har på kontoen)
                     if account_from.balance >= amount:
@@ -400,7 +404,6 @@ def post_data(data = None):
                             # Loggfør transaksjon
                             transaction = Transaction(transfer_time=str(datetime.now()), from_acc=from_acc, to_acc=to_acc, message=msg, amount=amount)
                             db.session.add(transaction)
-
                             db.session.commit()
 
     # Hvis vi får en ugyldig POST forespørsel eller if'ene ikke sender brukeren til en spesifik side, send brukeren til fremsiden
