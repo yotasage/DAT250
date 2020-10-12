@@ -6,6 +6,8 @@ import string
 import random
 import pyotp
 import qrcode
+import json
+import requests
 # import time  # For testing
 from flask import copy_current_request_context, redirect, url_for, request, render_template
 from flask_mail import Message as _Message
@@ -106,24 +108,16 @@ def generate_QR(fname, id, secret_key=None, save=False):
 
     return secret_key, img_io
 
-# def generate_Captcha():
-#     # done = False
-#     # while not done:
-#     #     try:
+def is_human(captcha_response):
+    """ Validating recaptcha response from google server
+        Returns True captcha test passed for submitted form else returns False.
+    """
+    secret = "6LeVXtYZAAAAAEucQFkxkIpYskRfAyKB140yp-HF"
+    payload = {'response':captcha_response, 'secret':secret}
+    response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
+    response_text = json.loads(response.text)
+    return response_text['success']
 
-#     length = random.randint(6,7)
-#     captchatext = random_string_generator(length)
-#     # print(f"captchatext = {captchatext}")
-#     image = ImageCaptcha()  # difficulty="low", medium, high
-#     image = image.generate_image(chars=" ")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
-#     img_io = BytesIO()
-#     image.save(img_io, 'PNG', quality=100)
-#     img_io.seek(0)
-#         # except OSError:
-#         #     print("Noe gikk galt mens koden laget captcha bilde")  # OSError: invalid face handle
-#         #     pass
-
-#     return img_io, captchatext
 
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):

@@ -175,6 +175,7 @@ def edit():
     address_error = request.args.get('address')
     pswd_error = request.args.get('pswd')
     new_pswd_error = request.args.get('new_pswd')
+    auth_error = request.args.get('auth')
 
     session_cookie = get_valid_cookie()
 
@@ -188,7 +189,7 @@ def edit():
                                         fname_error=fname_error, mname_error=mname_error, lname_error=lname_error,
                                         phone_num_error=phone_num_error, dob_error=dob_error, city_error=city_error,
                                         postcode_error=postcode_error, address_error=address_error, pswd_error=pswd_error,
-                                        new_pswd_error=new_pswd_error))  # Ønsket side for når vi er innlogget
+                                        new_pswd_error=new_pswd_error, auth_error=auth_error))  # Ønsket side for når vi er innlogget
     else:
         resp1 = make_response()  # Tom respons, denne skal ikke trigge uansett siden brukeren ikke er logget inn. Ønsket side for når vi er innlogget
 
@@ -216,13 +217,33 @@ def registration():
     city = request.args.get('city')
     postcode = request.args.get('postcode')
     address = request.args.get('address')
+    fname_error = request.args.get('fname_error')
+    mname_error = request.args.get('mname_error')
+    lname_error = request.args.get('lname_error')
+    email_error = request.args.get('email_error')
+    id_error = request.args.get('id_error')
+    phone_num_error = request.args.get('phone_num_error')
+    dob_error = request.args.get('dob_error')
+    city_error = request.args.get('city_error')
+    postcode_error = request.args.get('postcode_error')
+    address_error = request.args.get('address_error')
+    errors = [fname_error, mname_error, lname_error, email_error, id_error, phone_num_error, 
+                dob_error, city_error, postcode_error, address_error]
+    for i in errors:
+        print("error" + str(errors.index(i)) + ": " + str(i))
+    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
     # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
     resp2 = make_response(render_template("pages/registration.html", fname=fname, mname=mname, lname=lname, 
-                                                                        email=email, id=uid, phone_num=phone_num, 
-                                                                        dob=dob, city=city, postcode=postcode, 
-                                                                        address=address))     
+                                                                    email=email, id=uid, phone_num=phone_num, 
+                                                                    dob=dob, city=city, postcode=postcode, 
+                                                                    address=address, fname_error=fname_error,
+                                                                    mname_error=mname_error, lname_error=lname_error,
+                                                                    email_error=email_error, id_error=id_error,
+                                                                    phone_num_error=phone_num_error, dob_error=dob_error,
+                                                                    city_error=city_error, postcode_error=postcode_error,
+                                                                    address_error=address_error, sitekey=sitekey))     
 
     try:
         return signed_in(resp1, resp2)
@@ -296,9 +317,9 @@ def verification(style = None):
 
 @app.route("/password_reset_request.html")
 def password_reset_request(style = None):
-    print("29")
+    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
-    resp2 = make_response(render_template("pages/password_reset_request.html", len=0))  # Side for når en ikke er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", sitekey=sitekey))  # Side for når en ikke er innlogget
 
     try:
         return signed_in(resp1, resp2)
@@ -333,20 +354,6 @@ def QR(style = None):
             return send_file(qr, mimetype="image/png")
 
     abort(404)
-
-# @app.route("/Captcha.png")
-# def Captcha(style = None):
-#     print("12")
-#     captcha_image, captcha_string = generate_Captcha()
-
-#     # db.session.add(CaptchaBase(ip=request.remote_addr, captcha=captcha_string))
-#     # db.session.commit()
-
-#     print(f"captcha_string = {captcha_string}")
-
-#     # abort(404)
-
-#     return send_file(captcha_image, mimetype="image/png")
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP

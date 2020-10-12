@@ -53,36 +53,36 @@ class User(db.Model):
 
 class Blacklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ip = db.Column(db.String, unique=True, nullable=False)
-    last = db.Column(db.String, unique=False, nullable=False)                        # Sist gang en request ble gjort
+    ip = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=False)
+    last = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)                        # Sist gang en request ble gjort
     # start = db.Column(db.String, unique=False, nullable=False)                       # Når det begynte å bli for mange requests
-    frequent_request_count = db.Column(db.Integer, unique=False, nullable=False)     # Hvor mange ganger brukeren har sent for hyppige requests
-    wrong_password_count = db.Column(db.Integer, unique=False, nullable=False)       # Hvor mange ganger brukeren har skrevet inn feil passord
-    blocked_until = db.Column(db.String, unique=False, nullable=True)
-    blocked_login_until = db.Column(db.String, unique=False, nullable=True)
-    reason = db.Column(db.String, unique=False, nullable=True)                      
+    frequent_request_count = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)     # Hvor mange ganger brukeren har sent for hyppige requests
+    wrong_password_count = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)       # Hvor mange ganger brukeren har skrevet inn feil passord
+    blocked_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
+    blocked_login_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
+    reason = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)                      
 
 
 class Cookies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=False, nullable=False)
-    ip = db.Column(db.String, unique=False, nullable=False)
-    session_cookie = db.Column(db.String, unique=True, nullable=False)
-    valid_to = db.Column(db.String, unique=False, nullable=False)
+    user_id = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
+    ip = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    session_cookie = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=False)
+    valid_to = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
 
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=False, nullable=False)
-    balance = db.Column(db.Integer, unique=False, nullable=False)
-    account_number = db.Column(db.String, unique=True, nullable=False)
-    account_name = db.Column(db.String, unique=False, nullable=False)
+    user_id = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
+    balance = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
+    account_number = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=False)
+    account_name = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
 
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    transfer_time = db.Column(db.String, unique=False, nullable=False)
-    from_acc = db.Column(db.String, unique=False, nullable=False)
-    to_acc = db.Column(db.String, unique=False, nullable=False)
-    message = db.Column(db.String, unique=False, nullable=False)
-    amount = db.Column(db.Integer, unique=False, nullable=False)
+    transfer_time = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    from_acc = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    to_acc = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    message = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
+    amount = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)

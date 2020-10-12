@@ -82,17 +82,19 @@
           
           <div class="body_content">
     <div>
-        <img src="/QR.png?vkey={{vkey}}" alt="Logo" class="logo"> <br> <!-- to punktum i starten betyr at en skal gå en mappe tilbake i strukturen --> 
+        <img src="/QR.png?vkey={{vkey}}" alt="Logo" class="logo">
     </div>
 
     <div class="container">
             <form action="action_page.php" method="post">
                 <div style="text-align: center;">
+                    <strong style="color: black;">Scan the QR-code with your smartphone to register the user on your preferred Authenticator App. We strongly recommend Microsoft Authenticator.</strong><br><br>
                     {%if error %}
                         <br><strong style="color:red;">Passwords doesn't match, is the same as the temporary password, or are of an invalid length, should be between 8 to 128 characters.</strong><br><br>
                     {% else %}
-                        <br><br><br>
+                        <br>
                     {% endif %}
+
                 </div>
         
                 <div class="container2">
