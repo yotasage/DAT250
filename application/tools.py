@@ -118,7 +118,6 @@ def is_human(captcha_response):
     response_text = json.loads(response.text)
     return response_text['success']
 
-
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):
         index = element
@@ -304,7 +303,7 @@ def valid_address(address):
     return ""
 
 def valid_number(number, min_length=1, max_length=8):
-    if is_number(number) and (min_length <= len(number) <= max_length):
+    if is_number(number) and (min_length <= len(number) <= max_length) and '.' not in number and ',' not in number:
         return True
     return False
 
