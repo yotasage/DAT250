@@ -266,7 +266,7 @@ def transaction_overview(page = None):
         account = Account.query.filter_by(account_number=account_number).first()
 
         # Sjekker om dette er brukeren sin konto
-        if account.user_id == user.user_id:
+        if account is not None and user is not None and account.user_id == user.user_id:
 
             transactions = Transaction.query.filter_by(to_acc=account.account_number).all() + Transaction.query.filter_by(from_acc=account.account_number).all()
 
