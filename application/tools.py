@@ -111,8 +111,8 @@ def generate_Captcha():
     length = random.randint(6,7)
     captchatext = random_string_generator(length)
     print(f"captchatext = {captchatext}")
-    image = ImageCaptcha(fonts=['/static/fonts/arial.ttf'], font_sizes=(26, 28, 30))  # difficulty="low", medium, high
-    image = image.generate_image(chars="2134")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
+    image = ImageCaptcha() #fonts=['/static/fonts/arial.ttf'], font_sizes=(26, 28, 30))  # difficulty="low", medium, high
+    image = image.generate_image(captchatext) #chars="2134")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
     img_io = BytesIO()
     image.save(img_io, 'PNG', quality=100)
     img_io.seek(0)
