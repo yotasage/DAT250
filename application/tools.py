@@ -407,8 +407,8 @@ def make_user():
                             last_password_reset_request=str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET)))
 
         account_numbers = generate_account_numbers(amount=2)
-        regular_account = Account(user_id=100001, account_number=account_numbers[0], account_name="Main", balance=8421)
-        savings_account = Account(user_id=100001, account_number=account_numbers[1], account_name="Savings", balance=22458)
+        regular_account = Account(user_id=100001, account_number=account_numbers[0], account_name="Main", balance=58421)
+        savings_account = Account(user_id=100001, account_number=account_numbers[1], account_name="Savings", balance=3522458)
 
         # Legg kontoene til i databasen, og lagre alle database endringer
         db.session.add(regular_account)
