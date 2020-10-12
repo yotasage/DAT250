@@ -169,6 +169,22 @@ def post_data(data = None):
 
     # Verifiser data fra bruker, lag bruker, sett info inn i databasen, send bekreftelsesmail.
     elif data == "registration_data":
+
+        # Henter all infoen fra brukerinput først for å slippe så mange request.form.get(...)
+        fname = request.form.get("fname")
+        mname = request.form.get("mname")
+        lname = request.form.get("lname")
+        email = request.form.get("email")
+        user_id = request.form.get("id")
+        phone_num = request.form.get("phone_num")
+        dob = request.form.get("dob")
+        city = request.form.get("city")
+        postcode = request.form.get("postcode")
+        address = request.form.get("address")
+
+        formgets = [fname, mname, lname, email, user_id, phone_num, dob, city, postcode, address]
+        for i in range(len(formgets)):
+            print("inputfelt nr." + str(i) + ": " + formgets[i])
         
         # captcha_input = request.form.get("captcha_input")
 
@@ -185,40 +201,40 @@ def post_data(data = None):
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
 
         # Er fødselsdatoen gyldig?
-        if not valid_date(request.form.get("dob")):
+        if not valid_date(dob):
             feedback["dob"] = "invalid"
 
         # Er epost gyldig?
-        feedback["email"] = valid_email(request.form.get("email"))
+        feedback["email"] = valid_email(email)
 
         # Matcher bruker id og epost?
-        email = request.form.get("email").split('@')
-        if feedback["email"] == '' and email[0] != request.form.get("id"): # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
+        email = email.split('@')
+        if feedback["email"] == '' and email[0] != user_id: # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
             feedback["email"] = "mismatch"
             feedback["id"] = "mismatch"
 
         # Er bruker id'en gyldig?
-        feedback["id"] = valid_id(request.form.get("id"))
+        feedback["id"] = valid_id(user_id)
 
         # Er fornavn, mellomnavn og etternavn gyldig?
-        feedback["fname"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
-        if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname"] = valid_name(names=request.form.get("mname"))
-        feedback["lname"] = valid_name(names=request.form.get("lname"))
+        feedback["fname"] = valid_name(names=fname, whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
+        if mname != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
+            feedback["mname"] = valid_name(names=mname)
+        feedback["lname"] = valid_name(names=lname)
 
         # Er by navn gyldig?
-        feedback["city"] = valid_name(request.form.get("city"))
+        feedback["city"] = valid_name(city)
 
         # Er telefonnummer gyldig?
-        if not valid_number(number=request.form.get("phone_num"), min_length=8, max_length=8):
+        if not valid_number(number=phone_num, min_length=8, max_length=8):
             feedback["phone_num"] = "NaN"
 
         # Er post kode gyldig?
-        if not valid_number(number=request.form.get("postcode"), min_length=4, max_length=4):
+        if not valid_number(number=postcode, min_length=4, max_length=4):
             feedback["postcode"] = "NaN"
 
         # Er addressen gyldig?
-        feedback["address"] = valid_address(request.form.get("address"))
+        feedback["address"] = valid_address(address)
 
         # Har det oppstått noen feil?
         error = False
@@ -228,10 +244,12 @@ def post_data(data = None):
 
         # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
         if error:
-            return redirect(url_for('registration', fname=feedback["fname"], mname=feedback["mname"], lname=feedback["lname"], 
-                                                    email=feedback["email"], id=feedback["id"], phone_num=feedback["phone_num"], 
-                                                    dob=feedback["dob"], city=feedback["city"], postcode=feedback["postcode"], 
-                                                    address=feedback["address"]), code=302)
+            return redirect(url_for('registration', fname=fname, mname=mname, lname=lname, email=email, id=user_id, 
+                                                    phone_num=phone_num, dob=dob, city=city, postcode=postcode, address=address, 
+                                                    fname_error=feedback["fname"], mname_error=feedback["mname"], lname_error=feedback["lname"], 
+                                                    email_error=feedback["email"], id_error=feedback["id"], phone_num_error=feedback["phone_num"], 
+                                                    dob_error=feedback["dob"], city_error=feedback["city"], postcode_error=feedback["postcode"], 
+                                                    address_error=feedback["address"]), code=302)
 
         # Hvis brukeren allerede finnes, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
         elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
@@ -241,9 +259,9 @@ def post_data(data = None):
             code = random_string_generator(128)             # Generate a random string of 128 symbols, this is the verification code
             temp_password = random_string_generator(32)     # Generate a random string of 20 symbols, considering removing this
             validation_link = request.host_url + 'verification?code=' + code  # Lager linken brukeren skal få i mailen.
-            html_template = render_template('/mails/account_verification.html', fname=request.form.get("fname"), mname=request.form.get("mname"), 
-                                                                                lname=request.form.get("lname"), link=validation_link,
-                                                                                password=temp_password, uid=request.form.get("id"))
+            html_template = render_template('/mails/account_verification.html', fname=fname, mname=mname, 
+                                                                                lname=lname, link=validation_link,
+                                                                                password=temp_password, uid=user_id)
             
             # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
             send_mail(recipients=[request.form.get("email")], subject="Account verification", body="", html=html_template)
@@ -280,7 +298,7 @@ def post_data(data = None):
         #         print("NO MATCHING CAPTCHA - 1")
         # else:
         #     print("INVALID CAPTCHA - 1")
-        
+
     # Verifiser data som skal endres av bruker
     elif data == "edit_data": 
 

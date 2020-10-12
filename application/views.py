@@ -217,13 +217,32 @@ def registration():
     city = request.args.get('city')
     postcode = request.args.get('postcode')
     address = request.args.get('address')
+    fname_error = request.args.get('fname_error')
+    mname_error = request.args.get('mname_error')
+    lname_error = request.args.get('lname_error')
+    email_error = request.args.get('email_error')
+    id_error = request.args.get('id_error')
+    phone_num_error = request.args.get('phone_num_error')
+    dob_error = request.args.get('dob_error')
+    city_error = request.args.get('city_error')
+    postcode_error = request.args.get('postcode_error')
+    address_error = request.args.get('address_error')
+    errors = [fname_error, mname_error, lname_error, email_error, id_error, phone_num_error, 
+                dob_error, city_error, postcode_error, address_error]
+    for i in errors:
+        print("error" + str(errors.index(i)) + ": " + str(i))
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
     # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
     resp2 = make_response(render_template("pages/registration.html", fname=fname, mname=mname, lname=lname, 
-                                                                        email=email, id=uid, phone_num=phone_num, 
-                                                                        dob=dob, city=city, postcode=postcode, 
-                                                                        address=address))     
+                                                                    email=email, id=uid, phone_num=phone_num, 
+                                                                    dob=dob, city=city, postcode=postcode, 
+                                                                    address=address, fname_error=fname_error,
+                                                                    mname_error=mname_error, lname_error=lname_error,
+                                                                    email_error=email_error, id_error=id_error,
+                                                                    phone_num_error=phone_num_error, dob_error=dob_error,
+                                                                    city_error=city_error, postcode_error=postcode_error,
+                                                                    address_error=address_error))     
 
     try:
         return signed_in(resp1, resp2)
