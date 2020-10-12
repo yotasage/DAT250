@@ -103,24 +103,24 @@ def generate_QR(fname, id, secret_key=None, save=False):
 
     return secret_key, img_io
 
-def generate_Captcha():
-    # done = False
-    # while not done:
-    #     try:
+# def generate_Captcha():
+#     # done = False
+#     # while not done:
+#     #     try:
 
-    length = random.randint(6,7)
-    captchatext = random_string_generator(length)
-    print(f"captchatext = {captchatext}")
-    image = ImageCaptcha(fonts=['/static/fonts/arial.ttf'], font_sizes=(26, 28, 30))  # difficulty="low", medium, high
-    image = image.generate_image(chars="2134")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
-    img_io = BytesIO()
-    image.save(img_io, 'PNG', quality=100)
-    img_io.seek(0)
-        # except OSError:
-        #     print("Noe gikk galt mens koden laget captcha bilde")  # OSError: invalid face handle
-        #     pass
+#     length = random.randint(6,7)
+#     captchatext = random_string_generator(length)
+#     # print(f"captchatext = {captchatext}")
+#     image = ImageCaptcha()  # difficulty="low", medium, high
+#     image = image.generate_image(chars=" ")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
+#     img_io = BytesIO()
+#     image.save(img_io, 'PNG', quality=100)
+#     img_io.seek(0)
+#         # except OSError:
+#         #     print("Noe gikk galt mens koden laget captcha bilde")  # OSError: invalid face handle
+#         #     pass
 
-    return img_io, captchatext
+#     return img_io, captchatext
 
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):
@@ -390,7 +390,7 @@ def make_user():
 
         salt = generate_random_salt()
         password_hash = generate_password_hash("password", salt)
-        secret_key, qr = generate_QR("admin", "100001", save=True)
+        secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
 
         user_object = User( user_id=100001, 
                             email="242762@uis.no", 
