@@ -10,8 +10,10 @@ from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS,
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR
+# from tools import generate_Captcha
+from tools import make_user
 
-from models import User, Cookies, Blacklist, Account, Transaction
+from models import User, Cookies, Blacklist, Account, Transaction, CaptchaBase
 
 # Denne er bare for POST forespørsler.
 @app.route("/<data>", methods=['POST'])  # https://flask.palletsprojects.com/en/1.1.x/quickstart/
@@ -20,6 +22,7 @@ def post_data(data = None):
 
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
+        make_user()
         user_id = request.form.get("uname")
         
         if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
@@ -38,7 +41,7 @@ def post_data(data = None):
 
                 if user_object is not None:
                     print_userdata(user_object)
-
+                    
                 # Hvis brukeren er verifisert
                 authenticator_code = request.form.get('auth_code')
                 if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified:
@@ -98,11 +101,13 @@ def post_data(data = None):
                 conf_pswd = request.form.get('conf_pswd')
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
+                ############################
+                # captcha_input = request.form.get('captcha_input')
+                ############################
                 totp = pyotp.TOTP(secret_key).now()
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
-                print(totp)
-                print(authenticator_code)   
+  
                 print_userdata(user_object)
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
                 if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
@@ -164,6 +169,18 @@ def post_data(data = None):
 
     # Verifiser data fra bruker, lag bruker, sett info inn i databasen, send bekreftelsesmail.
     elif data == "registration_data":
+        
+        # captcha_input = request.form.get("captcha_input")
+
+        # if contain_allowed_symbols(s=captcha_input, whitelist=string.ascii_letters + string.digits):
+        #     captcha = CaptchaBase.query.filter_by(captcha=captcha_input).all()  # henter alle captcha koder som er lik den som ble skrevet inn
+
+        #     if captcha is not None:  # Hvis det finnes en captcha kode som er lik den som ble skrevet inn
+        #         for code in captcha:
+        #             if code.ip == request.remote_addr:  # Hvis captcha koden tilhører klienten sin IP
+        #                 db.session.delete(code)  # Slett den fra databasen
+        #                 db.session.commit()
+
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
 
@@ -257,6 +274,13 @@ def post_data(data = None):
             print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
 
+        #             else:
+        #                 print("INVALID CAPTCHA - 2")
+        #     else:
+        #         print("NO MATCHING CAPTCHA - 1")
+        # else:
+        #     print("INVALID CAPTCHA - 1")
+        
     # Verifiser data som skal endres av bruker
     elif data == "edit_data": 
 
@@ -355,7 +379,7 @@ def post_data(data = None):
         msg = request.form.get('kidnr')                # Stor risk for SQL Injection, hvilke symboler skal vi tillate, eventuelt, skal vi søke etter SQL kommandoer i teksten?
         
         # Sjekk om bruker kontoene er ulike og har gyldig format, i tillegg sjekk om belop er et tall og at det er større enn 0
-        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0:
+        if from_acc != to_acc and valid_account_number(from_acc) and valid_account_number(to_acc) and is_number(request.form.get('belop')) and int(request.form.get('belop')) > 0 and contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' '):
             amount = int(request.form.get('belop'))            
 
             #Vertifiser bruker

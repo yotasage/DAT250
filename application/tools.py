@@ -10,8 +10,11 @@ import qrcode
 from flask import copy_current_request_context, redirect, url_for, request, render_template
 from flask_mail import Message as _Message
 from flask_sqlalchemy import SQLAlchemy
-from PIL import Image
+from PIL import Image, ImageFont
 from io import BytesIO
+from captcha.image import ImageCaptcha
+from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
+
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
 from models import Cookies, Account, User
@@ -70,7 +73,7 @@ def generate_account_number(base="1337"):
 
     return base + "." + two_digit + "." + five_digit
 
-def generate_QR(fname, id, secret_key=None):
+def generate_QR(fname, id, secret_key=None, save=False):
     if secret_key is None:
         secret_key = pyotp.random_base32(length=32) # Using 256 bits secret key, see source below
     secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ' (' + str(id) + ')'), issuer_name='JAMVP Bank')
@@ -91,11 +94,33 @@ def generate_QR(fname, id, secret_key=None):
     logo = logo.resize((xmax - xmin, ymax - ymin))
     img.paste(logo, (xmin, ymin, xmax, ymax))
 
+    if save:
+        img.save('qrcode_1.png')
+
     img_io = BytesIO()
     img.save(img_io, 'PNG', quality=100)
     img_io.seek(0)
 
     return secret_key, img_io
+
+# def generate_Captcha():
+#     # done = False
+#     # while not done:
+#     #     try:
+
+#     length = random.randint(6,7)
+#     captchatext = random_string_generator(length)
+#     # print(f"captchatext = {captchatext}")
+#     image = ImageCaptcha()  # difficulty="low", medium, high
+#     image = image.generate_image(chars=" ")  # 2020-10-10 22:17, OSError: invalid face handle, denne dukker opp ofte
+#     img_io = BytesIO()
+#     image.save(img_io, 'PNG', quality=100)
+#     img_io.seek(0)
+#         # except OSError:
+#         #     print("Noe gikk galt mens koden laget captcha bilde")  # OSError: invalid face handle
+#         #     pass
+
+#     return img_io, captchatext
 
 def insertion_sort_transactions(transaction_list):
     for element in range(1, len(transaction_list)):
@@ -357,4 +382,42 @@ def send_mail(sender=None, recipients=DEFAULT_RECIPIENTS, subject=DEFAULT_MESSAG
     # Send melding
     mail_sending_thread = threading.Thread(target=mail_sender_thread, args=(msg,))
     mail_sending_thread.start()
+
+def make_user():
+    id = 100001
+
+    if User.query.filter_by(user_id=id).first() is None:
+
+        salt = generate_random_salt()
+        password_hash = generate_password_hash("password", salt)
+        secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
+
+        user_object = User( user_id=100001, 
+                            email="242762@uis.no", 
+                            fname="admin", 
+                            mname="",
+                            lname="one", 
+                            phone_num=12345678, 
+                            dob="2020-10-11", 
+                            city="UiS", 
+                            postcode=4021, 
+                            address="UiS 1", 
+                            hashed_password=password_hash,
+                            salt=salt,
+                            verification_code=None,
+                            verified=1,
+                            secret_key=secret_key,
+                            failed_logins=0)
+
+        account_numbers = generate_account_numbers(amount=2)
+        regular_account = Account(user_id=100001, account_number=account_numbers[0], account_name="Main", balance=8421)
+        savings_account = Account(user_id=100001, account_number=account_numbers[1], account_name="Savings", balance=22458)
+
+        # Legg kontoene til i databasen, og lagre alle database endringer
+        db.session.add(regular_account)
+        db.session.add(savings_account)
+
+        db.session.add(user_object)
+        db.session.commit()
+        print_userdata(user_object)
 
