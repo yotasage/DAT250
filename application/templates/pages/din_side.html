@@ -22,7 +22,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         margin-left: auto;
         margin-right: auto;
         width:600px; 
-        border-style: solid;  /* solid */
+        border-style: none;  /* solid */
         border-color: #f8f6f6;  /* 87, 140, 250 */
         background-color:  #f8f6f6;
     }
@@ -35,44 +35,23 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     }
 
     .fields {
-        padding: 8px;
+        padding: 5px;
+        width: 30%;
         display: inline-block;
-        border: none;   
+        border: 1px none white; 
     }
 
-    .middlefield {
-        padding: 8px;
-        display: inline-block;
-        border: none;   
-        position: relative;
-        top:0px;
+    input {
+        width: 100%;
     }
 
     body {margin: 0;}
 
     h1 {text-align: center;}
 
-    .textarea{
-        width: 160px;
-        height: 20px;
-        white-space: nowrap;
-        border-style: solid;
-        border-width: thin;
-        border-color: rgb(0, 0, 0);
-        background-color:  rgb(255, 255, 255);
-    }
-
-    .address_textarea {
-        width: 342px;
-        white-space: nowrap;
-        border-style: solid;
-        border-width: thin;
-        border-color: rgb(0, 0, 0);
-        background-color:  rgb(255, 255, 255);
-    }
-
-    .textarea:hover{
-        overflow: visible;
+    .address_fields {
+        padding: 5px;
+        width: 62.5%;
     }
 
   /* Page Content */
@@ -81,6 +60,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
         top: 85px;
         width: 100%;
     }
+
+
 </style>
 
 </head>
@@ -98,82 +79,62 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
             <div>
                 <div class="fields">
                     <label>First name:</label><br>
-                    <div class="textarea" >
-                        <label>{{fname}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{fname}}"  name="fname" readonly>
                 </div>
 
-                <div class="middlefield">
+                <div class="fields">
                     <label>Middle name:</label><br>
-                    <div class="textarea">
-                        <div>{{mname}}</div>
-                    </div>
+                    <input type="text" id="textbox" value="{{mname}}"  name="mname" readonly>
                 </div>
 
                 <div class="fields">
                     <label>Last name:</label><br>
-                    <div class="textarea">
-                        <label>{{lname}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{lname}}"  name="lname" readonly>
                 </div>
             </div>
 
             <div>
                 <div class="fields">
                     <label>Email:</label><br>
-                    <div class="textarea">
-                        <label>{{email}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{email}}"  name="email" readonly>
                 </div>
 
                 <div class="fields">
                     <label>User ID:</label><br>
-                    <div class="textarea">
-                        <label>{{id}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{id}}"  name="id" readonly>
                 </div>
             </div>
 
             <div>
                 <div class="fields">
                     <label>Phone number:</label><br>
-                    <div class="textarea">
-                        <label>{{phone_num}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{phone_num}}"  name="phone_num" readonly>
                 </div>
             </div>
 
             <div>
                 <div class="fields">
                     <label>Date of birth:</label><br>
-                    <div class="textarea">
-                        <label>{{dob}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{dob}}"  name="dob" readonly>
                 </div>
             </div>
 
             <div>
                 <div class="fields">
                     <label>City:</label><br>
-                    <div class="textarea">
-                        <label>{{city}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{city}}"  name="city" readonly>
                 </div>
 
                 <div class="fields">
                     <label>Postal code:</label><br>
-                    <div class="textarea">
-                        <label>{{postcode}}</label>
-                    </div>
+                    <input type="text" id="textbox" value="{{postcode}}"  name="postcode" readonly>
                 </div>
             </div>
 
             <div>
-                <div class="fields">
+                <div class="address_fields">
                     <label>Address:</label><br>
-                    <div class="address_textarea">
-                        <label>{{address}}</label>
-                    </div>
+                    <input class="address_textarea" type="text" id="textbox" value="{{address}}"  name="address" readonly>
                 </div>
             </div>
 
