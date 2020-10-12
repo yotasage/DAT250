@@ -231,6 +231,7 @@ def registration():
                 dob_error, city_error, postcode_error, address_error]
     for i in errors:
         print("error" + str(errors.index(i)) + ": " + str(i))
+    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
     # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
@@ -242,7 +243,7 @@ def registration():
                                                                     email_error=email_error, id_error=id_error,
                                                                     phone_num_error=phone_num_error, dob_error=dob_error,
                                                                     city_error=city_error, postcode_error=postcode_error,
-                                                                    address_error=address_error))     
+                                                                    address_error=address_error, sitekey=sitekey))     
 
     try:
         return signed_in(resp1, resp2)
