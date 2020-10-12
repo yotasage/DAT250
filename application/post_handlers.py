@@ -101,9 +101,6 @@ def post_data(data = None):
                 conf_pswd = request.form.get('conf_pswd')
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
-                ############################
-                # captcha_input = request.form.get('captcha_input')
-                ############################
                 totp = pyotp.TOTP(secret_key).now()
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
@@ -131,6 +128,13 @@ def post_data(data = None):
                     return redirect(url_for('verification', code=verification_code, error="True"), code=302)
 
     elif data == "reset_request":
+
+        # reCaptcha
+        captcha_response = request.form.get('g-recaptcha-response')
+
+        if not is_human(captcha_response):
+            return redirect(url_for('password_reset_request'), code=302)
+
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
             if user_object is not None and user_object.verified:
@@ -147,6 +151,7 @@ def post_data(data = None):
 
     elif data == "reset_password":
         if 'Referer' in request.headers:
+            
             password_reset_code = request.headers.get('Referer').split('reset?code=')[1].replace('&error=True', '')
 
             pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
@@ -155,7 +160,10 @@ def post_data(data = None):
             if contain_allowed_symbols(s=password_reset_code, whitelist=string.ascii_letters + string.digits):
                 user_object = User.query.filter_by(password_reset_code=password_reset_code).first()
 
-                if user_object is not None and valid_password(pswd) and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
+                secret_key = user_object.secret_key
+                authenticator_code = request.form.get('auth_code')
+                totp = str(pyotp.TOTP(secret_key).now())
+                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
                     salt = generate_random_salt()
                     password_hash = generate_password_hash(pswd, salt)
                     

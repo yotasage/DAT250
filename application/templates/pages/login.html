@@ -93,7 +93,8 @@
               {% if denied %}
                 <br><strong style="color:red;">You have tried and failed to sign in too many times, and therefore your next attempts will not be processed for the next hour.</strong><br><br>
               {% elif error %}
-                <br><strong style="color:red;">Either User ID or Password is wrong.</strong><br><br>
+                <br><strong style="color:red;">Either User ID, Password or Authenticator Code is wrong.</strong><br>
+                <br><strong style="color:red;">If you have lost your Authenticator, please contact a member of the JAMVP-family.</strong><br><br>
               {% elif v_mail %}
                 <br><strong style="color:rgb(0, 70, 0);">A verification mail has been sent to your email address, if a user with the ID you gave us does not exist.<br><br>To login you must first verify your account.</strong><br><br>
               {% elif timeout %}

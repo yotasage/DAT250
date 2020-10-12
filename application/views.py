@@ -298,9 +298,9 @@ def verification(style = None):
 
 @app.route("/password_reset_request.html")
 def password_reset_request(style = None):
-    print("29")
+    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
-    resp2 = make_response(render_template("pages/password_reset_request.html", len=0))  # Side for når en ikke er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", sitekey=sitekey))  # Side for når en ikke er innlogget
 
     try:
         return signed_in(resp1, resp2)
@@ -335,20 +335,6 @@ def QR(style = None):
             return send_file(qr, mimetype="image/png")
 
     abort(404)
-
-# @app.route("/Captcha.png")
-# def Captcha(style = None):
-#     print("12")
-#     captcha_image, captcha_string = generate_Captcha()
-
-#     # db.session.add(CaptchaBase(ip=request.remote_addr, captcha=captcha_string))
-#     # db.session.commit()
-
-#     print(f"captcha_string = {captcha_string}")
-
-#     # abort(404)
-
-#     return send_file(captcha_image, mimetype="image/png")
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
