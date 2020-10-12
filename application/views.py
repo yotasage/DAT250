@@ -216,13 +216,15 @@ def registration():
     city = request.args.get('city')
     postcode = request.args.get('postcode')
     address = request.args.get('address')
+    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
+
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
     # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
     resp2 = make_response(render_template("pages/registration.html", fname=fname, mname=mname, lname=lname, 
                                                                         email=email, id=uid, phone_num=phone_num, 
                                                                         dob=dob, city=city, postcode=postcode, 
-                                                                        address=address))     
+                                                                        address=address, sitekey=sitekey))     
 
     try:
         return signed_in(resp1, resp2)

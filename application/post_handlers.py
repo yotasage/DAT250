@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask import render_template, request, redirect, url_for, make_response
+from flask import render_template, request, redirect, url_for, make_response, flash
 from flask_sqlalchemy import SQLAlchemy
 import string
 import random
@@ -9,7 +9,7 @@ from flask_scrypt import generate_random_salt, generate_password_hash, check_pas
 from app import app, db, cookie_maxAge, client_maxAge, NUMBER_OF_LOGIN_ATTEMPTS, BLOCK_LOGIN_TIME # Importerer Flask objektet app
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
-from tools import generate_account_numbers, valid_account_number, generate_QR
+from tools import generate_account_numbers, valid_account_number, generate_QR, is_human
 # from tools import generate_Captcha
 from tools import make_user
 
@@ -169,17 +169,13 @@ def post_data(data = None):
 
     # Verifiser data fra bruker, lag bruker, sett info inn i databasen, send bekreftelsesmail.
     elif data == "registration_data":
-        
-        # captcha_input = request.form.get("captcha_input")
 
-        # if contain_allowed_symbols(s=captcha_input, whitelist=string.ascii_letters + string.digits):
-        #     captcha = CaptchaBase.query.filter_by(captcha=captcha_input).all()  # henter alle captcha koder som er lik den som ble skrevet inn
+        # reCaptcha
+        captcha_response = request.form.get('g-recaptcha-response')
 
-        #     if captcha is not None:  # Hvis det finnes en captcha kode som er lik den som ble skrevet inn
-        #         for code in captcha:
-        #             if code.ip == request.remote_addr:  # Hvis captcha koden tilhører klienten sin IP
-        #                 db.session.delete(code)  # Slett den fra databasen
-        #                 db.session.commit()
+        if not is_human(captcha_response):
+            return redirect(url_for('registration'), code=302)
+            
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
