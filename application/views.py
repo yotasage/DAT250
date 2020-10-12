@@ -253,7 +253,7 @@ def registration():
 @app.route("/transaction_view.html", methods=['GET'])
 def transaction_overview(page = None):
     print("25")
-    resp1 = make_response(render_template("pages/transaction_view.html", len=0))  # Side for når en er innlogget
+    resp1 = make_response(render_template("pages/startside.html"))  # Side for når en er innlogget
     resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
 
     # Les ut variabler
@@ -294,7 +294,6 @@ def transaction_overview(page = None):
                     Out.append(transaction.amount)
 
             resp1 = make_response(render_template("pages/transaction_view.html", len=len(transactions), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=account.account_number, name=account.account_name))
-
     try:
         return signed_in(resp1, resp2)
     except jinja2.exceptions.TemplateNotFound:  # Hvis siden/html filen ikke blir funnet
