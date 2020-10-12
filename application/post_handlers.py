@@ -257,12 +257,18 @@ def post_data(data = None):
             print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
 
-    # Verifiser data fra bruker osv
+    # Verifiser data som skal endres av bruker
     elif data == "edit_data": 
 
+        session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
+
+        if session_cookie is not None:  # Om vi fikk en gyldig header
+            cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
+            user = User.query.filter_by(user_id=cookie.user_id).first()
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname_error': '', 'mname_error': '', 'lname_error': '', 'phone_num_error': '',
-                     'dob_error': '', 'city_error': '', 'postcode_error': '', 'address_error': '', 'pswd_error': '', 'new_pswd_error': ''}
+                     'dob_error': '', 'city_error': '', 'postcode_error': '', 'address_error': '',
+                     'pswd_error': '', 'new_pswd_error': '', 'auth_error': ''}
 
         # Er fødselsdatoen gyldig?
         if not valid_date(request.form.get("dob")):
@@ -288,10 +294,29 @@ def post_data(data = None):
         # Er addressen gyldig?
         feedback["address_error"] = valid_address(request.form.get("address"))
 
+        # Er nåværende passord skrevet inn riktig?
+        if not check_password_hash(request.form.get("pswd"), user.hashed_password, user.salt):
+            feedback["pswd_error"] = "incorrect"
+
+        # Er det nye passordet gyldig? 
+        new_pswd = request.form.get("new_pswd")
+        new_pswd2 = request.form.get("new_pswd2")
+        if new_pswd == new_pswd2 != "" and not valid_password(new_pswd):
+            feedback["new_pswd_error"] = "invalid"
+        elif new_pswd != new_pswd2:
+            feedback["new_pswd_error"] = "unmatched"
+
+        # Er autentiseringskoden gyldig?
+        secret_key = user.secret_key
+        authenticator_code = request.form.get('auth')
+        totp = pyotp.TOTP(secret_key).now()
+        if authenticator_code != totp:
+            feedback["auth_error"] = "incorrect"
+
         # Har det oppstått noen feil?
         error = False
         for element in feedback:
-            if feedback[element] != '':  # Hvis innholde ikke er tomt, så har det oppstått en feil
+            if feedback[element] != '':  # Hvis innholdet ikke er tomt, så har det oppstått en feil
                 error = True
 
         # Hvis det har oppstått noen feil, send brukeren "tilbake" til redigeringssiden med feilmeldingene
@@ -299,45 +324,23 @@ def post_data(data = None):
             return redirect(url_for('edit', fname=feedback["fname_error"], mname=feedback["mname_error"], lname=feedback["lname_error"], 
                                                     phone_num=feedback["phone_num_error"], dob=feedback["dob_error"], 
                                                     city=feedback["city_error"], postcode=feedback["postcode_error"], 
-                                                    address=feedback["address_error"]), code=302)
+                                                    address=feedback["address_error"], pswd=feedback["pswd_error"],
+                                                    new_pswd=feedback["new_pswd_error"], auth=feedback["auth_error"]), code=302)
 
-        session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
-
-        if session_cookie is not None:  # Om vi fikk en gyldig header
-            cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
-            user = User.query.filter_by(user_id=cookie.user_id).first()
-
-            if valid_password(request.form.get("pswd")) and check_password_hash(request.form.get("pswd"), user.hashed_password, user.salt):
-                user.fname = request.form.get("fname")
-                user.mname = request.form.get("mname")
-                user.lname = request.form.get("lname")
-                user.phone_num = request.form.get("phone_num")
-                user.dob = request.form.get("dob")
-                user.city = request.form.get("city")
-                user.address = request.form.get("address")
-                user.postcode = request.form.get("postcode")
-
-                new_pswd = request.form.get("new_pswd")
-                new_pswd2 = request.form.get("new_pswd2")
-                if new_pswd == new_pswd2 != "" and valid_password(new_pswd):
-
-                    salt = generate_random_salt()
-                    password_hash = generate_password_hash(new_pswd, salt)
-
-                    user.salt = salt
-                    user.hashed_password = password_hash
-
-                elif new_pswd == new_pswd2 != "" and not valid_password(new_pswd):
-                    feedback["new_pswd_error"] = "invalid"
-                    return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
-
-                elif new_pswd != new_pswd2:
-                    feedback["new_pswd_error"] = "unmatched"
-                    return redirect(url_for('edit', new_pswd=feedback["new_pswd_error"], code=302))
-            else:
-                feedback["pswd_error"] = "incorrect"
-                return redirect(url_for('edit', pswd=feedback["pswd_error"], code=302))
-
+        else:
+            user.fname = request.form.get("fname")
+            user.mname = request.form.get("mname")
+            user.lname = request.form.get("lname")
+            user.phone_num = request.form.get("phone_num")
+            user.dob = request.form.get("dob")
+            user.city = request.form.get("city")
+            user.address = request.form.get("address")
+            user.postcode = request.form.get("postcode")
+            if new_pswd == new_pswd2 != "" and valid_password(new_pswd):
+                salt = generate_random_salt()
+                password_hash = generate_password_hash(new_pswd, salt)
+                user.salt = salt
+                user.hashed_password = password_hash
             db.session.commit()  # Etter endringer er gjort, lagre
 
             return redirect(url_for('din_side', code=302))
