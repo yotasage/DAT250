@@ -224,16 +224,14 @@ def post_data(data = None):
         city = request.form.get("city")
         postcode = request.form.get("postcode")
         address = request.form.get("address")
+        captcha = request.form.get('g-recaptcha-response')
 
         formgets = [fname, mname, lname, email, user_id, phone_num, dob, city, postcode, address]
         for i in range(len(formgets)):
             print("inputfelt nr." + str(i) + ": " + formgets[i])
-        
-        # reCaptcha
-        captcha_response = request.form.get('g-recaptcha-response')
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
-        feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
+        feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': '', 'captcha': ''}
 
         # Er fødselsdatoen gyldig?
         if not valid_date(dob):
@@ -271,6 +269,10 @@ def post_data(data = None):
         # Er addressen gyldig?
         feedback["address"] = valid_address(address)
 
+        # Er reCaptchaen godkjent?
+        if not is_human(captcha):
+            feedback["captcha"] = "invalid"
+
         # Har det oppstått noen feil?
         error = False
         for element in feedback:
@@ -278,13 +280,13 @@ def post_data(data = None):
                 error = True
 
         # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
-        if error or not is_human(captcha_response):
+        if error:
             return redirect(url_for('registration', fname=fname, mname=mname, lname=lname, email=email, id=user_id, 
                                                     phone_num=phone_num, dob=dob, city=city, postcode=postcode, address=address, 
                                                     fname_error=feedback["fname"], mname_error=feedback["mname"], lname_error=feedback["lname"], 
                                                     email_error=feedback["email"], id_error=feedback["id"], phone_num_error=feedback["phone_num"], 
                                                     dob_error=feedback["dob"], city_error=feedback["city"], postcode_error=feedback["postcode"], 
-                                                    address_error=feedback["address"]), code=302)
+                                                    address_error=feedback["address"], captcha_error=feedback["captcha"]), code=302)
 
         # Hvis brukeren allerede finnes, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
         elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
