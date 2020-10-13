@@ -55,8 +55,8 @@ def post_data(data = None):
 
                 # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
-                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.decode('utf-8'), user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
+                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie                                                                                                                                                        # decoding                                                       
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
                     # Max-Age=<number>, Number of seconds until the cookie expires.
@@ -65,6 +65,8 @@ def post_data(data = None):
                     # Generer session cookie, den blir sendt til serveren av klienten ved hver request (innlasting av bilder, html, css). Cookie'en blir brukt til å identifisere brukeren
                     sessionId = random_string_generator(128)
                     expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
+
+                    user_object.failed_logins = 0
 
                     cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
@@ -80,6 +82,7 @@ def post_data(data = None):
 
                 # Hvis brukeren er blokka
                 elif user_object is not None and user_object.blocked_login_until is not None and datetime.now() <= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                    client_listing.wrong_password_count += 1
                     return redirect(url_for('login', error="True"), code=302)
                 
                 # Hvis brukeren ikke er verifisert, og oppgir riktig midlertidig passord
@@ -96,20 +99,26 @@ def post_data(data = None):
                         client_listing.wrong_password_count = 0
 
                     if user_object is not None:
-                        user_object.failed_logins +=1
-                        print(f"user_object.failed_logins = {user_object.failed_logins}")
+                        authenticator_code = request.form.get('auth_code')
+                        if (str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code) ^ (check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt)):
+                            user_object.failed_logins +=1
+                            print(f"user_object.failed_logins = {user_object.failed_logins}")
 
-                        if user_object.failed_logins >= NUMBER_OF_LOGIN_ATTEMPTS_USER:
-                            user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
-                            user_object.failed_logins = 0
+                            if user_object.failed_logins >= NUMBER_OF_LOGIN_ATTEMPTS_USER:
+                                user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
+                                user_object.failed_logins = 0
 
-                            blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
+                                cookies = Cookies.query.filter_by(user_id=user_object.user_id).all()
+                                for cookie in cookies:
+                                    db.session.delete(cookie)
 
-                            html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                                lname=user_object.lname, ip=request.remote_addr,
-                                                                                                date=datetime.now(), blocked_until=blocked_until)
+                                blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
 
-                            send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
+                                html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
+                                                                                            lname=user_object.lname, ip=request.remote_addr,
+                                                                                            date=datetime.now(), blocked_until=blocked_until)
+
+                                send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
 
                     db.session.commit()
 
@@ -168,7 +177,7 @@ def post_data(data = None):
 
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
-            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"):
+            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f") and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                 user_object.last_password_reset_request = str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET))
 
                 code = random_string_generator(128)
@@ -181,8 +190,6 @@ def post_data(data = None):
                 send_mail(recipients=[user_object.email], subject="Password reset", body="TEST_BODY", html=html_template)
 
                 db.session.commit()
-
-        print(datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"))
 
     elif data == "reset_password":
         if 'Referer' in request.headers:
@@ -198,7 +205,7 @@ def post_data(data = None):
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
                 totp = str(pyotp.TOTP(secret_key).now())
-                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
+                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                     salt = generate_random_salt()
                     password_hash = generate_password_hash(pswd, salt)
                     
@@ -224,16 +231,14 @@ def post_data(data = None):
         city = request.form.get("city")
         postcode = request.form.get("postcode")
         address = request.form.get("address")
+        captcha = request.form.get('g-recaptcha-response')
 
         formgets = [fname, mname, lname, email, user_id, phone_num, dob, city, postcode, address]
         for i in range(len(formgets)):
             print("inputfelt nr." + str(i) + ": " + formgets[i])
-        
-        # reCaptcha
-        captcha_response = request.form.get('g-recaptcha-response')
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
-        feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': ''}
+        feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': '', 'captcha': ''}
 
         # Er fødselsdatoen gyldig?
         if not valid_date(dob):
@@ -271,6 +276,10 @@ def post_data(data = None):
         # Er addressen gyldig?
         feedback["address"] = valid_address(address)
 
+        # Er reCaptchaen godkjent?
+        if not is_human(captcha):
+            feedback["captcha"] = "invalid"
+
         # Har det oppstått noen feil?
         error = False
         for element in feedback:
@@ -278,13 +287,13 @@ def post_data(data = None):
                 error = True
 
         # Hvis det har oppstått noen feil, send brukeren "tilbake" til registreringssiden med feilmeldingene
-        if error or not is_human(captcha_response):
+        if error:
             return redirect(url_for('registration', fname=fname, mname=mname, lname=lname, email=email, id=user_id, 
                                                     phone_num=phone_num, dob=dob, city=city, postcode=postcode, address=address, 
                                                     fname_error=feedback["fname"], mname_error=feedback["mname"], lname_error=feedback["lname"], 
                                                     email_error=feedback["email"], id_error=feedback["id"], phone_num_error=feedback["phone_num"], 
                                                     dob_error=feedback["dob"], city_error=feedback["city"], postcode_error=feedback["postcode"], 
-                                                    address_error=feedback["address"]), code=302)
+                                                    address_error=feedback["address"], captcha_error=feedback["captcha"]), code=302)
 
         # Hvis brukeren allerede finnes, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
         elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
@@ -322,7 +331,7 @@ def post_data(data = None):
                                 city=request.form.get("city"), 
                                 postcode=int(request.form.get("postcode")), 
                                 address=request.form.get("address"), 
-                                hashed_password=password_hash,
+                                hashed_password=password_hash.encode('utf-8'), # gjør om fra str til bytes for å få kryptere
                                 salt=salt,
                                 verification_code=code,
                                 verified=0,
