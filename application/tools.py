@@ -20,7 +20,7 @@ from flask_scrypt import generate_random_salt, generate_password_hash, check_pas
 
 from app import app, mail, db, cookie_maxAge, client_maxAge
 
-from app import RESTRIC_PASSWORD_RESET
+from app import RESTRIC_PASSWORD_RESET, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH
 
 from models import Cookies, Account, User
 
@@ -307,7 +307,7 @@ def valid_number(number, min_length=1, max_length=8):
         return True
     return False
 
-def valid_password(password, min_length=8, max_length=128):
+def valid_password(password, min_length=PASSWORD_MIN_LENGTH, max_length=PASSWORD_MAX_LENGTH):
         if (min_length > len(password) or len(password) > max_length):
             # print("password length is invalid")
             return False
