@@ -66,6 +66,8 @@ def post_data(data = None):
                     sessionId = random_string_generator(128)
                     expiration_date = datetime.now() + timedelta(seconds=cookie_maxAge)
 
+                    user_object.failed_logins = 0
+
                     cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
@@ -96,24 +98,26 @@ def post_data(data = None):
                         client_listing.wrong_password_count = 0
 
                     if user_object is not None:
-                        user_object.failed_logins +=1
-                        print(f"user_object.failed_logins = {user_object.failed_logins}")
+                        authenticator_code = request.form.get('auth_code')
+                        if (str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code) ^ (check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt)):
+                            user_object.failed_logins +=1
+                            print(f"user_object.failed_logins = {user_object.failed_logins}")
 
-                        if user_object.failed_logins >= NUMBER_OF_LOGIN_ATTEMPTS_USER:
-                            user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
-                            user_object.failed_logins = 0
+                            if user_object.failed_logins >= NUMBER_OF_LOGIN_ATTEMPTS_USER:
+                                user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
+                                user_object.failed_logins = 0
 
-                            cookies = Cookies.query.filter_by(user_id=user_object.user_id).all()
-                            for cookie in cookies:
-                                db.session.delete(cookie)
+                                cookies = Cookies.query.filter_by(user_id=user_object.user_id).all()
+                                for cookie in cookies:
+                                    db.session.delete(cookie)
 
-                            blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
+                                blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
 
-                            html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                                lname=user_object.lname, ip=request.remote_addr,
-                                                                                                date=datetime.now(), blocked_until=blocked_until)
+                                html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
+                                                                                            lname=user_object.lname, ip=request.remote_addr,
+                                                                                            date=datetime.now(), blocked_until=blocked_until)
 
-                            send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
+                                send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
 
                     db.session.commit()
 
