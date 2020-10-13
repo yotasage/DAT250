@@ -227,6 +227,7 @@ def registration():
     city_error = request.args.get('city_error')
     postcode_error = request.args.get('postcode_error')
     address_error = request.args.get('address_error')
+    captcha_error = request.args.get('captcha_error')
     errors = [fname_error, mname_error, lname_error, email_error, id_error, phone_num_error, 
                 dob_error, city_error, postcode_error, address_error]
     for i in errors:
@@ -243,7 +244,7 @@ def registration():
                                                                     email_error=email_error, id_error=id_error,
                                                                     phone_num_error=phone_num_error, dob_error=dob_error,
                                                                     city_error=city_error, postcode_error=postcode_error,
-                                                                    address_error=address_error, sitekey=sitekey))     
+                                                                    address_error=address_error, captcha_error=captcha_error, sitekey=sitekey))     
 
     try:
         return signed_in(resp1, resp2)

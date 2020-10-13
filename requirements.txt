@@ -11,3 +11,7 @@ pillow
 qrcode
 cryptography (trengs for kryptering av databasen)
 sqlalchemy_utils (trengs også for kryptering)
+<<<<<<< HEAD
+=======
+requests
+>>>>>>> 7d0e48fd2b25912d689d7971d3aecaf0fbe68966

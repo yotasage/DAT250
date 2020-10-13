@@ -175,7 +175,7 @@ body {
 .right {
     border: 1px  none white;   
     position: absolute;
-    width: 600px;
+    width: 75%;
     padding: 0px;
     top: 5px;
     right: 5px;
