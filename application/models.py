@@ -51,6 +51,7 @@ class User(db.Model):
 #     failed_logins = db.Column(db.Integer, unique=False, nullable=False) 
 #     blocked_login_until = db.Column(db.String, unique=False, nullable=True)
 
+
 class Blacklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=False)
@@ -86,3 +87,8 @@ class Transaction(db.Model):
     to_acc = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
     message = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
     amount = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
+
+
+class CommonPasswords(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
