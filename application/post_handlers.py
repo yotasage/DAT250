@@ -177,7 +177,7 @@ def post_data(data = None):
 
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
-            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"):
+            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f") and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                 user_object.last_password_reset_request = str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET))
 
                 code = random_string_generator(128)
@@ -190,8 +190,6 @@ def post_data(data = None):
                 send_mail(recipients=[user_object.email], subject="Password reset", body="TEST_BODY", html=html_template)
 
                 db.session.commit()
-
-        print(datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f"))
 
     elif data == "reset_password":
         if 'Referer' in request.headers:
@@ -207,7 +205,7 @@ def post_data(data = None):
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
                 totp = str(pyotp.TOTP(secret_key).now())
-                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt):
+                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                     salt = generate_random_salt()
                     password_hash = generate_password_hash(pswd, salt)
                     
