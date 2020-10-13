@@ -55,8 +55,8 @@ def post_data(data = None):
 
                 # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
-                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.decode('utf-8'), user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
+                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie                                                                                                                                                        # decoding                                                       
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
                     # Max-Age=<number>, Number of seconds until the cookie expires.
@@ -322,7 +322,7 @@ def post_data(data = None):
                                 city=request.form.get("city"), 
                                 postcode=int(request.form.get("postcode")), 
                                 address=request.form.get("address"), 
-                                hashed_password=password_hash,
+                                hashed_password=password_hash.encode('utf-8'), # gjør om fra str til bytes for å få kryptere
                                 salt=salt,
                                 verification_code=code,
                                 verified=0,
