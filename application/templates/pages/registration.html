@@ -85,8 +85,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
     
     <div style='text-align: left; width:500px; display: block; margin-left: auto; margin-right: auto;'>
         <br>
-        {% if fname_error is not none and mname_error is not none and lname_error is not none and email_error is not none and id_error is not none and phone_num_error is not none and dob_error is not none and city_error is not none and postcode_error is not none and address_error is not none %}
-            {% if fname_error != '' or mname_error != '' or lname_error != '' or email_error != '' or id_error != '' or phone_num_error != '' or dob_error != '' or city_error != '' or postcode_error != '' or address_error != '' %}
+        {% if fname_error is not none and mname_error is not none and lname_error is not none and email_error is not none and id_error is not none and phone_num_error is not none and dob_error is not none and city_error is not none and postcode_error is not none and address_error is not none and captcha_error is not none %}
+            {% if fname_error != '' or mname_error != '' or lname_error != '' or email_error != '' or id_error != '' or phone_num_error != '' or dob_error != '' or city_error != '' or postcode_error != '' or address_error != '' or captcha_error != '' %}
                 <strong style="color:red;">Something is wrong with the information you have given us:</strong><br><br>
                 {% if fname_error == 'invalid' %}
                     <p style="color:red;">Error #1: First name is invalid, should consist of letters only.</p>
@@ -138,6 +138,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 {% endif %}
                 {% if address_error == 'invalidNum' %}
                     <p style="color:red;">Error #16: Invalid house number in address, should be a number, and may contain a letter at the end, i.e. Haakon VIIs gate 9 or Streetname 3b.</p>
+                {% endif %}
+                {% if captcha_error == 'invalid' %}
+                    <p style="color:red;">Error #17: reCaptcha was not correctly passed.</p>
                 {% endif %}
             
             {% else %}
