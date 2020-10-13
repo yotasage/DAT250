@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import jinja2  # For å kunne håndtere feil som 404
 from flask import render_template, request, redirect, url_for, abort, make_response, send_file
 import string
-
+import os
 from models import User, Blacklist, Cookies, Account, Transaction
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
@@ -232,7 +232,7 @@ def registration():
                 dob_error, city_error, postcode_error, address_error]
     for i in errors:
         print("error" + str(errors.index(i)) + ": " + str(i))
-    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
+    sitekey = os.environ.get("PUBLIC_SITE_KEY")
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers
     # trenger det ikke nå lenger siden header greiene er flyttet på, men er et greit eksempel
@@ -317,7 +317,7 @@ def verification(style = None):
 
 @app.route("/password_reset_request.html")
 def password_reset_request(style = None):
-    sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
+    sitekey = os.environ.get("PUBLIC_SITE_KEY")
     captcha_error = request.args.get('captcha_error')
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
     resp2 = make_response(render_template("pages/password_reset_request.html", captcha_error=captcha_error, sitekey=sitekey))  # Side for når en ikke er innlogget
