@@ -318,8 +318,9 @@ def verification(style = None):
 @app.route("/password_reset_request.html")
 def password_reset_request(style = None):
     sitekey = '6LeVXtYZAAAAABnbl6HjUx6fqi5efMo8DJzHSucY'
+    captcha_error = request.args.get('captcha_error')
     resp1 = redirect(url_for('startpage'), code=302)  # Side for når en er innlogget
-    resp2 = make_response(render_template("pages/password_reset_request.html", sitekey=sitekey))  # Side for når en ikke er innlogget
+    resp2 = make_response(render_template("pages/password_reset_request.html", captcha_error=captcha_error, sitekey=sitekey))  # Side for når en ikke er innlogget
 
     try:
         return signed_in(resp1, resp2)

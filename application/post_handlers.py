@@ -180,7 +180,7 @@ def post_data(data = None):
         captcha_response = request.form.get('g-recaptcha-response')
 
         if not is_human(captcha_response):
-            return redirect(url_for('password_reset_request'), code=302)
+            return redirect(url_for('password_reset_request', captcha_error='invalid'), code=302)
 
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
