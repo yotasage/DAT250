@@ -103,6 +103,10 @@ def post_data(data = None):
                             user_object.blocked_login_until = str(datetime.now() + timedelta(seconds=BLOCK_LOGIN_TIME_USER))
                             user_object.failed_logins = 0
 
+                            cookies = Cookies.query.filter_by(user_id=user_object.user_id).all()
+                            for cookie in cookies:
+                                db.session.delete(cookie)
+
                             blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
 
                             html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
