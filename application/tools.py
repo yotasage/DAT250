@@ -389,7 +389,7 @@ def make_user():
         secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
 
         user_object = User( user_id=100001, 
-                            email="242762@uis.no", 
+                            email="000001@uis.no", 
                             fname="admin", 
                             mname="",
                             lname="one", 
