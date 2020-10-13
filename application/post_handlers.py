@@ -399,6 +399,8 @@ def post_data(data = None):
             feedback["new_pswd_error"] = "invalid"
         elif new_pswd != new_pswd2:
             feedback["new_pswd_error"] = "unmatched"
+        elif new_pswd == new_pswd2 and check_password_hash(new_pswd, user.hashed_password.encode('utf-8'), user.salt):
+            feedback["new_pswd_error"] = "unchanged"
 
         # Er autentiseringskoden gyldig?
         secret_key = user.secret_key
