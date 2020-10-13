@@ -82,6 +82,7 @@ def post_data(data = None):
 
                 # Hvis brukeren er blokka
                 elif user_object is not None and user_object.blocked_login_until is not None and datetime.now() <= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                    client_listing.wrong_password_count += 1
                     return redirect(url_for('login', error="True"), code=302)
                 
                 # Hvis brukeren ikke er verifisert, og oppgir riktig midlertidig passord
