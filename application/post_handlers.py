@@ -400,7 +400,7 @@ def post_data(data = None):
         feedback["address_error"] = valid_address(request.form.get("address"))
 
         # Er nåværende passord skrevet inn riktig?
-        if not check_password_hash(request.form.get("pswd"), user.hashed_password.encode('utf-8'), user.salt.encode('utf-8'))):
+        if not check_password_hash(request.form.get("pswd"), user.hashed_password.encode('utf-8'), user.salt.encode('utf-8')):
             feedback["pswd_error"] = "incorrect"
 
         # Er det nye passordet gyldig? 
