@@ -18,13 +18,13 @@ class User(db.Model):
     city = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
     postcode = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
     address = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
-    hashed_password = db.Column(db.String, unique=False, nullable=True) # Funker ikke å kryptere hashed_password, får feilmeldingen --> TypeError: a bytes-like object is required, not 'str'
-    salt = db.Column(db.String, unique=False, nullable=True)
+    hashed_password = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True) # Funker ikke å kryptere hashed_password, får feilmeldingen --> TypeError: a bytes-like object is required, not 'str'
+    salt = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
     verification_code = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=True)
     verified = db.Column(EncryptedType(db.Boolean, key, AesEngine, 'zeroes'), unique=False, nullable=False)
     password_reset_code = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=True)
     secret_key = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=True)
-    failed_logins = db.Column(db.Integer, unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
+    failed_logins = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
     blocked_login_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
     last_password_reset_request = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
 

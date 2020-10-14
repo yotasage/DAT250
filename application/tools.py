@@ -22,7 +22,7 @@ from app import app, mail, db, cookie_maxAge, client_maxAge
 
 from app import RESTRIC_PASSWORD_RESET, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH
 
-from models import Cookies, Account, User
+from models import Cookies, Account, User, CommonPasswords
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'jamvp.tk'
@@ -316,6 +316,12 @@ def valid_password(password, min_length=PASSWORD_MIN_LENGTH, max_length=PASSWORD
         elif not contain_allowed_symbols(password):
             # print("password contains invalid characters")
             return False
+
+        # Hvis passorde finnes i databasen over top "10000" passord
+        elif CommonPasswords.query.filter_by(password=password).first() is not None:
+            return False
+
+        # Passorde er gyldig
         return True
 
 

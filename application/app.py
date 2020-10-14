@@ -59,25 +59,27 @@ from models import User, Cookies, Account, Transaction, Blacklist, CommonPasswor
 # når fila skal ut i production så skal db.create all være der enda
 
 
-# r_file_1 = open('application/bad_password.txt', 'r')
+if len(CommonPasswords.query.all()) == 0:
 
-# namelist_1 = []
+    r_file_1 = open('application/bad_password_2.txt', 'r')
 
-# line = r_file_1.readline()
-# while not line == '':
-#     line = line.replace('\n', '')
-#     if len(line) >= PASSWORD_MIN_LENGTH:
-#         namelist_1.append(line)
-#         db.session.add(CommonPasswords(password=line))
-#     line = r_file_1.readline()
+    namelist_1 = []
 
-# print(len(namelist_1))
+    line = r_file_1.readline()
+    while not line == '':
+        line = line.replace('\n', '')
+        if len(line) >= PASSWORD_MIN_LENGTH:
+            namelist_1.append(line)
+            db.session.add(CommonPasswords(password=line))
+        line = r_file_1.readline()
 
-# db.session.commit()
+    print(len(namelist_1))
 
-# print(len(CommonPasswords.query.all()))
+    print(len(CommonPasswords.query.all()))
 
-print(CommonPasswords.query.filter_by(password="161NtshSYniCk").first())
+    print(CommonPasswords.query.filter_by(password="fatluvr69").first())
+
+db.session.commit()
 
 # Placed here to avoid circular references, views module needs to import the app variable defined in this script.
 import request_processing
