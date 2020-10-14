@@ -122,8 +122,11 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 {% if new_pswd_error == 'unmatched' %}
                 <p style="color:red;">Error #19: The passwords do not match.</p>
                 {% endif %}
+                {% if new_pswd_error == 'unchanged' %}
+                <p style="color:red;">Error #20: The new password can not be the current password.</p>
+                {% endif %}
                 {% if auth_error == 'incorrect' %}
-                <p style="color:red;">Error #20: The authenticator code is incorrect.</p>
+                <p style="color:red;">Error #21: The authenticator code is incorrect.</p>
                 {% endif %}
 
             
