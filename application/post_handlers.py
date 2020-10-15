@@ -55,8 +55,8 @@ def post_data(data = None):
 
                 # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt) and user_object.verified and user_object.blocked_login_until is None:
-                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie                                                                                                                                                        # decoding                                                       
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and user_object.verified and user_object.blocked_login_until is None:
+                    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
                     # Max-Age=<number>, Number of seconds until the cookie expires.
@@ -93,7 +93,7 @@ def post_data(data = None):
                     return redirect(url_for('login', error="True"), code=302)
                 
                 # Hvis brukeren ikke er verifisert, og oppgir riktig midlertidig passord
-                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt) and not user_object.verified:
+                elif user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and not user_object.verified:
                     return redirect(url_for('verification', code=user_object.verification_code), code=302)
                 
                 # Et feilet innloggingsforsøk
@@ -107,7 +107,7 @@ def post_data(data = None):
 
                     if user_object is not None:
                         authenticator_code = request.form.get('auth_code')
-                        if (str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code) ^ (check_password_hash(request.form.get("pswd"), user_object.hashed_password, user_object.salt)):
+                        if (str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code) ^ check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')):
                             user_object.failed_logins +=1
                             print(f"user_object.failed_logins = {user_object.failed_logins}")
 
@@ -151,13 +151,12 @@ def post_data(data = None):
                 totp = pyotp.TOTP(secret_key).now()
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(pswd, salt)
-  
-                print_userdata(user_object)
+
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
-                if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt):
+                if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')):
                     user_object.verification_code = None            # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash.decode('utf-8')
-                    user_object.salt = salt
+                    user_object.salt = salt.decode('utf-8')
                     
                     user_object.verified = 1                        # Marker som verifisert
                     # Oppretter brukskonto og sparekonto for brukeren
@@ -180,11 +179,11 @@ def post_data(data = None):
         captcha_response = request.form.get('g-recaptcha-response')
 
         if not is_human(captcha_response):
-            return redirect(url_for('password_reset_request'), code=302)
+            return redirect(url_for('password_reset_request', captcha_error='invalid'), code=302)
 
         if valid_id(request.form.get("uname")) == "":
             user_object = User.query.filter_by(user_id=int(request.form.get("uname"))).first()
-            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f") and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+            if user_object is not None and user_object.verified and datetime.now() >= datetime.strptime(user_object.last_password_reset_request, "%Y-%m-%d %H:%M:%S.%f") and user_object.blocked_login_until is None:
                 user_object.last_password_reset_request = str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET))
 
                 code = random_string_generator(128)
@@ -212,12 +211,12 @@ def post_data(data = None):
                 secret_key = user_object.secret_key
                 authenticator_code = request.form.get('auth_code')
                 totp = str(pyotp.TOTP(secret_key).now())
-                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt) and datetime.now() >= datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
+                if user_object is not None and valid_password(pswd) and authenticator_code == totp and pswd == conf_pswd and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and user_object.blocked_login_until is None:
                     salt = generate_random_salt()
                     password_hash = generate_password_hash(pswd, salt)
                     
                     user_object.hashed_password = password_hash.decode('utf-8')
-                    user_object.salt = salt
+                    user_object.salt = salt.decode('utf-8')
                     user_object.password_reset_code = None
 
                     db.session.commit()
@@ -302,27 +301,33 @@ def post_data(data = None):
                                                     dob_error=feedback["dob"], city_error=feedback["city"], postcode_error=feedback["postcode"], 
                                                     address_error=feedback["address"], captcha_error=feedback["captcha"]), code=302)
 
-        # Hvis brukeren allerede finnes, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
-        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None:
+        # Hvis brukeren allerede finnes og er verifisert, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
+        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None and User.query.filter_by(user_id=int(request.form.get("id"))).first().verified:
             user_object = User.query.filter_by(user_id=int(request.form.get("id"))).first()
-            html_template = render_template('/mails/register_existing_user.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                        lname=user_object.lname, ip=request.remote_addr,
-                                                                        date=datetime.now())
+            html_template = render_template('/mails/register_existing_user.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, 
+                                                                                    ip=request.remote_addr, date=datetime.now())
 
             send_mail(recipients=[user_object.email], subject="Someone tried to register an account using your email", body="", html=html_template)
 
             return redirect(url_for('login', v_mail="True"), code=302)
+        
+        # Hvis brukeren allerede finnes og ikke er verifisert, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
+        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None and not User.query.filter_by(user_id=int(request.form.get("id"))).first().verified:
+            user_object = User.query.filter_by(user_id=int(request.form.get("id"))).first()
+            validation_link = request.host_url + 'verification?code=' + user_object.verification_code
+
+            html_template = render_template('/mails/account_verification.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, link=validation_link)
+            
+            # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
+            send_mail(recipients=[request.form.get("email")], subject="Account verification", body="", html=html_template)
+
+            return redirect(url_for('login', v_mail="True"), code=302)
+
         # Ellers, lag en tilfeldig link som brukeren bruker til å verifisere seg selv. Denne linken mottas på epost.
         else:
             code = random_string_generator(128)             # Generate a random string of 128 symbols, this is the verification code
             temp_password = random_string_generator(32)     # Generate a random string of 20 symbols, considering removing this
             validation_link = request.host_url + 'verification?code=' + code  # Lager linken brukeren skal få i mailen.
-            html_template = render_template('/mails/account_verification.html', fname=fname, mname=mname, 
-                                                                                lname=lname, link=validation_link,
-                                                                                password=temp_password, uid=user_id)
-            
-            # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
-            send_mail(recipients=[request.form.get("email")], subject="Account verification", body="", html=html_template)
 
             salt = generate_random_salt()
             password_hash = generate_password_hash(temp_password, salt)
@@ -338,8 +343,8 @@ def post_data(data = None):
                                 city=request.form.get("city"), 
                                 postcode=int(request.form.get("postcode")), 
                                 address=request.form.get("address"), 
-                                hashed_password=password_hash.decode('utf-8'), # gjør om fra str til bytes for å få kryptere
-                                salt=salt,
+                                hashed_password=password_hash.decode('utf-8'),
+                                salt=salt.decode('utf-8'),
                                 verification_code=code,
                                 verified=0,
                                 secret_key=secret_key,
@@ -348,6 +353,12 @@ def post_data(data = None):
 
             db.session.add(user_object)
             db.session.commit()
+
+            html_template = render_template('/mails/account_verification.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, link=validation_link)
+            
+            # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
+            send_mail(recipients=[request.form.get("email")], subject="Account verification", body="", html=html_template)
+
             print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
 
@@ -389,7 +400,7 @@ def post_data(data = None):
         feedback["address_error"] = valid_address(request.form.get("address"))
 
         # Er nåværende passord skrevet inn riktig?
-        if not check_password_hash(request.form.get("pswd"), user.hashed_password.encode('utf-8'), user.salt):
+        if not check_password_hash(request.form.get("pswd"), user.hashed_password.encode('utf-8'), user.salt.encode('utf-8')):
             feedback["pswd_error"] = "incorrect"
 
         # Er det nye passordet gyldig? 
@@ -399,6 +410,8 @@ def post_data(data = None):
             feedback["new_pswd_error"] = "invalid"
         elif new_pswd != new_pswd2:
             feedback["new_pswd_error"] = "unmatched"
+        elif new_pswd == new_pswd2 and check_password_hash(new_pswd, user.hashed_password.encode('utf-8'), user.salt):
+            feedback["new_pswd_error"] = "unchanged"
 
         # Er autentiseringskoden gyldig?
         secret_key = user.secret_key
@@ -433,7 +446,7 @@ def post_data(data = None):
             if new_pswd == new_pswd2 != "" and valid_password(new_pswd):
                 salt = generate_random_salt()
                 password_hash = generate_password_hash(new_pswd, salt)
-                user.salt = salt
+                user.salt = salt.decode('utf-8')
                 user.hashed_password = password_hash.decode('utf-8')
             db.session.commit()  # Etter endringer er gjort, lagre
 
