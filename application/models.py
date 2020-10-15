@@ -24,7 +24,7 @@ class User(db.Model):
     verified = db.Column(EncryptedType(db.Boolean, key, AesEngine, 'zeroes'), unique=False, nullable=False)
     password_reset_code = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=True)
     secret_key = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=True, nullable=True)
-    failed_logins = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
+    failed_logins = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False) # Funker ikke å kryptere failed_logins, tror kanskje det er fordi den er 0?
     blocked_login_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
     last_password_reset_request = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
 

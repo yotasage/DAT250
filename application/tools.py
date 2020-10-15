@@ -391,7 +391,7 @@ def make_user():
     if User.query.filter_by(user_id=id).first() is None:
 
         salt = generate_random_salt()
-        password_hash = generate_password_hash("password", salt)
+        password_hash = generate_password_hash("adminpassword", salt)
         secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
 
         user_object = User( user_id=100001, 
@@ -404,8 +404,8 @@ def make_user():
                             city="UiS", 
                             postcode=4021, 
                             address="UiS 1", 
-                            hashed_password=password_hash,
-                            salt=salt,
+                            hashed_password=password_hash.decode('utf-8'),
+                            salt=salt.decode('utf-8'),
                             verification_code=None,
                             verified=1,
                             secret_key=secret_key,
