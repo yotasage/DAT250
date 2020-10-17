@@ -81,7 +81,7 @@ def generate_account_number(base="1337"):
 def generate_QR(fname, id, secret_key=None, save=False):
     if secret_key is None:
         secret_key = pyotp.random_base32(length=32) # Using 256 bits secret key, see source below
-    secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ' (' + str(id) + ')'), issuer_name='JAMVP Bank')
+    secret_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(name=(str(fname) + ', User ID: ' + str(id)), issuer_name='JAMVP Bank')
     qr = qrcode.QRCode(
     version=1,
     error_correction=qrcode.constants.ERROR_CORRECT_L,
