@@ -130,8 +130,18 @@ def startpage():
                     Msg.append(transaction.message)
                     From.append(transaction.from_acc)
                     To.append(transaction.to_acc)
+        
+        account_num_error = request.args.get('account_num_error')
+        account_balance_error = request.args.get('account_balance_error')
+        amount_error = request.args.get('amount_error')
+        kid_error = request.args.get('kid_error')
+        auth_error = request.args.get('auth_error')
 
-        resp1 = make_response(render_template("pages/startside.html", len=len(transactions_list), transfer_time=transfer_time, From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance))
+        resp1 = make_response(render_template("pages/startside.html", len=len(transactions_list), transfer_time=transfer_time, 
+                                                From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, 
+                                                ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance,
+                                                account_num_error=account_num_error, account_balance_error=account_balance_error,
+                                                amount_error=amount_error, kid_error=kid_error, auth_error=auth_error))
 
     try:
         return signed_in(resp1, resp2)

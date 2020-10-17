@@ -95,7 +95,40 @@
       
       <div class="body_content">
 
-
+<div style='text-align: left; width:500px; display: block; margin-left: auto; margin-right: auto;'>
+    <br>    
+    {% if account_num_error is not none or account_balance_error is not none or amount_error is not none or kid_error is not none or auth_error is not none %}
+    <strong style="color:red;">Something is wrong with the information you have given us:</strong><br><br>
+        {% if account_num_error == 'equal' %}
+        <p style="color:red;">Error #1: The account numbers need to be different.</p>
+        {% endif %}
+        {% if account_num_error == 'invalid' %}
+        <p style="color:red;">Error #2: An invalid account number has been entered.</p>
+        {% endif %}
+        {% if account_num_error == 'incorrect' %}
+        <p style="color:red;">Error #3: One of your account numbers must be entered in "From account".</p>
+        {% endif %}
+        {% if account_num_error == 'not_exist' %}
+        <p style="color:red;">Error #4: You're trying to send money to an account that does not exist.</p>
+        {% endif %}
+        {% if amount_error == 'invalid' %}
+        <p style="color:red;">Error #5: The amount needs to be a postitive number without symbols.</p>
+        {% endif %}
+        {% if kid_error == 'not_allowed_symbols' %}
+        <p style="color:red;">Error #6: The KID/message contains unallowed symbols.</p>
+        {% endif %}
+        {% if account_balance_error == 'invalid' %}
+        <p style="color:red;">Error #7: The amount exceeds your account balance.</p>
+        {% endif %}
+        {% if auth_error == 'incorrect' %}
+        <p style="color:red;">Error #8: The authenticator code is incorrect.</p>
+        {% endif %}
+    
+    {% else %}
+        <br>
+    {% endif %}
+    <br>
+</div>
 
 <div class="container">
     <form action="action_page.php" method="post">
