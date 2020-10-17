@@ -22,7 +22,7 @@ from app import app, mail, db, cookie_maxAge, client_maxAge
 
 from app import RESTRIC_PASSWORD_RESET, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH
 
-from models import Cookies, Account, User
+from models import Cookies, Account, User, CommonPasswords
 
 DEFAULT_RECIPIENTS = ["email@domain.com"]  # Dette er ei liste over alle default mottakere av mailen, hver mottaker skilles med komma
 DOMAIN_NAME = 'jamvp.tk'
@@ -112,7 +112,7 @@ def is_human(captcha_response):
     """ Validating recaptcha response from google server
         Returns True captcha test passed for submitted form else returns False.
     """
-    secret = "6LeVXtYZAAAAAEucQFkxkIpYskRfAyKB140yp-HF"
+    secret = os.environ.get('SITE_KEY')
     payload = {'response':captcha_response, 'secret':secret}
     response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
     response_text = json.loads(response.text)
@@ -316,6 +316,12 @@ def valid_password(password, min_length=PASSWORD_MIN_LENGTH, max_length=PASSWORD
         elif not contain_allowed_symbols(password):
             # print("password contains invalid characters")
             return False
+
+        # Hvis passorde finnes i databasen over top "10000" passord
+        elif CommonPasswords.query.filter_by(password=password).first() is not None:
+            return False
+
+        # Passorde er gyldig
         return True
 
 
@@ -385,7 +391,7 @@ def make_user():
     if User.query.filter_by(user_id=id).first() is None:
 
         salt = generate_random_salt()
-        password_hash = generate_password_hash("password", salt)
+        password_hash = generate_password_hash("adminpassword", salt)
         secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
 
         user_object = User( user_id=100001, 
@@ -398,8 +404,8 @@ def make_user():
                             city="UiS", 
                             postcode=4021, 
                             address="UiS 1", 
-                            hashed_password=password_hash,
-                            salt=salt,
+                            hashed_password=password_hash.decode('utf-8'),
+                            salt=salt.decode('utf-8'),
                             verification_code=None,
                             verified=1,
                             secret_key=secret_key,
