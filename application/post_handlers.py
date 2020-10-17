@@ -484,12 +484,12 @@ def post_data(data = None):
                 feedback['amount_error'] = 'invalid'
             else:
                 amount = int(belop)
+                if account_from is not None and account_from.balance < amount:
+                    feedback['account_balance_error'] = 'invalid'
             if not contain_allowed_symbols(s=msg, whitelist=string.ascii_letters + string.digits + ' ' + Norwegian_characters):
                 feedback['kid_error'] = 'not_allowed_symbols'
             if totp != authenticator_code:
                 feedback['auth_error'] = 'incorrect'
-            if account_from is not None and account_from.balance < amount:
-                feedback['account_balance_error'] = 'invalid'
         else:
             feedback['account_num_error'] = 'invalid'
 
