@@ -13,7 +13,7 @@ from app import NUMBER_OF_LOGIN_ATTEMPTS_IP, NUMBER_OF_LOGIN_ATTEMPTS_USER, BLOC
 
 from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
-from tools import generate_account_numbers, valid_account_number, generate_QR, is_human
+from tools import generate_account_numbers, valid_account_number, generate_QR, is_human, generate_id
 # from tools import generate_Captcha
 from tools import make_user, Norwegian_characters
 
@@ -240,8 +240,8 @@ def post_data(data = None):
         captcha = request.form.get('g-recaptcha-response')
 
         formgets = [fname, mname, lname, email, user_id, phone_num, dob, city, postcode, address]
-        for i in range(len(formgets)):
-            print("inputfelt nr." + str(i) + ": " + formgets[i])
+        #for i in range(len(formgets)):
+        #    print("inputfelt nr." + str(i) + ": " + formgets[i])
 
         # Her legges eventuelle feilmeldinger angående dataen fra registreringssiden.
         feedback = {'fname': '', 'mname': '', 'lname': '', 'email': '', 'id': '', 'phone_num': '', 'dob': '', 'city': '', 'postcode': '', 'address': '', 'captcha': ''}
@@ -254,13 +254,13 @@ def post_data(data = None):
         feedback["email"] = valid_email(email)
 
         # Matcher bruker id og epost?
-        emailsplit = email.split('@')
-        if feedback["email"] == '' and emailsplit[0] != user_id: # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
-            feedback["email"] = "mismatch"
-            feedback["id"] = "mismatch"
+        # emailsplit = email.split('@')
+        # if feedback["email"] == '' and emailsplit[0] != user_id: # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
+        #     feedback["email"] = "mismatch"
+        #     feedback["id"] = "mismatch"
 
         # Er bruker id'en gyldig?
-        feedback["id"] = valid_id(user_id)
+        # feedback["id"] = valid_id(user_id)
 
         # Er fornavn, mellomnavn og etternavn gyldig?
         feedback["fname"] = valid_name(names=fname, whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
@@ -302,8 +302,8 @@ def post_data(data = None):
                                                     address_error=feedback["address"], captcha_error=feedback["captcha"]), code=302)
 
         # Hvis brukeren allerede finnes og er verifisert, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
-        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None and User.query.filter_by(user_id=int(request.form.get("id"))).first().verified:
-            user_object = User.query.filter_by(user_id=int(request.form.get("id"))).first()
+        elif User.query.filter_by(email=request.form.get("email")).first() is not None and User.query.filter_by(email=request.form.get("email")).first().verified:
+            user_object = User.query.filter_by(email=request.form.get("email")).first()
             html_template = render_template('/mails/register_existing_user.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, 
                                                                                     ip=request.remote_addr, date=datetime.now())
 
@@ -312,8 +312,8 @@ def post_data(data = None):
             return redirect(url_for('login', v_mail="True"), code=302)
         
         # Hvis brukeren allerede finnes og ikke er verifisert, send klienten tilbake til login siden som om brukeren faktisk klarte å registrere seg
-        elif User.query.filter_by(user_id=int(request.form.get("id"))).first() is not None and not User.query.filter_by(user_id=int(request.form.get("id"))).first().verified:
-            user_object = User.query.filter_by(user_id=int(request.form.get("id"))).first()
+        elif User.query.filter_by(email=request.form.get("email")).first() is not None and not User.query.filter_by(email=request.form.get("email")).first().verified:
+            user_object = User.query.filter_by(email=request.form.get("email")).first()
             validation_link = request.host_url + 'verification?code=' + user_object.verification_code
 
             html_template = render_template('/mails/account_verification.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, link=validation_link)
@@ -329,11 +329,12 @@ def post_data(data = None):
             temp_password = random_string_generator(32)     # Generate a random string of 20 symbols, considering removing this
             validation_link = request.host_url + 'verification?code=' + code  # Lager linken brukeren skal få i mailen.
 
+            user_id = generate_id()
             salt = generate_random_salt()
             password_hash = generate_password_hash(temp_password, salt)
-            secret_key,_ = generate_QR(request.form.get("fname"), request.form.get("id"))
+            secret_key,_ = generate_QR(request.form.get("fname"), str(user_id))
 
-            user_object = User( user_id=int(request.form.get("id")), 
+            user_object = User( user_id=user_id,
                                 email=request.form.get("email"), 
                                 fname=request.form.get("fname"), 
                                 mname=request.form.get("mname"),
