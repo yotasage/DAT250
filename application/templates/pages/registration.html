@@ -108,7 +108,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                     <p style="color:red;">Error #6: The text in front of @ in the email address does not match the user identification.</p>
                 {% endif %}
                 {% if email_error == 'invalid' %}
-                    <p style="color:red;">Error #7: The domain (the text behind @) in the email address is invalid, should be: uis.no</p>
+                    <p style="color:red;">Error #7: The email address is invalid.</p> <!-- The domain (the text behind @) in the email address is invalid, should be: uis.no -->
                 {% endif %}
                 {% if id_error == 'mismatch' %}
                     <p style="color:red;">Error #8: User identification does not match the text in front of @ in the email address.</p>
@@ -183,16 +183,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                 </div>
 
                 <div>
-                    <div class="fields">
+                    <div class="fields" id="address_field">
                         <label for="email">E-mail:</label><br>
                         {% if email == none %}
-                        <input type="email" id="email" placeholder="Identification@uis.no" name="email" required>
+                        <input type="email" id="email" placeholder="example@domain.something" name="email" required>
                         {% else %}
                         <input type="email" id="email" value="{{email}}" name="email" required>
                         {% endif %}
                         
                     </div>
-
+                <!-- 
                     <div class="fields">
                         <label for="id">User Identification:</label><br>
                         {% if id == none %}
@@ -201,6 +201,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expression
                         <input type="text" id="id" value="{{id}}" name="id" required>
                         {% endif %}
                     </div>
+                -->
                 </div>
 
                 <div>

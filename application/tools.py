@@ -236,19 +236,22 @@ def valid_date(date, separator='-'):
     return True
 
 # Denne kan sjekkes i en if, den gir True når den returnerer text, og False når den returnerer "".
-def valid_email(email, domain='uis.no', min_length=6, max_length=7):
-    if email != '':
-        email = email.split('@')
-        if len(email) == 2:
+def valid_email(mail_addr, is_num=False, min_length=6, max_length=64, check_len=False, domain='uis.no', check_domain=False):
+    if mail_addr != '':
+        email = mail_addr.split('@')
+
+        if len(email) == 2 and contain_allowed_symbols(mail_addr, whitelist=string.ascii_letters + string.digits + Norwegian_characters + string.punctuation) and User.query.filter_by(email=mail_addr).first() is None:
             
-            if not is_number(email[0]):  # Sjekk om det forran @ ikke er et tall
+            if is_num and not is_number(email[0]):  # Sjekk om det forran @ ikke er et tall
                 return "NaN"
 
-            if min_length > len(email[0]) or len(email[0]) > max_length:  # Sjekk om det forran @ ikke har gyldig lengde
+            if check_len and (min_length > len(email[0]) or len(email[0]) > max_length):  # Sjekk om det forran @ ikke har gyldig lengde
                 return "invalidLength"
 
-            if email[1] != domain:  # Sjekker om epost addresse ikke har gyldig domene
+            if check_domain and email[1] != domain:  # Sjekker om epost addresse ikke har gyldig domene
                 return "invalid"
+        else:
+            return "invalid"
     else:
         return "empty"
     return ""
@@ -263,6 +266,12 @@ def valid_id(id, min_length=6, max_length=7):
     else:
         return "empty"
     return ""
+
+def generate_id():
+    while True:
+        id = int(random_string_generator(size=6, chars=string.digits))
+        if User.query.filter_by(user_id=id).first() is None:
+            return id
 
 def valid_name(names, whitelist=string.ascii_letters + Norwegian_characters):
     if names != '':
@@ -386,16 +395,16 @@ def send_mail(sender=None, recipients=DEFAULT_RECIPIENTS, subject=DEFAULT_MESSAG
     mail_sending_thread.start()
 
 def make_user():
-    id = 100001
+    user_id = 100001
 
-    if User.query.filter_by(user_id=id).first() is None:
+    if User.query.filter_by(user_id=user_id).first() is None:
 
         salt = generate_random_salt()
         password_hash = generate_password_hash("adminpassword", salt)
-        secret_key, qr = generate_QR("admin", "100001", secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
+        secret_key, qr = generate_QR("admin", str(user_id), secret_key="OEDVH3ILZSLXCZXXUVYJIUA3TU56BMWD", save=True)
 
-        user_object = User( user_id=100001, 
-                            email="000001@uis.no", 
+        user_object = User( user_id=user_id, 
+                            email="the.jona.mr@outlook.com", 
                             fname="admin", 
                             mname="",
                             lname="one", 
@@ -413,8 +422,8 @@ def make_user():
                             last_password_reset_request=str(datetime.now() + timedelta(seconds=RESTRIC_PASSWORD_RESET)))
 
         account_numbers = generate_account_numbers(amount=2)
-        regular_account = Account(user_id=100001, account_number=account_numbers[0], account_name="Main", balance=58421)
-        savings_account = Account(user_id=100001, account_number=account_numbers[1], account_name="Savings", balance=3522458)
+        regular_account = Account(user_id=user_id, account_number=account_numbers[0], account_name="Main", balance=58421)
+        savings_account = Account(user_id=user_id, account_number=account_numbers[1], account_name="Savings", balance=3522458)
 
         # Legg kontoene til i databasen, og lagre alle database endringer
         db.session.add(regular_account)
