@@ -30,8 +30,8 @@ PASSWORD_MAX_LENGTH = 128
 PASSWORD_MIN_LENGTH = 8
 
 mail_settings = {
-    "MAIL_SERVER": 'smtp.office365.com',
-    "MAIL_PORT": 587,
+    "MAIL_SERVER": 'smtp.gmail.com',  # smtp.office365.com
+    "MAIL_PORT": 587,  # Use port 465, or port 587 if your client begins with plain text before issuing the STARTTLS command.
     "MAIL_USE_TLS": True,                                           # Mail blir kryptert
     "MAIL_USE_SSL": False,                                          # Dette er en annen krypterings greie vi ikke bruker
     "MAIL_USERNAME": os.environ.get('MAIL_USERNAME_FLASK'),         # $Env:MAIL_USERNAME_FLASK = "username" skrives inn i Powershell for windows                                                    # os.environ.get('MAIL_USERNAME_FLASK')
