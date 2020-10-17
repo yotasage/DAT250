@@ -240,7 +240,7 @@ def valid_email(mail_addr, is_num=False, min_length=6, max_length=64, check_len=
     if mail_addr != '':
         email = mail_addr.split('@')
 
-        if len(email) == 2 and contain_allowed_symbols(mail_addr, whitelist=string.ascii_letters + string.digits + Norwegian_characters + string.punctuation) and User.query.filter_by(email=mail_addr).first() is None:
+        if len(email) == 2 and contain_allowed_symbols(mail_addr, whitelist=string.ascii_letters + string.digits + Norwegian_characters + string.punctuation):
             
             if is_num and not is_number(email[0]):  # Sjekk om det forran @ ikke er et tall
                 return "NaN"
@@ -397,7 +397,7 @@ def send_mail(sender=None, recipients=DEFAULT_RECIPIENTS, subject=DEFAULT_MESSAG
 def make_user():
     user_id = 100001
 
-    if User.query.filter_by(user_id=user_id).first() is None:
+    if User.query.filter_by(email="the.jona.mr@outlook.com").first() is None:
 
         salt = generate_random_salt()
         password_hash = generate_password_hash("adminpassword", salt)
