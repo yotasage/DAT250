@@ -8,6 +8,8 @@ from flask import render_template, request, redirect, url_for, abort, make_respo
 import string
 import os
 from models import User, Blacklist, Cookies, Account, Transaction
+from flask_scrypt import generate_random_salt, generate_password_hash, check_password_hash
+
 
 from app import app, db, cookie_maxAge # Importerer Flask objektet app
 from tools import send_mail, valid_cookie, update_cookie, contain_allowed_symbols, extract_cookies, get_valid_cookie, insertion_sort_transactions, valid_account_number, generate_QR
@@ -83,15 +85,17 @@ def startpage():
         user = User.query.filter_by(user_id=cookie.user_id).first()
         accounts = Account.query.filter_by(user_id=user.user_id).all()
 
-        ac_name= []
-        ac_nr= []
-        ac_balance=[]
+        ac_name = []
+        ac_nr = []
+        ac_balance = []
+        btn = []
 
         transactions = set()  # Bruker set for å fjerne duplikater
 
         for account in accounts:
             ac_name.append(account.account_name)
             ac_nr.append(account.account_number)
+            btn.append(generate_password_hash(account.account_number, '').decode('utf-8'))
             ac_balance.append(account.balance)
 
             for transaction in Transaction.query.filter_by(to_acc=account.account_number).all():
@@ -141,7 +145,7 @@ def startpage():
                                                 From=From, To=To, Msg=Msg, Inn=Inn, Out=Out, account=accounts[0].account_number, 
                                                 ac_name=ac_name, ac_nr=ac_nr,ac_balance= ac_balance,
                                                 account_num_error=account_num_error, account_balance_error=account_balance_error,
-                                                amount_error=amount_error, kid_error=kid_error, auth_error=auth_error))
+                                                amount_error=amount_error, kid_error=kid_error, auth_error=auth_error, btn=btn))
 
     try:
         return signed_in(resp1, resp2)
@@ -268,16 +272,23 @@ def transaction_overview(page = None):
     resp2 = redirect(url_for('index'), code=302)  # Side for når en ikke er innlogget
 
     # Les ut variabler
-    account_number = request.args.get('cnr')
+    account_number_hash = request.args.get('cnr')
     session_cookie = get_valid_cookie()
 
-    if session_cookie is not None and valid_account_number(account_number):
+    if session_cookie is not None and contain_allowed_symbols(account_number_hash, whitelist=string.ascii_letters + string.digits + string.punctuation + ' '):
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
         user = User.query.filter_by(user_id=cookie.user_id).first()
-        account = Account.query.filter_by(account_number=account_number).first()
+        accounts = Account.query.filter_by(user_id=cookie.user_id).all()
+
+        match = False
+        for account in accounts:
+            actuall_hash = generate_password_hash(account.account_number, '').decode('utf-8').replace('+',' ')
+            if account_number_hash == actuall_hash:
+                match = True
+                break
 
         # Sjekker om dette er brukeren sin konto
-        if account is not None and user is not None and account.user_id == user.user_id:
+        if account is not None and user is not None and account.user_id == user.user_id and match:
 
             transactions = Transaction.query.filter_by(to_acc=account.account_number).all() + Transaction.query.filter_by(from_acc=account.account_number).all()
 

@@ -51,12 +51,12 @@ def before_request_func():
                 client_listing.frequent_request_count = 0
 
             client_listing.last = str(datetime.now())
-            db.session.commit()
 
     else:
         client_listing = Blacklist(ip=request.remote_addr, last=str(datetime.now()), frequent_request_count=0, wrong_password_count=0)
         db.session.add(client_listing)
-        db.session.commit()
+        
+    db.session.commit()
 
 def signed_in(signed_in_page, url_page):
     cookie_list = extract_cookies()

@@ -44,8 +44,7 @@ def post_data(data = None):
                 user_object = User.query.filter_by(user_id=int(user_id)).first()
 
                 if user_object is not None:
-                    pass
-                    # print_userdata(user_object)
+                    print_userdata(user_object)
 
                 # Hvis login for denne brukerkontoen har vært blokket, og ikke lenger er det
                 if user_object is not None and user_object.blocked_login_until is not None and datetime.now() > datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
@@ -489,7 +488,7 @@ def post_data(data = None):
                 feedback['kid_error'] = 'not_allowed_symbols'
             if totp != authenticator_code:
                 feedback['auth_error'] = 'incorrect'
-            if account_from.balance < amount:
+            if account_from is not None and account_from.balance < amount:
                 feedback['account_balance_error'] = 'invalid'
         else:
             feedback['account_num_error'] = 'invalid'
