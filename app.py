@@ -21,7 +21,7 @@ BAD_LOGIN_INTERVAL = 60*60*12
 NUMBER_OF_LOGIN_ATTEMPTS_USER = 10
 BLOCK_LOGIN_TIME_USER = 60*60
 
-RESTRIC_PASSWORD_RESET = 60 #60*30
+RESTRIC_PASSWORD_RESET = 60*30
 
 MAX_TIME_BETWEEN_REQUESTS = 4  # Seconds, if a request is performed within a certain amount of time after another, it is considered too frequent
 BLOCK_PERIOD = 60*60*24  # Seconds
