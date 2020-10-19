@@ -14,7 +14,7 @@ import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne
 COOKIE_MAXAGE = cookie_maxAge = 900  # Hvor mange sekunder en cookie er gyldig
 CLIENT_MAXAGE = client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
 
-NUMBER_OF_LOGIN_ATTEMPTS_IP = 3
+NUMBER_OF_LOGIN_ATTEMPTS_IP = 100
 BLOCK_LOGIN_TIME_IP = 60*60*24
 BAD_LOGIN_INTERVAL = 60*60*12
 
@@ -58,7 +58,15 @@ db.drop_all() # for å slette alle brukere for å teste db, bare kommentere ut n
 db.create_all() # greit for å teste db, men senere så er ikke det så lurt å ha det siden den sletter alle eksisterende brukere
 # når vi har integrert inn login og regin for nettsiden så burde vi fjerne db.create 
 # når fila skal ut i production så skal db.create all være der enda
-
+print("######################################")
+print("######################################")
+print("######################################")
+print()
+print("START")
+print()
+print("######################################")
+print("######################################")
+print("######################################")
 
 if len(CommonPasswords.query.all()) == 0:
 
