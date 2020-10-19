@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JAMVP Bank</title>
+<link rel="icon" type="image/png" href="/favicon.png"> <!-- Bilde som vises ved siden av tittelen i fanen, det kalles for favicon -->
+<link rel="stylesheet" type="text/css" href="/header.css">
+<!-- 
+https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ -->
+
+<style>
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;
+    }
+
+    .container {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width:600px; 
+        border-style: none;  /* solid */
+        border-color: #f8f6f6;  /* 87, 140, 250 */
+        background-color:  #f8f6f6;
+    }
+
+    button {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align:center;
+    }
+
+    .fields {
+        padding: 5px;
+        width: 30%;
+        display: inline-block;
+        border: 1px none white; 
+    }
+
+    input {
+        width: 100%;
+    }
+
+    body {margin: 0;}
+
+    h1 {text-align: center;}
+
+    .address_fields {
+        padding: 5px;
+        width: 62.5%;
+    }
+
+  /* Page Content */
+    .body_content {
+        position: relative;
+        top: 85px;
+        width: 100%;
+    }
+
+
+</style>
+
+</head>
+<body>
+    <div class="header">
+        <iframe class="headerObj" src="header.html" title="header"></iframe>
+    </div> 
+      
+<div class="body_content">
+
+    
+
+    <div class="container">
+        <h1>User information</h1>
+        <div>
+            <div>
+                <div class="fields">
+                    <label>First name:</label><br>
+                    <input type="text" id="textbox" value="{{fname}}"  name="fname" readonly>
+                </div>
+
+                <div class="fields">
+                    <label>Middle name:</label><br>
+                    <input type="text" id="textbox" value="{{mname}}"  name="mname" readonly>
+                </div>
+
+                <div class="fields">
+                    <label>Last name:</label><br>
+                    <input type="text" id="textbox" value="{{lname}}"  name="lname" readonly>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label>Email:</label><br>
+                    <input type="text" id="textbox" value="{{email}}"  name="email" readonly>
+                </div>
+
+                <div class="fields">
+                    <label>User ID:</label><br>
+                    <input type="text" id="textbox" value="{{id}}"  name="id" readonly>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label>Phone number:</label><br>
+                    <input type="text" id="textbox" value="{{phone_num}}"  name="phone_num" readonly>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label>Date of birth:</label><br>
+                    <input type="text" id="textbox" value="{{dob}}"  name="dob" readonly>
+                </div>
+            </div>
+
+            <div>
+                <div class="fields">
+                    <label>City:</label><br>
+                    <input type="text" id="textbox" value="{{city}}"  name="city" readonly>
+                </div>
+
+                <div class="fields">
+                    <label>Postal code:</label><br>
+                    <input type="text" id="textbox" value="{{postcode}}"  name="postcode" readonly>
+                </div>
+            </div>
+
+            <div>
+                <div class="address_fields">
+                    <label>Address:</label><br>
+                    <input class="address_textarea" type="text" id="textbox" value="{{address}}"  name="address" readonly>
+                </div>
+            </div>
+
+            <br>
+            <button onclick="location.href='edit.html';" type="button">Edit info</button>
+            <br>
+        </div>
+    </div>
+    <br><br>
+</div>
+</body>
+</html>
