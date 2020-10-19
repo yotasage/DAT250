@@ -62,7 +62,7 @@ db.create_all() # greit for å teste db, men senere så er ikke det så lurt å 
 
 if len(CommonPasswords.query.all()) == 0:
 
-    r_file_1 = open('application/bad_password_2.txt', 'r')
+    r_file_1 = open('bad_password_2.txt', 'r')
 
     namelist_1 = []
 
