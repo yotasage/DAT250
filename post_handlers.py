@@ -73,7 +73,10 @@ def post_data(data = None):
 
                     user_object.failed_logins = 0
 
-                    cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
+                    if 'x-forwarded-for' in request.headers:
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.headers.get('x-forwarded-for'), session_cookie=sessionId, valid_to=str(expiration_date))
+                    else:
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
 

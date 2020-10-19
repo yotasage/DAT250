@@ -170,7 +170,12 @@ def valid_cookie(cookie_in_question):
         print("###############################################")
         print("###############################################")
 
-        if cookie.ip != request.remote_addr:
+        if 'x-forwarded-for' in request.headers:
+            ip = request.headers.get('x-forwarded-for')
+        else:
+            ip = request.remote_addr
+
+        if cookie.ip != ip:
             user_object = User.query.filter_by(user_id=cookie.user_id).first()
 
             html_template = render_template('/mails/stolen_cookie.html', fname=user_object.fname, mname=user_object.mname, 
