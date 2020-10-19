@@ -93,7 +93,7 @@ def generate_QR(fname, id, secret_key=None, save=False):
     img = qr.make_image(fill_color="black", back_color="white")
     width, height = img.size
     logo_size = 80
-    logo = Image.open('application/static/assets/logo_no_white.png')
+    logo = Image.open('static/assets/logo_no_white.png')
     xmin = ymin = int((width / 2) - (logo_size / 2))
     xmax = ymax = int((width / 2) + (logo_size / 2))
     logo = logo.resize((xmax - xmin, ymax - ymin))
