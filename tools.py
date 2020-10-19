@@ -155,6 +155,18 @@ def valid_cookie(cookie_in_question):
 
         # Cookies er koblet opp mot ip til klienten, om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
         # Returnerer False, da vil cookie bli slettet en eller annen gang, og brukeren blir da også logget ut
+
+        print("###############################################")
+        print("###############################################")
+        print("##############################################")
+        print()
+        print(f"cookie.ip = {cookie.ip}")
+        print(f"request.remote_addr = {request.remote_addr}")
+        print()
+        print("###############################################")
+        print("###############################################")
+        print("###############################################")
+
         if cookie.ip != request.remote_addr:
             user_object = User.query.filter_by(user_id=cookie.user_id).first()
 
