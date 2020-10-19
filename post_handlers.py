@@ -48,10 +48,6 @@ def post_data(data = None):
 
                 user_object = User.query.filter_by(user_id=int(user_id)).first()
 
-                if user_object is not None:
-                    # print_userdata(user_object)
-                    pass
-
                 # Hvis login for denne brukerkontoen har vært blokket, og ikke lenger er det
                 if user_object is not None and user_object.blocked_login_until is not None and datetime.now() > datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
                     user_object.blocked_login_until = None
@@ -73,7 +69,10 @@ def post_data(data = None):
 
                     user_object.failed_logins = 0
 
-                    cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
+                    if 'x-forwarded-for' in request.headers:
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.headers.get('x-forwarded-for'), session_cookie=sessionId, valid_to=str(expiration_date))
+                    else:
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
 
@@ -367,7 +366,6 @@ def post_data(data = None):
             # Denne må være med for å kunne sende bekreftelses mailen, men kan kommenteres vekk under testing slik at en slipper å få så mange mailer.
             send_mail(recipients=[request.form.get("email")], subject="Account verification", body="", html=html_template)
 
-            print_userdata(user_object)
             return redirect(url_for('login', v_mail="True"), code=302)
 
     # Verifiser data som skal endres av bruker

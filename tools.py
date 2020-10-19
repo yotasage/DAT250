@@ -93,7 +93,7 @@ def generate_QR(fname, id, secret_key=None, save=False):
     img = qr.make_image(fill_color="black", back_color="white")
     width, height = img.size
     logo_size = 80
-    logo = Image.open('application/static/assets/logo_no_white.png')
+    logo = Image.open('static/assets/logo_no_white.png')
     xmin = ymin = int((width / 2) - (logo_size / 2))
     xmax = ymax = int((width / 2) + (logo_size / 2))
     logo = logo.resize((xmax - xmin, ymax - ymin))
@@ -155,11 +155,17 @@ def valid_cookie(cookie_in_question):
 
         # Cookies er koblet opp mot ip til klienten, om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
         # Returnerer False, da vil cookie bli slettet en eller annen gang, og brukeren blir da også logget ut
-        if cookie.ip != request.remote_addr:
+
+        if 'x-forwarded-for' in request.headers:
+            ip = request.headers.get('x-forwarded-for')
+        else:
+            ip = request.remote_addr
+
+        if cookie.ip != ip:
             user_object = User.query.filter_by(user_id=cookie.user_id).first()
 
             html_template = render_template('/mails/stolen_cookie.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                lname=user_object.lname, ip=request.remote_addr,
+                                                                                lname=user_object.lname, ip=ip,
                                                                                 date=datetime.now())
 
             send_mail(recipients=[user_object.email], subject="Someone tried to sign in to your account", body="", html=html_template)
@@ -432,5 +438,4 @@ def make_user():
 
         db.session.add(user_object)
         db.session.commit()
-        print_userdata(user_object)
 
