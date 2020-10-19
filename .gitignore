@@ -3,11 +3,10 @@
 .vscode/settings.json
 application/__pycache__
 backup
-mail_user_config.py
-application/certificate
-.pem
-**/certificate
+
+
+
+
 **/__pycache__
-*.key
+
 .pyc*
-*.crt
