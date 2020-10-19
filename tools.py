@@ -156,20 +156,6 @@ def valid_cookie(cookie_in_question):
         # Cookies er koblet opp mot ip til klienten, om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
         # Returnerer False, da vil cookie bli slettet en eller annen gang, og brukeren blir da også logget ut
 
-        print("###############################################")
-        print("###############################################")
-        print("##############################################")
-        print()
-        print(f"cookie.ip = {cookie.ip}")
-        print(f"request.remote_addr = {request.remote_addr}")
-        print()
-        print('x-forwarded-for' in request.headers)
-        print(request.headers.get('x-forwarded-for'))
-        print()
-        print("###############################################")
-        print("###############################################")
-        print("###############################################")
-
         if 'x-forwarded-for' in request.headers:
             ip = request.headers.get('x-forwarded-for')
         else:
@@ -179,7 +165,7 @@ def valid_cookie(cookie_in_question):
             user_object = User.query.filter_by(user_id=cookie.user_id).first()
 
             html_template = render_template('/mails/stolen_cookie.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                lname=user_object.lname, ip=request.remote_addr,
+                                                                                lname=user_object.lname, ip=ip,
                                                                                 date=datetime.now())
 
             send_mail(recipients=[user_object.email], subject="Someone tried to sign in to your account", body="", html=html_template)
@@ -452,5 +438,4 @@ def make_user():
 
         db.session.add(user_object)
         db.session.commit()
-        print_userdata(user_object)
 
