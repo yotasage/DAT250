@@ -55,8 +55,14 @@ def before_request_func():
     else:
         client_listing = Blacklist(ip=request.remote_addr, last=str(datetime.now()), frequent_request_count=0, wrong_password_count=0)
         db.session.add(client_listing)
-        
+
     db.session.commit()
+
+    # print(f"request.host_url = {request.host_url}")
+    # print(f"request.headers['Referer'] = {request.headers['Referer']}")
+
+    # if 'Referer' in request.headers and request.host_url not in request.headers['Referer']:
+    #     return redirect(url_for('index'), code=302)
 
 def signed_in(signed_in_page, url_page):
     cookie_list = extract_cookies()

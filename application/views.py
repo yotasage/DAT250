@@ -35,7 +35,7 @@ def header():
 
     session_cookie = get_valid_cookie()
 
-    if session_cookie is not None:
+    if session_cookie is not None and ('Referer' in request.headers and request.host_url in request.headers['Referer'] and request.host_url != request.headers['Referer']):
         cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
         user = User.query.filter_by(user_id=cookie.user_id).first()
 
