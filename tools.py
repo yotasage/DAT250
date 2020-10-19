@@ -277,7 +277,7 @@ def valid_id(id, min_length=6, max_length=7):
 def generate_id():
     while True:
         suggested_id = int(random_string_generator(size=6, chars=string.digits))
-        if valid_id(suggested_id) and User.query.filter_by(user_id=suggested_id).first() is None:
+        if valid_id(str(suggested_id)) == "" and User.query.filter_by(user_id=suggested_id).first() is None:
             return suggested_id
 
 def valid_name(names, whitelist=string.ascii_letters + Norwegian_characters):
