@@ -271,8 +271,8 @@ def post_data(data = None):
         # Er fornavn, mellomnavn og etternavn gyldig?
         feedback["fname"] = valid_name(names=fname, whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if mname != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname"] = valid_name(names=mname)
-        feedback["lname"] = valid_name(names=lname)
+            feedback["mname"] = valid_name(names=mname, whitelist=string.ascii_letters + '-' + Norwegian_characters)
+        feedback["lname"] = valid_name(names=lname, whitelist=string.ascii_letters + '-' + Norwegian_characters)
 
         # Er by navn gyldig?
         feedback["city"] = valid_name(city)
@@ -388,8 +388,8 @@ def post_data(data = None):
         # Er fornavn, mellomnavn og etternavn gyldig?
         feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname_error"] = valid_name(names=request.form.get("mname"))
-        feedback["lname_error"] = valid_name(names=request.form.get("lname"))
+            feedback["mname_error"] = valid_name(names=request.form.get("mname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)
+        feedback["lname_error"] = valid_name(names=request.form.get("lname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)
 
         # Er by navn gyldig?
         feedback["city_error"] = valid_name(request.form.get("city"))
