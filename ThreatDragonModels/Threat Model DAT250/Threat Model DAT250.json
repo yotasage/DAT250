@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "title": "Threat Model DAT250",
+    "owner": "JAMVP-BANK",
+    "description": ""
+  },
+  "detail": {
+    "contributors": [
+      {
+        "name": "Jonathan"
+      },
+      {
+        "name": "Martin"
+      },
+      {
+        "name": "Alide"
+      },
+      {
+        "name": "Vebjørn"
+      }
+    ],
+    "diagrams": [
+      {
+        "title": "Sikkerhet-JAMVPBANK",
+        "thumbnail": "./public/content/images/thumbnail.jpg",
+        "id": 0
+      }
+    ]
+  }
+}
