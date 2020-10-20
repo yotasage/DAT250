@@ -146,10 +146,10 @@ def post_data(data = None):
         # Dette må gjøres for å identifisere hvem som prøver å verifisere seg.
         if 'Referer' in request.headers:
             verification_code = request.headers.get('Referer').split('verification?code=')[1].replace('&error=True', '')  # request.headers.get('Referer')
-            user_id = request.form.get("uname")
-            if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits) and valid_id(user_id) == "":  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+            user_id = int(request.form.get("uname"))
+            if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits) and valid_id(str(user_id)) == "":  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
                 user_object = User.query.filter_by(verification_code=verification_code).first()
-
+                
                 pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
                 conf_pswd = request.form.get('conf_pswd')
                 secret_key = user_object.secret_key
@@ -159,7 +159,7 @@ def post_data(data = None):
                 password_hash = generate_password_hash(pswd, salt)
 
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
-                if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and user_id == user_object.user_id:
+                if user_object is not None and user_id == user_object.user_id and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')):
                     user_object.verification_code = None            # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash.decode('utf-8')
                     user_object.salt = salt.decode('utf-8')
