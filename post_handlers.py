@@ -386,7 +386,7 @@ def post_data(data = None):
             feedback["dob_error"] = "invalid"
 
         # Er fornavn, mellomnavn og etternavn gyldig?
-        feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
+        feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
             feedback["mname_error"] = valid_name(names=request.form.get("mname"))
         feedback["lname_error"] = valid_name(names=request.form.get("lname"))
