@@ -91,7 +91,7 @@
                     <strong style="color: black;">Scan the QR-code with your smartphone to register the user on your preferred Authenticator App. We strongly recommend Microsoft Authenticator.</strong><br>
                     <br><strong style="color: #084A83;">Your given User ID will be shown in the Authenticator App.</strong><br>
                     {%if error %}
-                        <br><strong style="color:red;">Either passwords doesn't match or are of an invalid length, passwords should be between 8 to 128 characters. Otherwise the Authenticator Code you entered is not correct.</strong><br><br>
+                        <br><strong style="color:red;">Either passwords doesn't match or are of an invalid length, passwords should be between 8 to 128 characters. Otherwise the Authenticator Code you entered is not correct. Check that your user ID matches the user ID in the Authenticator app.</strong><br><br>
                     {% else %}
                         <br>
                     {% endif %}
@@ -100,6 +100,11 @@
         
                 <div class="container2">
                     <br>
+
+                    <div class=input_container> 
+                        <label for="uname"><b>User ID:</b></label><br>
+                        <input type="text" name="uname" required> <br> <br>
+                    </div>
 
                     <div class=input_container> 
                         <label for="pswd"><b>Password:</b></label><br>
