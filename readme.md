@@ -5,3 +5,4 @@ Web hosting:
     PS C:\Users\vebjo\OneDrive\Dokumenter\Skole\Informasjons- og programvaresikkerhet\Prosjekt\DAT250\application> heroku create jamvpbank-api-heroku
     Creating ⬢ jamvpbank-api-heroku... done
     https://jamvpbank-api-heroku.herokuapp.com/ | https://git.heroku.com/jamvpbank-api-heroku.git
+    jamvp.tk
