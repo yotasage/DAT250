@@ -26,6 +26,9 @@ def add_headers(resp):
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
+    resp.headers.set('Strict-Transport-Security', "max-age=31536000; includeSubDomains")
+    resp.headers.set('X-Frame-Options', "sameorigin")
+    resp.headers.set('X-Content-Type-Options', "nosniff")
 
     return resp
 
