@@ -55,10 +55,7 @@ def post_data(data = None):
 
                 # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and 
-                str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and 
-                check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and 
-                user_object.verified and user_object.blocked_login_until is None:
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and user_object.verified and user_object.blocked_login_until is None:
                     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
