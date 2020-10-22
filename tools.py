@@ -198,28 +198,6 @@ def update_cookie(cookie_in_question, response, age=cookie_maxAge + client_maxAg
     update_cookie_clientside(cookie_in_question, response, age)
     update_cookie_serverside(cookie_in_question, age)
 
-# Brukes for debugging, printer ut det vi har om brukeren
-def print_userdata(user_object):
-    print("#################  USER DATA - START  ######################")
-    print(f"id = {user_object.id}")
-    print(f"user_id = {user_object.user_id}")
-    print(f"email = {user_object.email}")
-    print(f"fname = {user_object.fname}")
-    print(f"mname = {user_object.mname}")
-    print(f"lname = {user_object.lname}")
-    print(f"phone_num = {user_object.phone_num}")
-    print(f"dob = {user_object.dob}")
-    print(f"city = {user_object.city}")
-    print(f"postcode = {user_object.postcode}")
-    print(f"address = {user_object.address}")
-    print(f"hashed_password = {user_object.hashed_password}")
-    print(f"salt = {user_object.salt}")
-    print(f"verification_code = {user_object.verification_code}")
-    print(f"verified = {user_object.verified}")
-    print(f"password_reset_code = {user_object.password_reset_code}")
-    print(f"secret_key = {user_object.secret_key}")
-    print("#################  USER DATA - END  ######################")
-
 # Må vurdere hvilke symboler vi kan tillate
 def contain_allowed_symbols(s, whitelist=string.ascii_letters + string.digits + Norwegian_characters + string.punctuation):
     for c in s:

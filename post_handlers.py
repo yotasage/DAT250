@@ -11,7 +11,7 @@ from app import app, db, cookie_maxAge, client_maxAge # Importerer Flask objekte
 # Constants
 from app import NUMBER_OF_LOGIN_ATTEMPTS_IP, NUMBER_OF_LOGIN_ATTEMPTS_USER, BLOCK_LOGIN_TIME_IP, BLOCK_LOGIN_TIME_USER, RESTRIC_PASSWORD_RESET, BAD_LOGIN_INTERVAL
 
-from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, print_userdata, Norwegian_characters
+from tools import send_mail, is_number, random_string_generator, contain_allowed_symbols, Norwegian_characters
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR, is_human, generate_id
 # from tools import generate_Captcha
