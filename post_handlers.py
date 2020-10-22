@@ -148,10 +148,10 @@ def post_data(data = None):
         # Dette må gjøres for å identifisere hvem som prøver å verifisere seg.
         if 'Referer' in request.headers:
             verification_code = request.headers.get('Referer').split('verification?code=')[1].replace('&error=True', '')  # request.headers.get('Referer')
-
-            if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+            user_id = int(request.form.get("uname"))
+            if contain_allowed_symbols(s=verification_code, whitelist=string.ascii_letters + string.digits) and valid_id(str(user_id)) == "":  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
                 user_object = User.query.filter_by(verification_code=verification_code).first()
-
+                
                 pswd = request.form.get('pswd')  # request.form['pswd'] brukes denne så krasjer koden om noen med vilje ikke oppgir pswd
                 conf_pswd = request.form.get('conf_pswd')
                 secret_key = user_object.secret_key
@@ -161,7 +161,7 @@ def post_data(data = None):
                 password_hash = generate_password_hash(pswd, salt)
 
                 # Hvis det er en konto med denne verifiseringskoden, passordene er like, gyldige, og ikke lik det midlertidige passorde
-                if user_object is not None and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')):
+                if user_object is not None and user_id == user_object.user_id and pswd == conf_pswd and valid_number(authenticator_code, 6, 6) and authenticator_code == totp and valid_password(pswd) and not check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')):
                     user_object.verification_code = None            # Deaktiver verifiseringslinken til brukeren
                     user_object.hashed_password = password_hash.decode('utf-8')
                     user_object.salt = salt.decode('utf-8')
@@ -273,8 +273,8 @@ def post_data(data = None):
         # Er fornavn, mellomnavn og etternavn gyldig?
         feedback["fname"] = valid_name(names=fname, whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if mname != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname"] = valid_name(names=mname)
-        feedback["lname"] = valid_name(names=lname)
+            feedback["mname"] = valid_name(names=mname, whitelist=string.ascii_letters + '-' + Norwegian_characters)
+        feedback["lname"] = valid_name(names=lname, whitelist=string.ascii_letters + '-' + Norwegian_characters)
 
         # Er by navn gyldig?
         feedback["city"] = valid_name(city)
@@ -388,10 +388,10 @@ def post_data(data = None):
             feedback["dob_error"] = "invalid"
 
         # Er fornavn, mellomnavn og etternavn gyldig?
-        feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-')  # Godtar bindestrek i navn
+        feedback["fname_error"] = valid_name(names=request.form.get("fname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)  # Godtar bindestrek i navn
         if request.form.get("mname") != "":  # Trenger ikke å ha mellomnavn, men hvis det har blitt skrevet inn, kontroller det.
-            feedback["mname_error"] = valid_name(names=request.form.get("mname"))
-        feedback["lname_error"] = valid_name(names=request.form.get("lname"))
+            feedback["mname_error"] = valid_name(names=request.form.get("mname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)
+        feedback["lname_error"] = valid_name(names=request.form.get("lname"), whitelist=string.ascii_letters + '-' + Norwegian_characters)
 
         # Er by navn gyldig?
         feedback["city_error"] = valid_name(request.form.get("city"))
