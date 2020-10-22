@@ -251,8 +251,7 @@ def registration():
     captcha_error = request.args.get('captcha_error')
     errors = [fname_error, mname_error, lname_error, email_error, id_error, phone_num_error, 
                 dob_error, city_error, postcode_error, address_error]
-    for i in errors:
-        print("error" + str(errors.index(i)) + ": " + str(i))
+
     sitekey = os.environ.get("PUBLIC_SITE_KEY")
 
     # Make_response, En alternativ måte å sende en side til brukeren, måtte gjøre det slik for å sette headers

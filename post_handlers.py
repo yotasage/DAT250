@@ -15,7 +15,7 @@ from tools import send_mail, is_number, random_string_generator, contain_allowed
 from tools import valid_date, valid_email, valid_id, valid_name, valid_address, valid_number, valid_password, get_valid_cookie
 from tools import generate_account_numbers, valid_account_number, generate_QR, is_human, generate_id
 # from tools import generate_Captcha
-from tools import make_user, Norwegian_characters
+from tools import Norwegian_characters
 
 from models import User, Cookies, Blacklist, Account, Transaction
 
@@ -26,7 +26,6 @@ def post_data(data = None):
 
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
-        make_user()
         user_id = request.form.get("uname")
         
         if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
@@ -56,7 +55,10 @@ def post_data(data = None):
 
                 # Hvis brukeren er verifisert og ikke blokka
                 authenticator_code = request.form.get('auth_code')
-                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and user_object.verified and user_object.blocked_login_until is None:
+                if user_object is not None and (request.form.get("uname") == str(user_object.user_id)) and 
+                str(pyotp.TOTP(user_object.secret_key).now()) == authenticator_code and 
+                check_password_hash(request.form.get("pswd"), user_object.hashed_password.encode('utf-8'), user_object.salt.encode('utf-8')) and 
+                user_object.verified and user_object.blocked_login_until is None:
                     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
                     # Cookies names starting with __Secure- must be set with the secure flag from a secure page (HTTPS)
                     # A secure cookie is only sent to the server when a request is made with the https: scheme. 
