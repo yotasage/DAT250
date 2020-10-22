@@ -6,7 +6,6 @@ from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 key = os.environ.get("ENCRYPTION_KEY")
 
-# Med kryptering:
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=True, nullable=False)
@@ -28,29 +27,6 @@ class User(db.Model):
     failed_logins = db.Column(EncryptedType(db.Integer, key, AesEngine, 'oneandzeroes'), unique=False, nullable=False)
     blocked_login_until = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=True)
     last_password_reset_request = db.Column(EncryptedType(db.String, key, AesEngine, 'pkcs5'), unique=False, nullable=False)
-
-
-# Uten kryptering:
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, unique=True, nullable=False)
-#     email = db.Column(db.String, unique=True, nullable=False)
-#     fname = db.Column(db.String, unique=False, nullable=False)
-#     mname = db.Column(db.String, unique=False, nullable=True)
-#     lname = db.Column(db.String, unique=False, nullable=False)
-#     phone_num = db.Column(db.Integer, unique=True, nullable=False)
-#     dob = db.Column(db.String, unique=False, nullable=False)
-#     city = db.Column(db.String, unique=False, nullable=False)
-#     postcode = db.Column(db.Integer, unique=False, nullable=False)
-#     address = db.Column(db.String, unique=False, nullable=False)
-#     hashed_password = db.Column(db.String, unique=False, nullable=True)
-#     salt = db.Column(db.String, unique=False, nullable=True)
-#     verification_code = db.Column(db.String, unique=True, nullable=True)
-#     verified = db.Column(db.Boolean, unique=False, nullable=False)
-#     password_reset_code = db.Column(db.String, unique=True, nullable=True)
-#     secret_key = db.Column(db.String, unique=True, nullable=True)
-#     failed_logins = db.Column(db.Integer, unique=False, nullable=False) 
-#     blocked_login_until = db.Column(db.String, unique=False, nullable=True)
 
 
 class Blacklist(db.Model):
