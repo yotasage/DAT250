@@ -69,9 +69,11 @@ def post_data(data = None):
                     user_object.failed_logins = 0
 
                     if 'x-forwarded-for' in request.headers:
-                        cookie = Cookies(user_id=user_object.user_id, ip=request.headers.get('x-forwarded-for'), session_cookie=sessionId, valid_to=str(expiration_date))
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.headers.get('x-forwarded-for'), 
+                                        session_cookie=sessionId, valid_to=str(expiration_date))
                     else:
-                        cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, session_cookie=sessionId, valid_to=str(expiration_date))
+                        cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, 
+                                        session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
 
@@ -259,10 +261,11 @@ def post_data(data = None):
         feedback["email"] = valid_email(email)
 
         # Matcher bruker id og epost?
-        # emailsplit = email.split('@')
-        # if feedback["email"] == '' and emailsplit[0] != user_id: # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
-        #     feedback["email"] = "mismatch"
-        #     feedback["id"] = "mismatch"
+        emailsplit = email.split('@')
+        # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
+        if feedback["email"] == '' and emailsplit[0] != user_id:
+            feedback["email"] = "mismatch"
+            feedback["id"] = "mismatch"
 
         # Er bruker id'en gyldig?
         # feedback["id"] = valid_id(user_id)
@@ -464,7 +467,7 @@ def post_data(data = None):
         
         #Verifiser bruker
         session_cookie = get_valid_cookie()  # Henter gyldig cookie fra headeren hvis det er en
-        if session_cookie is not None:  # Om vi fikk en gyldig header
+        if session_cookie is not None:
             cookie = Cookies.query.filter_by(session_cookie=session_cookie).first()
             user = User.query.filter_by(user_id=cookie.user_id).first()
 

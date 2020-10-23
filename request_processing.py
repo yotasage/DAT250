@@ -81,7 +81,12 @@ def signed_in(signed_in_page, url_page):
         elif valid == False:  # En av cookiene var i databasen, og den var utgått
             cookie_object = Cookies.query.filter_by(session_cookie=cookie).first()
 
-            if cookie_object.ip != request.remote_addr:
+            if 'x-forwarded-for' in request.headers:
+                ip = request.headers.get('x-forwarded-for')
+            else:
+                ip = request.remote_addr
+
+            if cookie_object.ip != ip:  # request.remote_addr
                 resp = redirect(url_for('login'), code=302)
             else:
                 resp = redirect(url_for('login', timeout="True"), code=302)

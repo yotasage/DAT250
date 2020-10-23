@@ -147,13 +147,15 @@ def extract_cookies():
 
 # Check if cookie is valid
 def valid_cookie(cookie_in_question):
-    if contain_allowed_symbols(s=cookie_in_question, whitelist=string.ascii_letters + string.digits):  # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+    # Kontrollerer om koden inneholder gyldige symboler før vi prøver å søke gjennom databasen med den.
+    if contain_allowed_symbols(s=cookie_in_question, whitelist=string.ascii_letters + string.digits):
         cookie = Cookies.query.filter_by(session_cookie=cookie_in_question).first()
 
         if cookie is None:
             return None  # Hvis cookien ikke finnes i database
 
-        # Cookies er koblet opp mot ip til klienten, om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
+        # Cookies er koblet opp mot ip til klienten, 
+        # om cookie blir stjålet av noen og brukt en annen plass så får ikke "tyven" logge seg inn for det om.
         # Returnerer False, da vil cookie bli slettet en eller annen gang, og brukeren blir da også logget ut
 
         if 'x-forwarded-for' in request.headers:
@@ -164,11 +166,12 @@ def valid_cookie(cookie_in_question):
         if cookie.ip != ip:
             user_object = User.query.filter_by(user_id=cookie.user_id).first()
 
-            html_template = render_template('/mails/stolen_cookie.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                lname=user_object.lname, ip=ip,
-                                                                                date=datetime.now())
+            html_template = render_template('/mails/stolen_cookie.html', 
+                                            fname=user_object.fname, mname=user_object.mname, 
+                                            lname=user_object.lname, ip=ip, date=datetime.now())
 
-            send_mail(recipients=[user_object.email], subject="Someone tried to sign in to your account", body="", html=html_template)
+            send_mail(recipients=[user_object.email], 
+                      subject="Someone tried to sign in to your account", body="", html=html_template)
             return False
     
         # Hent ut dato og klokkeslett denne cookien er gyldig til
@@ -177,7 +180,8 @@ def valid_cookie(cookie_in_question):
         if datetime.now() > valid_to:
             return False  # Hvis cookien er for gammel
         return True  # Hvis cookien er gyldig
-    return None  # En ugyldig cookie, den inneholder ugyldige tegn, og kan derfor ikke finnes i databasen, return None
+    # En ugyldig cookie, den inneholder ugyldige tegn, og kan derfor ikke finnes i databasen, return None
+    return None
 
 def update_cookie_clientside(cookie_in_question, resp, age=cookie_maxAge + client_maxAge):
     if "https://" in request.host_url:
