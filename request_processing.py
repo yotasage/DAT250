@@ -22,11 +22,10 @@ from tasks import delete_cookie
 # dette øker trafikken mellom serveren og brukeren (kjedelig for de me mobil data), men sikkerheten øker generelt.
 @app.after_request  # Denne kjører etter route funksjonene
 def add_headers(resp):
-    resp.headers.set('Strict-Transport-Security', "max-age=2629743")            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+    resp.headers.set('Strict-Transport-Security', "max-age=31536000; includeSubDomains") # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     resp.headers.set('Cache-Control', "no-cache, no-store, must-revalidate")
     resp.headers.set('Pragma', "no-cache")
     resp.headers.set('Expires', "0")
-    resp.headers.set('Strict-Transport-Security', "max-age=31536000; includeSubDomains")
     resp.headers.set('X-Frame-Options', "sameorigin")
     resp.headers.set('X-Content-Type-Options', "nosniff")
 
@@ -34,7 +33,12 @@ def add_headers(resp):
 
 @app.before_request
 def before_request_func():
-    client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+    if 'x-forwarded-for' in request.headers:
+        ip = request.headers.get('x-forwarded-for')
+    else:
+        ip = request.remote_addr
+
+    client_listing = Blacklist.query.filter_by(ip=ip).first()
 
     if client_listing is not None:
         if client_listing.blocked_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_until, "%Y-%m-%d %H:%M:%S.%f"):
@@ -56,7 +60,7 @@ def before_request_func():
             client_listing.last = str(datetime.now())
 
     else:
-        client_listing = Blacklist(ip=request.remote_addr, last=str(datetime.now()), last_bad_login=str(datetime.now()), frequent_request_count=0, wrong_password_count=0)
+        client_listing = Blacklist(ip=ip, last=str(datetime.now()), last_bad_login=str(datetime.now()), frequent_request_count=0, wrong_password_count=0)
         db.session.add(client_listing)
 
     db.session.commit()
@@ -101,6 +105,11 @@ def signed_in(signed_in_page, url_page):
 
 @app.errorhandler(403)
 def Forbidden(e):
+    if 'x-forwarded-for' in request.headers:
+        ip = request.headers.get('x-forwarded-for')
+    else:
+        ip = request.remote_addr
+
     # note that we set the 403 status explicitly
-    client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+    client_listing = Blacklist.query.filter_by(ip=ip).first()
     return render_template('error/403.html', date=datetime.strptime(client_listing.blocked_until, "%Y-%m-%d %H:%M:%S.%f")), 403

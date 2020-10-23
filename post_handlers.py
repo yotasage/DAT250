@@ -24,12 +24,17 @@ from models import User, Cookies, Blacklist, Account, Transaction
 def post_data(data = None):
     print("post_handlers - 1")
 
+    if 'x-forwarded-for' in request.headers:
+        ip = request.headers.get('x-forwarded-for')
+    else:
+        ip = request.remote_addr
+
     # Kontrollerer brukernavn og passord som er skrevet inn i login siden
     if data == "login_data":
         user_id = request.form.get("uname")
         
         if valid_id(user_id) == "":  # Sjekker om id'en vi mottok er i orden før vi prøver å søke gjennom databasen med den.
-            client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+            client_listing = Blacklist.query.filter_by(ip=ip).first()
 
             if datetime.now() > datetime.strptime(client_listing.last_bad_login, "%Y-%m-%d %H:%M:%S.%f") + timedelta(seconds=BAD_LOGIN_INTERVAL):
                 print("CLIENT COUNTER RESATT")
@@ -72,7 +77,7 @@ def post_data(data = None):
                         cookie = Cookies(user_id=user_object.user_id, ip=request.headers.get('x-forwarded-for'), 
                                         session_cookie=sessionId, valid_to=str(expiration_date))
                     else:
-                        cookie = Cookies(user_id=user_object.user_id, ip=request.remote_addr, 
+                        cookie = Cookies(user_id=user_object.user_id, ip=ip, 
                                         session_cookie=sessionId, valid_to=str(expiration_date))
                     db.session.add(cookie)
                     db.session.commit()
@@ -129,7 +134,7 @@ def post_data(data = None):
                                 blocked_until = datetime.strptime(user_object.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f")
 
                                 html_template = render_template('/mails/blocked_user.html', fname=user_object.fname, mname=user_object.mname, 
-                                                                                            lname=user_object.lname, ip=request.remote_addr,
+                                                                                            lname=user_object.lname, ip=ip,
                                                                                             date=datetime.now(), blocked_until=blocked_until)
 
                                 send_mail(recipients=[user_object.email], subject="Your account has been blocked", body="", html=html_template)
@@ -313,7 +318,7 @@ def post_data(data = None):
         elif User.query.filter_by(email=request.form.get("email")).first() is not None and User.query.filter_by(email=request.form.get("email")).first().verified:
             user_object = User.query.filter_by(email=request.form.get("email")).first()
             html_template = render_template('/mails/register_existing_user.html', fname=user_object.fname, mname=user_object.mname, lname=user_object.lname, 
-                                                                                    ip=request.remote_addr, date=datetime.now())
+                                                                                    ip=ip, date=datetime.now())
 
             send_mail(recipients=[user_object.email], subject="Someone tried to register an account using your email", body="", html=html_template)
 
