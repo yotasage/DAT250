@@ -63,7 +63,12 @@ def login(page = None):
     messages_2 = request.args.get('v_mail')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
     messages_3 = request.args.get('timeout')  # Henter argumentet error fra URL som kommer med forespørselen fra nettleseren til brukeren.
 
-    client_listing = Blacklist.query.filter_by(ip=request.remote_addr).first()
+    if 'x-forwarded-for' in request.headers:
+        ip = request.headers.get('x-forwarded-for')
+    else:
+        ip = request.remote_addr
+
+    client_listing = Blacklist.query.filter_by(ip=ip).first()
 
     # Side for når en ikke er innlogget
     if client_listing.blocked_login_until is not None and datetime.now() <= datetime.strptime(client_listing.blocked_login_until, "%Y-%m-%d %H:%M:%S.%f"):
