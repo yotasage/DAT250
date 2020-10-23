@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 from datetime import datetime, timedelta
 
-import mail_user_config  # Prøv å kjør uten denne et par ganger.    Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
+import mail_user_config  # Det denne gjør er å sette variablene som leses nedenfor os.environ.get('MAIL_USERNAME_FLASK') og os.environ.get('MAIL_PASSWORD_FLASK')
 
 COOKIE_MAXAGE = cookie_maxAge = 900  # Hvor mange sekunder en cookie er gyldig
 CLIENT_MAXAGE = client_maxAge = 2629743  # Hvor mange sekunder en cookie skal bli bevart hos clienten, dette er omtrent en måned
