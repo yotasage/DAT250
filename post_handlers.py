@@ -266,7 +266,7 @@ def post_data(data = None):
         feedback["email"] = valid_email(email)
 
         # Matcher bruker id og epost?
-        emailsplit = email.split('@')
+        #emailsplit = email.split('@')
         # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
         # if feedback["email"] == '' and emailsplit[0] != user_id:
         #     feedback["email"] = "mismatch"
