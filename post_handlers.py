@@ -268,9 +268,9 @@ def post_data(data = None):
         # Matcher bruker id og epost?
         emailsplit = email.split('@')
         # Hvis epost er gyldig, Sjekk om id ikke stemmer overens med epost
-        if feedback["email"] == '' and emailsplit[0] != user_id:
-            feedback["email"] = "mismatch"
-            feedback["id"] = "mismatch"
+        # if feedback["email"] == '' and emailsplit[0] != user_id:
+        #     feedback["email"] = "mismatch"
+        #     feedback["id"] = "mismatch"
 
         # Er bruker id'en gyldig?
         # feedback["id"] = valid_id(user_id)
